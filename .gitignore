@@ -1,0 +1,11 @@
+node_modules/
+.env
+coverage/
+*.log
+.DS_Store
+.vscode/
+
+# ảnh upload không commit, chỉ giữ .gitkeep
+public/uploads/**
+!public/uploads/**/
+!public/uploads/**/.gitkeep
