@@ -9,7 +9,8 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "seed:admin": "node src/database/seeds/createAdmin.js"
   },
   "keywords": [],
   "author": "",

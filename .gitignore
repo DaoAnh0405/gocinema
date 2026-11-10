@@ -4,6 +4,7 @@ coverage/
 *.log
 .DS_Store
 .vscode/
+tests/
 
 # ảnh upload không commit, chỉ giữ .gitkeep
 public/uploads/**

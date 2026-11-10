@@ -18,6 +18,8 @@ module.exports = Object.freeze({
   isProd: nodeEnv === 'production',
   isTest,
   port: Number(get('PORT', 3000)),
+  appUrl: get('APP_URL', 'http://localhost:3000')
+    .replace(/\/$/, ''),
   db: {
     host: get('DB_HOST', 'localhost'),
     port: Number(get('DB_PORT', 3307)),
