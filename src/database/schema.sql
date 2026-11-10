@@ -1,3 +1,4 @@
+SET NAMES utf8mb4; --
 DROP DATABASE IF EXISTS gocinema;
 
 CREATE DATABASE gocinema
@@ -52,14 +53,13 @@ CREATE TABLE customers (
 CREATE TABLE password_reset_tokens (
     token_id    INT AUTO_INCREMENT PRIMARY KEY,
     account_id  INT NOT NULL,
-    token       VARCHAR(100) NOT NULL UNIQUE,
+    token       VARCHAR(100) NOT NULL UNIQUE COMMENT 'Bản băm SHA-256 của token gửi qua email',
     expires_at  DATETIME NOT NULL,
     is_used     BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_prt_account FOREIGN KEY (account_id) REFERENCES accounts(account_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- NHÓM 2: PHIM
-
 CREATE TABLE movies (
     movie_id      INT AUTO_INCREMENT PRIMARY KEY,
     title         VARCHAR(200) NOT NULL,
@@ -93,7 +93,6 @@ CREATE TABLE movie_genres (
 ) ENGINE=InnoDB;
 
 -- NHÓM 3: RẠP, PHÒNG CHIẾU, GHẾ, SUẤT CHIẾU
-
 CREATE TABLE cinemas (
     cinema_id     INT AUTO_INCREMENT PRIMARY KEY,
     cinema_name   VARCHAR(100) NOT NULL,
@@ -145,9 +144,9 @@ CREATE TABLE showtimes (
     movie_id       INT NOT NULL,
     room_id        INT NOT NULL,
     start_time     DATETIME NOT NULL,
-    end_time       DATETIME NOT NULL,
+    end_time       DATETIME NOT NULL COMMENT 'Giờ chiếu + thời lượng phim + 15 phút dọn phòng (dùng để kiểm tra trùng lịch)',
     screen_format  VARCHAR(20) DEFAULT '2D' COMMENT '2D / 3D / IMAX',
-    language       VARCHAR(30) COMMENT 'Subtitled / Dubbed',
+    language       VARCHAR(30) COMMENT 'Tiếng Việt / Phụ đề / Lồng tiếng',
     status         TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = open, 0 = closed, -1 = cancelled',
     INDEX idx_show_movie_start (movie_id, start_time),
     INDEX idx_show_room_start (room_id, start_time),
@@ -162,14 +161,16 @@ CREATE TABLE showtime_seats (
     seat_id      INT NOT NULL,
     status       TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = available, 0 = held, -1 = sold',
     held_until   DATETIME NULL COMMENT 'Hạn giữ ghế tạm thời',
+    held_by      INT NULL COMMENT 'Tài khoản đang giữ ghế (NULL khi ghế trống hoặc đã bán)',
     PRIMARY KEY (showtime_id, seat_id),
+    INDEX idx_ss_status_held (status, held_until),
     CONSTRAINT fk_ss_showtime FOREIGN KEY (showtime_id) REFERENCES showtimes(showtime_id) ON DELETE CASCADE,
     CONSTRAINT fk_ss_seat     FOREIGN KEY (seat_id)     REFERENCES seats(seat_id),
+    CONSTRAINT fk_ss_held_by  FOREIGN KEY (held_by)     REFERENCES accounts(account_id) ON DELETE SET NULL,
     CONSTRAINT chk_ss_status CHECK (status IN (-1, 0, 1))
 ) ENGINE=InnoDB;
 
--- NHÓM 4: GIÁ VÉ, THỨC ĂN, KHUYẾN MÃI
-
+-- NHÓM 4: GIÁ VÉ, ĐỒ ĂN, KHUYẾN MÃI
 CREATE TABLE ticket_prices (
     price_id       INT AUTO_INCREMENT PRIMARY KEY,
     seat_type_id   INT NOT NULL,
@@ -214,7 +215,6 @@ CREATE TABLE promotions (
 ) ENGINE=InnoDB;
 
 -- NHÓM 5: CA LÀM VIỆC, ĐƠN HÀNG, VÉ, THANH TOÁN
-
 CREATE TABLE work_shifts (
     shift_id      INT AUTO_INCREMENT PRIMARY KEY,
     staff_id      INT NOT NULL,
@@ -244,6 +244,7 @@ CREATE TABLE orders (
     cancelled_at     DATETIME NULL,
     INDEX idx_orders_customer_date (customer_id, created_at),
     INDEX idx_orders_created_at (created_at),
+    INDEX idx_orders_status_created (status, created_at),
     CONSTRAINT fk_ord_customer  FOREIGN KEY (customer_id)  REFERENCES customers(account_id),
     CONSTRAINT fk_ord_staff     FOREIGN KEY (staff_id)     REFERENCES staff(account_id),
     CONSTRAINT fk_ord_shift     FOREIGN KEY (shift_id)     REFERENCES work_shifts(shift_id),
@@ -259,7 +260,7 @@ CREATE TABLE tickets (
     seat_id              INT NOT NULL,
     ticket_price         DECIMAL(10,0) NOT NULL COMMENT 'Gia tai thoi diem mua',
     qr_code              VARCHAR(50) NOT NULL UNIQUE COMMENT 'Ma QR de soat ve',
-    status               TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = valid, 0 = used, -1 = cancelled',
+    status               TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = valid, 0 = used, -1 = cancelled. Tao cung luc voi don; chi co hieu luc khi don o trang thai PAID',
     checked_by_staff_id  INT NULL,
     checked_in_at        DATETIME NULL,
     INDEX idx_tickets_showtime_seat (showtime_id, seat_id),
