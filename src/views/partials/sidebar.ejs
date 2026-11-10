@@ -1,0 +1,25 @@
+<%
+  const here = String(currentPath || '').split('?')[0];
+  const isActive = (item) => item.exact
+    ? here === item.href
+    : here === item.href || here.startsWith(item.href + '/');
+%>
+<nav class="gc-sidebar" aria-label="Menu <%= panelName %>">
+  <a class="gc-sidebar__brand" href="<%= menu[0].href %>">
+    <span>GoCinema</span>
+    <small><%= panelName %></small>
+  </a>
+  <ul class="nav flex-column pb-3">
+    <% menu.forEach((item) => { %>
+      <% if (item.group) { %>
+        <li class="gc-sidebar__group"><%= item.group %></li>
+      <% } else if (!item.permission || can(item.permission)) { %>
+        <li class="nav-item">
+          <a class="nav-link <%= isActive(item) ? 'active' : '' %>" href="<%= item.href %>">
+            <i class="bi <%= item.icon %>"></i> <%= item.label %>
+          </a>
+        </li>
+      <% } %>
+    <% }) %>
+  </ul>
+</nav>
