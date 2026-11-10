@@ -1,22 +1,10 @@
 const router = require('express').Router();
-const { pool } = require('../../config/db');
-const asyncHandler = require('../../utils/asyncHandler');
 
-router.get('/', (_req, res) => {
-  res.render('pages/public/home', { title: 'Trang chủ' });
-});
-
-router.get(
-  '/health',
-  asyncHandler(async (_req, res) => {
-    let db = 'up';
-    try {
-      await pool.query('SELECT 1');
-    } catch {
-      db = 'down';
-    }
-    res.json({ status: 'ok', db, time: new Date().toISOString() });
-  }),
-);
+router.use('/', require('./publicRoutes'));
+router.use('/', require('./authRoutes'));
+router.use('/', require('./passwordResetRoutes'));
+router.use('/admin', require('./adminRoutes'));
+router.use('/staff', require('./staffRoutes'));
+router.use('/profile', require('./profileRoutes'));
 
 module.exports = router;
