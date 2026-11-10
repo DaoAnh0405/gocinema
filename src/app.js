@@ -14,6 +14,11 @@ const apiRoutes = require('./routes/api');
 
 const app = express();
 
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');            // layout mặc định
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
+
 app.disable('x-powered-by');
 
 // View engine
