@@ -16,7 +16,7 @@ const options = {
   },
 };
 
-// Khi test dùng bộ nhớ tạm để Jest thoát gọn
+// khi test dùng bộ nhớ tạm để Jest thoát gọn
 if (!env.isTest) {
   options.store = new MySQLStore({}, pool); // tự tạo bảng `sessions`
 }
