@@ -111,111 +111,126 @@ VALUES
  'Câu chuyện đầy kịch tính về lằn ranh sinh tử và những bí ẩn đằng sau tiếng chuông định mệnh.',
  110, '2026-01-01', NULL, 'Jay Sukmo',
  'Bhisma Mulia, Ratu Sofya, Givina',
- '/images/posters/khi-than-chet-do-chuong.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_1', 'T18', 'NOW_SHOWING'),
+ '/images/posters/khi-than-chet-do-chuong.jpg', 'https://www.youtube.com/watch?v=eJZOJVGaXKQ', 'T18', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=eJZOJVGaXKQ
 
 ('Thiên Đường Tăm Tối',
  'Hành trình khám phá những góc khuất tâm lý và bí mật đen tối tại một nơi tưởng chừng như yên bình.',
  115, '2026-01-01', NULL, 'Yeon Sang-ho',
  'Kim Hyun-joo, Bae Hyun-sung, Lee Hyun-kyun, Kim Jong-tae, Koo Kyo-hwan',
- '/images/posters/thien-duong-tam-toi.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_2', 'T18', 'NOW_SHOWING'),
+ '/images/posters/thien-duong-tam-toi.jpg', 'https://www.youtube.com/watch?v=drOYCp_2Vtw', 'T18', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=drOYCp_2Vtw
 
 ('Chàng Mèo Mang Mũ',
  'Bộ phim hoạt hình/phiêu lưu thú vị về chú mèo kỳ lạ mang theo những bất ngờ và tiếng cười.',
  95, '2026-01-01', NULL, 'Alessandro Carloni, Erica Rivinoja',
  'Bill Hader, Xochitl Gomez, Matt Berry, Quinta Brunson, Bowen Yang',
- '/images/posters/chang-meo-mang-mu.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_3', 'P', 'NOW_SHOWING'),
+ '/images/posters/chang-meo-mang-mu.jpg', 'https://www.youtube.com/watch?v=eCs0qclCDKA', 'P', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=eCs0qclCDKA
 
 ('Trại Buôn Người',
  'Phút giây nghẹt thở lật tẩy đường dây tội phạm xuyên quốc gia và cuộc chiến sinh tồn.',
  120, '2026-01-01', NULL, 'Toni Dương Bảo Anh',
  'Steven Nguyễn, Trầm Minh Hoàng, Quách Ngọc Ngoan, Huỳnh Minh Kiên, Tùng Mint, Võ Đình Hiếu',
- '/images/posters/trai-buon-nguoi.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_4', 'T18', 'NOW_SHOWING'),
+ '/images/posters/trai-buon-nguoi.jpg', 'https://www.youtube.com/watch?v=8SF-MgysvBU', 'T18', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=8SF-MgysvBU
 
 ('Clayface',
  'Tác phẩm xoay quanh nhân vật phản diện mang khả năng biến hóa khôn lường trong thế giới siêu anh hùng.',
  125, '2026-01-01', NULL, 'James Watkins',
  'Tom Rhys Harries, Naomi Ackie, David Dencik, Max Minghella, Eddie Marsan',
- '/images/posters/clayface.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_5', 'T16', 'NOW_SHOWING'),
+ '/images/posters/clayface.jpg', 'https://www.youtube.com/watch?v=KCR-rz0YfD4', 'T16', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=KCR-rz0YfD4
 
 ('Chị Chị Em Em 3',
  'Phần tiếp theo của series phim điện ảnh tâm lý, giật gân xoay quanh những mưu mô tình cảm đầy rẫy bất ngờ.',
  105, '2026-01-01', NULL, 'Nguyễn Hữu Hoàng',
  'Ninh Dương Lan Ngọc, Nguyễn Cao Kỳ Duyên, Steven Nguyễn, Chi Pu, Trần Quốc Anh, Lê Khanh',
- '/images/posters/chi-chi-em-em-3.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_6', 'T18', 'NOW_SHOWING'),
+ '/images/posters/chi-chi-em-em-3.jpg', 'https://www.youtube.com/watch?v=lM4mrAELuz0', 'T18', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=lM4mrAELuz0
 
-('Ramayana: Part One',
+('Ramayana : Khởi Nguồn Một Huyền Thoại',
  'Sử thi hoành tráng tái hiện câu chuyện truyền thuyết kinh điển đầy màu sắc và cảm xúc.',
  170, '2026-01-01', NULL, 'Nitesh Tiwari',
  'Ranbir Kapoor, Sai Pallavi, Yash, Sunny Deol, Ravie Dubey',
- '/images/posters/ramayana.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_7', 'P', 'NOW_SHOWING'),
+ '/images/posters/ramayana.jpg', 'https://www.youtube.com/watch?v=6BDX2p1aNlE', 'P', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=6BDX2p1aNlE
 
 ('Bò Sữa Bay',
  'Bộ phim hoạt hình giải trí nhẹ nhàng với các nhân vật đáng yêu và chuyến phiêu lưu kỳ thú.',
  90, '2026-01-01', NULL, 'Nguyễn Phạm Thành Đạt',
  'Nguyễn Hùng, Võ Điền Gia Huy, Ngọc Xuân, Tiểu Vy, Lãnh Thanh, Huy Tít',
- '/images/posters/bo-sua-bay.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_8', 'P', 'NOW_SHOWING'),
+ '/images/posters/bo-sua-bay.jpg', 'https://www.youtube.com/watch?v=kKhAo3l2Bb4', 'P', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=kKhAo3l2Bb4
 
 ('Godzilla Minus Zero',
  'Cuộc đối đầu kinh hoàng khi quái vật huyền thoại trỗi dậy tàn phá, đẩy nhân loại vào bờ vực tuyệt vọng.',
  125, '2026-01-01', NULL, 'Takashi Yamazaki',
  'Ryunosuke Kamiki, Minami Hamabe, Masami Nagasawa, Jun Kunimura',
- '/images/posters/godzilla-minus-zero.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_9', 'T13', 'NOW_SHOWING'),
+ '/images/posters/godzilla-minus-zero.jpg', 'https://www.youtube.com/watch?v=TfkCKKW3iB8', 'T13', 'NOW_SHOWING'),
+-- https://www.youtube.com/watch?v=TfkCKKW3iB8
 
 -- SẮP CHIẾU
 ('Avengers: Doomsday',
  'Các siêu anh hùng của vũ trụ Marvel đối mặt với mối đe dọa lớn nhất từ trước đến nay.',
  150, '2026-12-18', NULL, 'Anthony Russo, Joe Russo',
  'Robert Downey Jr., Chris Hemsworth, Anthony Mackie, Florence Pugh',
- '/images/posters/avengers-doomsday.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_AVENGERS_DOOMSDAY', 'T13', 'COMING_SOON'),
-('Dune: Phần Ba',
+ '/images/posters/avengers-doomsday.jpg', 'https://www.youtube.com/watch?v=irVNGjRFZGk', 'T13', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=irVNGjRFZGk
+
+('Dune: Hành Tinh Cát - Phần Ba',
  'Phần kết của bộ ba Dune, tiếp nối hành trình của Paul Atreides trên con đường làm hoàng đế.',
  150, '2026-12-18', NULL, 'Denis Villeneuve',
  'Timothée Chalamet, Zendaya, Florence Pugh, Jason Momoa',
- '/images/posters/dune-3.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_DUNE_3', 'T13', 'COMING_SOON'),
+ '/images/posters/dune-3.jpg', 'https://www.youtube.com/watch?v=of4DM5WWv4M', 'T13', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=of4DM5WWv4M
 
 ('Nhất Quỷ Nhì Ma',
  'Tại một ngôi trường bị bao phủ bởi những lời đồn tâm linh, những hiện tượng kỳ bí liên tiếp xảy ra và dần hé lộ các bí mật đáng sợ.',
  120, '2027-01-15', NULL, 'Đang cập nhật',
  'Đang cập nhật',
- '/images/posters/nhat-quy-nhi-ma.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_NHAT_QUY_NHI_MA', 'T16', 'COMING_SOON'),
+ '/images/posters/nhat-quy-nhi-ma.jpg', 'https://www.youtube.com/watch?v=8untGwjhtYQ', 'T16', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=8untGwjhtYQ
 
-('Angry Birds 3',
+('The Angry Birds Movie 3',
  'Red, Chuck, Bomb và những người bạn trở lại trong chuyến phiêu lưu mới với nhiều tình huống hài hước và bất ngờ.',
  95, '2027-01-01', NULL, 'John Rice',
  'Jason Sudeikis, Josh Gad, Danny McBride, Rachel Bloom, Emma Myers, Keke Palmer, Lily James, Walker Scobell',
- '/images/posters/angry-birds-3.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_ANGRY_BIRDS_3', 'P', 'COMING_SOON'),
+ '/images/posters/angry-birds-3.jpg', 'https://www.youtube.com/watch?v=a9DB_aUMzME', 'P', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=a9DB_aUMzME
 
 ('Đêm Hung Tàn 2',
  'Ông Già Noel trở lại trong cuộc phiêu lưu Giáng Sinh đầy hài hước và kịch tính khi phải đối mặt với những mối đe dọa mới.',
  110, '2026-12-04', NULL, 'Tommy Wirkola',
  'David Harbour, Kristen Bell, Jared Harris, Daniela Melchior, Joe Pantoliano, Andrew Bachelor',
- '/images/posters/dem-hung-tan-2.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_VIOLENT_NIGHT_2', 'T18', 'COMING_SOON'),
+ '/images/posters/dem-hung-tan-2.jpg', 'https://www.youtube.com/watch?v=B4I29C3ddu4', 'T18', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=B4I29C3ddu4
 
 ('Trại Giam Hạnh Phúc',
  'Câu chuyện về một người thầy hiền lành bị đưa vào tù và hành trình cảm hóa những con người nơi song sắt bằng lòng tốt.',
  127, '2026-11-20', NULL, 'Nguyễn Nhật Trung',
  'Ma Ran Đô, Tuấn Trần, Khuyến Dương, Tiến Luật, Gia Nguyễn, Hoàng Phi, La Thành, Lương Thế Thành',
- '/images/posters/trai-giam-hanh-phuc.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_TRAI_GIAM_HANH_PHUC', 'T13', 'COMING_SOON'),
+ '/images/posters/trai-giam-hanh-phuc.jpg', 'https://www.youtube.com/watch?v=gXfaBKCL9z4', 'T13', 'COMING_SOON'),
+-- https://www.youtube.com/watch?v=gXfaBKCL9z4
 
 -- ĐÃ KẾT THÚC
 ('Oppenheimer',
  'Câu chuyện về J. Robert Oppenheimer và vai trò của ông trong việc chế tạo bom nguyên tử.',
  180, '2023-07-21', '2023-09-30', 'Christopher Nolan',
  'Cillian Murphy, Emily Blunt, Matt Damon, Robert Downey Jr.',
- '/images/posters/oppenheimer.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_OPPENHEIMER', 'T18', 'ENDED'),
-('Joker: Folie à Deux',
+ '/images/posters/oppenheimer.jpg', 'https://www.youtube.com/watch?v=uYPbbksJxIg', 'T18', 'ENDED'),
+
+('Joker: Folie À Deux',
  'Arthur Fleck bị giam tại Arkham và gặp Harley Quinn, người mở ra thế giới âm nhạc và tình yêu điên loạn.',
  138, '2024-10-04', '2024-11-20', 'Todd Phillips',
  'Joaquin Phoenix, Lady Gaga, Brendan Gleeson, Catherine Keener',
- '/images/posters/joker-2.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_JOKER_2', 'T18', 'ENDED'),
+ '/images/posters/joker-2.jpg', 'https://www.youtube.com/watch?v=_OKAwz2MsJs', 'T18', 'ENDED'),
+
 ('Godzilla x Kong: Đế Chế Mới',
  'Godzilla và Kong bắt tay chống lại mối đe dọa khổng lồ ẩn sâu trong lòng Trái Đất.',
  115, '2024-03-29', '2024-05-31', 'Adam Wingard',
  'Rebecca Hall, Brian Tyree Henry, Dan Stevens, Kaylee Hottle',
- '/images/posters/godzilla-x-kong.jpg', 'https://www.youtube.com/watch?v=YOUTUBE_ID_GODZILLA_KONG', 'T13', 'ENDED');
-
--- Trailer giả chưa thay bằng link thật thì để trống, tránh liên kết hỏng
-UPDATE movies SET trailer_url = NULL WHERE trailer_url LIKE '%YOUTUBE_ID_%';
+ '/images/posters/godzilla-x-kong.jpg', 'https://www.youtube.com/watch?v=B2Jlyq_Tf3Y', 'T13', 'ENDED');
 
 -- Gán thể loại cho các phim thực sự có trong danh sách movies
 INSERT INTO movie_genres (movie_id, genre_id)
@@ -236,8 +251,8 @@ FROM (
   UNION ALL SELECT 'Clayface', 'Hành động'
   UNION ALL SELECT 'Chị Chị Em Em 3', 'Tâm lý'
   UNION ALL SELECT 'Chị Chị Em Em 3', 'Tình cảm'
-  UNION ALL SELECT 'Ramayana: Part One', 'Hành động'
-  UNION ALL SELECT 'Ramayana: Part One', 'Phiêu lưu'
+  UNION ALL SELECT 'Ramayana : Khởi Nguồn Một Huyền Thoại', 'Hành động'
+  UNION ALL SELECT 'Ramayana : Khởi Nguồn Một Huyền Thoại', 'Phiêu lưu'
   UNION ALL SELECT 'Bò Sữa Bay', 'Hoạt hình'
   UNION ALL SELECT 'Bò Sữa Bay', 'Phiêu lưu'
   UNION ALL SELECT 'Bò Sữa Bay', 'Hài'
@@ -247,13 +262,13 @@ FROM (
   UNION ALL SELECT 'Avengers: Doomsday', 'Hành động'
   UNION ALL SELECT 'Avengers: Doomsday', 'Khoa học viễn tưởng'
   UNION ALL SELECT 'Avengers: Doomsday', 'Phiêu lưu'
-  UNION ALL SELECT 'Dune: Phần Ba', 'Khoa học viễn tưởng'
-  UNION ALL SELECT 'Dune: Phần Ba', 'Phiêu lưu'
+  UNION ALL SELECT 'Dune: Hành Tinh Cát - Phần Ba', 'Khoa học viễn tưởng'
+  UNION ALL SELECT 'Dune: Hành Tinh Cát - Phần Ba', 'Phiêu lưu'
   UNION ALL SELECT 'Nhất Quỷ Nhì Ma', 'Kinh dị'
   UNION ALL SELECT 'Nhất Quỷ Nhì Ma', 'Hài'
-  UNION ALL SELECT 'Angry Birds 3', 'Hoạt hình'
-  UNION ALL SELECT 'Angry Birds 3', 'Hài'
-  UNION ALL SELECT 'Angry Birds 3', 'Phiêu lưu'
+  UNION ALL SELECT 'The Angry Birds Movie 3', 'Hoạt hình'
+  UNION ALL SELECT 'The Angry Birds Movie 3', 'Hài'
+  UNION ALL SELECT 'The Angry Birds Movie 3', 'Phiêu lưu'
   UNION ALL SELECT 'Đêm Hung Tàn 2', 'Hành động'
   UNION ALL SELECT 'Đêm Hung Tàn 2', 'Hài'
   UNION ALL SELECT 'Đêm Hung Tàn 2', 'Kinh dị'
@@ -261,8 +276,8 @@ FROM (
   UNION ALL SELECT 'Trại Giam Hạnh Phúc', 'Tâm lý'
   -- ĐÃ KẾT THÚC
   UNION ALL SELECT 'Oppenheimer', 'Tâm lý'
-  UNION ALL SELECT 'Joker: Folie à Deux', 'Tâm lý'
-  UNION ALL SELECT 'Joker: Folie à Deux', 'Tình cảm'
+  UNION ALL SELECT 'Joker: Folie À Deux', 'Tâm lý'
+  UNION ALL SELECT 'Joker: Folie À Deux', 'Tình cảm'
   UNION ALL SELECT 'Godzilla x Kong: Đế Chế Mới', 'Hành động'
   UNION ALL SELECT 'Godzilla x Kong: Đế Chế Mới', 'Khoa học viễn tưởng'
 ) x
@@ -272,7 +287,7 @@ JOIN genres g ON g.genre_name = x.g;
 -- NHÓM 3: RẠP, NHÂN VIÊN, PHÒNG, GHẾ
 INSERT INTO cinemas (cinema_name, address, city, phone_number, status) VALUES
   ('GoCinema Cầu Giấy',  '234 Xuân Thủy, Cầu Giấy',        'Hà Nội',  '02432001001', 1),
-  ('GoCinema Long Biên', '15 Nguyễn Văn Cừ, Long Biên',    'Hà Nội',  '02432001002', 1),
+  ('GoCinema Nhổn', '15 Nguyễn Văn Cừ, Long Biên',    'Hà Nội',  '02432001002', 1),
   ('GoCinema Quận 1',    '88 Nguyễn Huệ, Quận 1',          'TP.HCM',  '02838001003', 1),
   ('GoCinema Đà Nẵng',   '10 Trần Phú, Hải Châu',          'Đà Nẵng', '02363001004', 0);
 
@@ -282,7 +297,7 @@ FROM (
   SELECT 'staff1@gocinema.vn' AS email, 'Nguyễn Thị Lan'  AS full_name, 'GoCinema Cầu Giấy'  AS cinema, 'Thu ngân'      AS position
   UNION ALL SELECT 'staff2@gocinema.vn', 'Trần Văn Hùng',   'GoCinema Cầu Giấy',  'Soát vé'
   UNION ALL SELECT 'staff3@gocinema.vn', 'Lê Thu Trang',    'GoCinema Quận 1',    'Quản lý ca'
-  UNION ALL SELECT 'staff4@gocinema.vn', 'Phạm Quốc Bảo',   'GoCinema Long Biên', 'Thu ngân'
+  UNION ALL SELECT 'staff4@gocinema.vn', 'Phạm Quốc Bảo',   'GoCinema Nhổn', 'Thu ngân'
 ) s
 JOIN accounts a ON a.email = s.email
 JOIN cinemas  c ON c.cinema_name = s.cinema;
@@ -295,8 +310,8 @@ FROM (
   SELECT 'GoCinema Cầu Giấy' AS cinema, 'Phòng 1' AS room_name, '2D'   AS room_type, 1 AS status
   UNION ALL SELECT 'GoCinema Cầu Giấy',  'Phòng 2', '3D',   1
   UNION ALL SELECT 'GoCinema Cầu Giấy',  'Phòng 3', 'IMAX', 1
-  UNION ALL SELECT 'GoCinema Long Biên', 'Phòng 1', '2D',   1
-  UNION ALL SELECT 'GoCinema Long Biên', 'Phòng 2', '3D',   1
+  UNION ALL SELECT 'GoCinema Nhổn', 'Phòng 1', '2D',   1
+  UNION ALL SELECT 'GoCinema Nhổn', 'Phòng 2', '3D',   1
   UNION ALL SELECT 'GoCinema Quận 1',    'Phòng 1', '2D',   1
   UNION ALL SELECT 'GoCinema Quận 1',    'Phòng 2', 'IMAX', 1
   UNION ALL SELECT 'GoCinema Quận 1',    'Phòng 3', '2D',   0   -- đang bảo trì
@@ -389,7 +404,7 @@ INSERT INTO showtimes (movie_id, room_id, start_time, end_time, screen_format, l
 SELECT t.movie_id, x.room_id, x.st,
        DATE_ADD(x.st, INTERVAL (t.duration + 15) MINUTE),
        x.room_type,
-       CASE WHEN t.title IN ('Chàng Mèo Mang Mũ', 'Bò Sữa Bay', 'Angry Birds 3') THEN 'Lồng tiếng'
+       CASE WHEN t.title IN ('Chàng Mèo Mang Mũ', 'Bò Sữa Bay', 'The Angry Birds Movie 3') THEN 'Lồng tiếng'
             WHEN MOD(x.dn + x.sidx, 2) = 0 THEN 'Phụ đề'
             ELSE 'Lồng tiếng' END,
        1
