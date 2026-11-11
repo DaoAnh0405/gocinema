@@ -89,11 +89,12 @@
 
   <%# KHUYẾN MÃI %>
   <section class="gc-section">
-    <h2 class="gc-section__title mb-3">Khuyến mãi</h2>
+    <h2 class="gc-section__title mb-3">Khuyến mãi demo</h2>
     <% if (promotions.length) { %>
       <div class="gc-grid">
         <% promotions.forEach((p) => { %>
-          <a class="gc-promo" href="/promotions">
+          <a class="gc-promo" href="/"> 
+            <!-- /promotions -->
             <span class="gc-promo__badge">
               <%= p.discount_type === 'PERCENT' ? '-' + Number(p.discount_value) + '%' : '-' + fmt.money(p.discount_value) %>
             </span>

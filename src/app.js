@@ -5,29 +5,33 @@ const morgan = require('morgan');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
 
+// config
 const env = require('./config/env');
 const sessionMiddleware = require('./config/session');
+
+// middlewares
 const viewLocals = require('./middlewares/viewLocals');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
+// routes
 const webRoutes = require('./routes/web');
 const apiRoutes = require('./routes/api');
 
 const app = express();
 
+// app configuration
+app.disable('x-powered-by');
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// ejs layout
 app.use(expressLayouts);
-app.set('layout', 'layouts/main');            // layout mặc định
+app.set('layout', 'layouts/main');
 app.set('layout extractScripts', true);
 app.set('layout extractStyles', true);
 
-app.disable('x-powered-by');
-
-// View engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(expressLayouts);
-app.set('layout', 'layouts/main');
-
-// Bảo mật (cho phép Bootstrap/Chart.js từ jsDelivr)
+// security
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -43,22 +47,28 @@ app.use(
   }),
 );
 
-// Parser và tiện ích
-if (!env.isTest) app.use(morgan('dev'));
+// logging
+if (!env.isTest) {
+  app.use(morgan('dev'));
+}
+
+// body parsing và method override
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+
+// static file
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Session và biến dùng chung cho view
+// session và view locals
 app.use(sessionMiddleware);
 app.use(viewLocals);
 
-// Routes
+// routes
 app.use('/api', apiRoutes);
 app.use('/', webRoutes);
 
-// Lỗi (luôn đặt cuối)
+// error handling
 app.use(notFound);
 app.use(errorHandler);
 
