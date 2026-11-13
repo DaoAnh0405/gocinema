@@ -38,7 +38,7 @@ async function createCustomer({ email, phone, passwordHash, fullName, dob, gende
       ROLE.CUSTOMER,
     ]);
     if (!roles.length) {
-      throw new Error('Chưa có vai trò CUSTOMER. Hãy chạy `npm run db:reset` để nạp seed.sql');
+      throw new Error('Chưa có vai trò CUSTOMER. Hãy chạy `npm run db:reset` để nạp seed_test.sql');
     }
     const [acc] = await conn.query(
       'INSERT INTO accounts (email, phone, password, role_id) VALUES (?, ?, ?, ?)',
