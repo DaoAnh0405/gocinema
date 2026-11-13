@@ -5,7 +5,7 @@
 ### npm
 - `npm run dev` | Chạy app với nodemon |
 - `npm run db:up` / `db:down` | Bật / tắt MySQL |
-- `npm run db:reset` | Xóa sạch DB và nạp lại `schema.sql` + `seed.sql` |
+- `npm run db:reset` | Xóa sạch DB và nạp lại `schema.sql` + `src/database/seed_test.sql` (file cục bộ được Git bỏ qua; tạo bản sao từ `src/database/seed.sql` nếu chưa có) |
 - `npm test` | Chạy test (Jest + Supertest) |
 
 ### Commit 
