@@ -1,5 +1,5 @@
 <div class="price-pagination">
-  <p aria-label="Hiển thị <%= pagination.start %> đến <%= pagination.end %> trên <%= pagination.total %> mức giá"><%= pagination.start %> - <%= pagination.end %>/<%= pagination.total %></p>
+  <p aria-label="Hiển thị <%= pagination.start %> đến <%= pagination.end %> trên <%= pagination.total %> <%= locals.paginationLabel || 'mức giá' %>"><%= pagination.start %> - <%= pagination.end %>/<%= pagination.total %></p>
   <% if (pagination.totalPages > 1) { %>
     <nav aria-label="Phân trang giá vé">
       <ul>

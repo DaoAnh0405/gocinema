@@ -1,0 +1,34 @@
+<div class="price-table-scroll" role="region" tabindex="0" aria-label="Danh sách <%= rooms ? 'phòng chiếu' : 'rạp' %>">
+  <table class="price-table cinema-table <%= rooms ? 'cinema-table--rooms' : '' %>">
+    <thead><tr>
+      <% if (rooms) { %>
+        <th scope="col">Tên phòng</th><th scope="col">Loại phòng</th><th scope="col">Số ghế</th><th scope="col">Kích thước lưới</th><th scope="col">Trạng thái</th><th scope="col">Thao tác</th>
+      <% } else { %>
+        <th scope="col">Tên rạp</th><th scope="col">Địa chỉ</th><th scope="col">Thành phố</th><th scope="col">Số lượng phòng</th><th scope="col">Trạng thái</th><th scope="col">Thao tác</th>
+      <% } %>
+    </tr></thead>
+    <tbody>
+      <% rows.forEach((row) => { const id = rooms ? row.room_id : row.cinema_id; %>
+        <tr>
+          <td><%= rooms ? row.room_name : row.cinema_name %></td>
+          <% if (rooms) { %><td><%= row.room_type || '—' %></td><td><%= row.seat_count %></td><td><%= row.row_count %> hàng x <%= row.column_count %> cột</td>
+          <% } else { %><td><%= row.address || '—' %></td><td><%= row.city || '—' %></td><td><%= row.room_count %></td><% } %>
+          <td><span class="cinema-status <%= row.status === 1 ? 'cinema-status--active' : 'cinema-status--inactive' %>"><%= row.status === 1 ? 'Hoạt động' : (rooms ? 'Bảo trì' : 'Tạm ngưng') %></span></td>
+          <td>
+            <div class="cinema-row-actions">
+              <% if (!rooms) { %><a class="cinema-small-button" href="/admin/cinemas/<%= id %>/rooms" aria-label="Phòng chiếu của <%= row.cinema_name %>">Phòng</a><% } %>
+              <% if (rooms) { %><a class="cinema-small-button" href="<%= base %>/<%= id %>/seats" aria-label="Ghế của <%= row.room_name %>">Ghế</a><% } %>
+              <a class="cinema-edit" href="<%= base %>/<%= id %>/edit<%= pageQuery %>" title="Chỉnh sửa" aria-label="Sửa <%= rooms ? row.room_name : row.cinema_name %>"><%- include('../../../components/prices/icon', { name: 'edit' }) %></a>
+              <% if (!rooms) { %><form method="post" action="<%= base %>/<%= id %>/status<%= pageQuery %>" data-price-form>
+                <input type="hidden" name="_csrf" value="<%= cinemaCsrf %>">
+                <input type="hidden" name="status" value="<%= row.status === 1 ? 0 : 1 %>">
+                <button class="cinema-small-button" type="submit" aria-label="<%= row.status === 1 ? (rooms ? 'Bảo trì' : 'Tạm ngưng') : 'Kích hoạt' %> <%= rooms ? row.room_name : row.cinema_name %>"><%= row.status === 1 ? (rooms ? 'Bảo trì' : 'Tạm ngưng') : 'Kích hoạt' %></button>
+              </form><% } %>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!rows.length) { %><tr><td class="price-table__empty" colspan="6">Không có <%= rooms ? 'phòng chiếu' : 'rạp' %> phù hợp.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>

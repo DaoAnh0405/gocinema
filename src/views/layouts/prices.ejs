@@ -10,15 +10,26 @@
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="/css/prices-theme.css">
   <link rel="stylesheet" href="/css/prices.css">
+  <% if (locals.moduleStylesheet) { %><link rel="stylesheet" href="<%= moduleStylesheet %>"><% } %>
   <%- style %>
 </head>
 <body class="gc-dash gc-dash--admin">
   <div class="gc-shell">
     <%- include('../partials/sidebar') %>
-    <div class="price-main price-app">
+    <div class="price-main price-app <%= locals.moduleClass || '' %>">
       <header class="price-topbar">
         <button class="btn btn-sm btn-light d-lg-none" type="button" data-sidebar-toggle aria-label="Mở menu"><i class="bi bi-list" aria-hidden="true"></i></button>
-        <h1><%= title %></h1>
+        <div class="admin-page-heading">
+          <h1><%= title %></h1>
+          <% if (locals.breadcrumbs) { %>
+            <nav class="admin-breadcrumbs" aria-label="Đường dẫn">
+              <% breadcrumbs.forEach((crumb, index) => { %>
+                <% if (index) { %><span aria-hidden="true">›</span><% } %>
+                <% if (crumb.href) { %><a href="<%= crumb.href %>"><%= crumb.label %></a><% } else { %><span><%= crumb.label %></span><% } %>
+              <% }) %>
+            </nav>
+          <% } %>
+        </div>
         <details class="price-account">
           <summary><%- include('../components/prices/icon', { name: 'avatar' }) %><span><%= currentUser.email %></span><%- include('../components/prices/icon', { name: 'account-arrow' }) %></summary>
           <div class="price-account__menu">

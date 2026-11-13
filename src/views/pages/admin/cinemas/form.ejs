@@ -1,0 +1,26 @@
+<form method="post" action="<%= (editingId ? base + '/' + editingId : base) + pageQuery %>" data-price-form>
+  <input type="hidden" name="_csrf" value="<%= cinemaCsrf %>">
+  <% if (errors.length) { %><ul class="price-errors" role="alert"><% errors.forEach((error) => { %><li><%= error %></li><% }) %></ul><% } %>
+  <% if (dialog === 'room') { %>
+    <%- include('../../../components/prices/input', { name: 'room_name', label: 'Tên phòng chiếu', value: values.room_name, required: true, maxlength: 50 }) %>
+    <%- include('../../../components/prices/select', { name: 'room_type', label: 'Loại phòng chiếu', value: values.room_type, options: formats.map((type) => ({ value: type, label: type })) }) %>
+    <div class="room-grid-fields">
+      <%- include('../../../components/prices/input', { name: 'row_count', label: 'Số hàng', type: 'number', value: values.row_count, required: true, min: 1, max: 702, step: 1 }) %>
+      <%- include('../../../components/prices/input', { name: 'column_count', label: 'Số cột', type: 'number', value: values.column_count, required: true, min: 1, max: 100, step: 1 }) %>
+    </div>
+  <% } else { %>
+    <%- include('../../../components/prices/input', { name: 'cinema_name', label: 'Tên rạp', value: values.cinema_name, required: true, maxlength: 100 }) %>
+    <%- include('../../../components/prices/input', { name: 'address', label: 'Địa chỉ', value: values.address, required: true, maxlength: 255 }) %>
+    <%- include('../../../components/prices/input', { name: 'city', label: 'Thành phố', value: values.city, required: true, maxlength: 50 }) %>
+    <%- include('../../../components/prices/input', { name: 'phone_number', label: 'Số điện thoại', type: 'tel', value: values.phone_number, maxlength: 15 }) %>
+  <% } %>
+  <% if (dialog === 'room') { %>
+    <%- include('../../../components/prices/select', { name: 'status', label: 'Trạng thái', value: values.status, options: [{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Bảo trì' }] }) %>
+  <% } else { %>
+    <input type="hidden" name="status" value="<%= ['0', '1'].includes(String(values.status)) ? values.status : 1 %>">
+  <% } %>
+  <div class="price-dialog__actions">
+    <%- include('../../../components/prices/button', { href: listUrl, text: 'Hủy bỏ' }) %>
+    <%- include('../../../components/prices/button', { type: 'submit', variant: 'primary', text: 'Lưu' }) %>
+  </div>
+</form>
