@@ -5,8 +5,10 @@ coverage/
 .DS_Store
 .vscode/
 tests/
-
+dukien.md
 # ảnh upload không commit, chỉ giữ .gitkeep
 public/uploads/**
 !public/uploads/**/
 !public/uploads/**/.gitkeep
+src/tests/
+.vs/
