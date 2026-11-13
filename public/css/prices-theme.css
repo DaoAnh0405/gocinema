@@ -1,14 +1,6 @@
-@font-face {
-  font-family: Inter;
-  src: url('/fonts/inter/inter-regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Native desktop measurements come from the 588 × 393 Figma screen. */
 .price-app {
-  --price-font-family: Inter, sans-serif;
+  --price-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --price-font-weight: 400;
   --price-text: #000;
   --price-text-inverse: #fff;

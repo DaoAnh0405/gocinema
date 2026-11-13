@@ -1,0 +1,24 @@
+<form class="cinema-filters" method="get" action="<%= base %>" aria-label="Lọc <%= rooms ? 'phòng chiếu' : 'rạp' %>">
+  <div class="cinema-search">
+    <i class="bi bi-search" aria-hidden="true"></i>
+    <input type="search" name="q" value="<%= filters.q %>" maxlength="100" placeholder="<%= rooms ? 'Tìm phòng chiếu…' : 'Tìm tên rạp, địa chỉ…' %>" aria-label="<%= rooms ? 'Tìm phòng chiếu' : 'Tìm tên rạp hoặc địa chỉ' %>">
+  </div>
+  <% if (rooms) { %>
+    <select name="type" aria-label="Lọc loại phòng">
+      <option value="">Loại phòng</option>
+      <% formats.forEach((format) => { %><option value="<%= format %>" <%= filters.type === format ? 'selected' : '' %>><%= format %></option><% }) %>
+    </select>
+  <% } else { %>
+    <select name="city" aria-label="Lọc thành phố">
+      <option value="">Thành phố</option>
+      <% if (filters.city && !cities.some((item) => item.city === filters.city)) { %><option selected value="<%= filters.city %>"><%= filters.city %></option><% } %>
+      <% cities.forEach((item) => { %><option value="<%= item.city %>" <%= filters.city === item.city ? 'selected' : '' %>><%= item.city %></option><% }) %>
+    </select>
+  <% } %>
+  <select name="status" aria-label="Lọc trạng thái">
+    <option value="">Trạng thái</option>
+    <option value="1" <%= filters.status === '1' ? 'selected' : '' %>>Hoạt động</option>
+    <option value="0" <%= filters.status === '0' ? 'selected' : '' %>><%= rooms ? 'Bảo trì' : 'Tạm ngưng' %></option>
+  </select>
+  <button type="submit" class="cinema-filter-button"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+</form>
