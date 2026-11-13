@@ -7,6 +7,6 @@ router.use(requireLogin, requireRole(ROLE.ADMIN), adminLayout);
 
 router.get('/', (req, res) => res.render('pages/admin/dashboard', { title: 'Tổng quan' }));
 
-// mount module ở đây
+router.use(require('./adminCatalogRoutes'));
 
 module.exports = router;
