@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="/css/booking.css">
+<% const id = quote.showtime.showtime_id; %>
+
+<div class="container py-4 gc-book" id="foodApp"
+     data-ticket-subtotal="<%= quote.ticketSubtotal %>"
+     data-seconds-left="<%= quote.secondsLeft %>"
+     data-seats-url="/booking/showtimes/<%= id %>/seats">
+  <%- include('../../partials/bookingSummary', {
+        showtime: quote.showtime, seats: quote.seats, foods: quote.foods, total: quote.subtotal,
+        backUrl: `/booking/showtimes/${id}/seats`, nextForm: 'foodForm',
+        timerId: 'holdCountdown', secondsLeft: quote.secondsLeft }) %>
+
+  <form id="foodForm" method="post" action="/booking/showtimes/<%= id %>/food" data-once>
+    <section class="card mt-3"><div class="card-body">
+      <h2 class="h6 mb-3">Chọn Combo/ Sản phẩm</h2>
+
+      <% if (!foods.length) { %>
+        <p class="text-muted mb-0">Hiện chưa có đồ ăn để chọn. Bạn có thể bấm Tiếp tục.</p>
+      <% } %>
+
+      <% foods.forEach((f) => { %>
+        <div class="gc-foodrow">
+          <div class="gc-food__img">
+            <i class="bi bi-cup-straw" aria-hidden="true"></i>
+            <% if (f.image_url) { %><img src="<%= f.image_url %>" alt="<%= f.food_name %>" loading="lazy"><% } %>
+          </div>
+          <div class="gc-foodrow__info">
+            <strong><%= f.food_name %></strong>
+            <span class="text-muted fw-normal small">Giá: <span class="text-danger" style="font-size: 20px; font-weight: bold;"><%= fmt.money(f.price) %></span></span>
+          </div>
+          <div class="gc-qty" data-price="<%= f.price %>" data-name="<%= f.food_name %>">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-qty="-1" aria-label="Giảm">−</button>
+            <input type="number" class="form-control form-control-sm" name="food_<%= f.food_id %>" style=" border: none; "
+                   value="<%= qty.get(f.food_id) || 0 %>" min="0" max="<%= maxQty %>" aria-label="Số lượng <%= f.food_name %>">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-qty="1" aria-label="Tăng">+</button>
+          </div>
+        </div>
+      <% }) %>
+    </div></section>
+  </form>
+</div>
+
+<script src="/js/foodPicker.js"></script>
+<script src="/js/holdCountdown.js"></script>
