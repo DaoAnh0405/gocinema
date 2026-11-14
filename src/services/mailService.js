@@ -1,0 +1,48 @@
+const nodemailer = require('nodemailer');
+const env = require('../config/env');
+
+const transporter = nodemailer.createTransport({
+  host: env.mail.host,
+  port: env.mail.port,
+  secure: env.mail.secure, // true cho cổng 465, false cho 587
+  auth: { user: env.mail.user, pass: env.mail.pass },
+});
+
+async function sendMail({ to, subject, html, text }) {
+  if (env.isTest) return;
+
+  // th chưa cấu hình mail: in nội dung ra terminal test
+  if (!env.mail.user || !env.mail.pass) {
+    if (env.isProd) throw new Error('Chưa cấu hình MAIL_USER / MAIL_PASS');
+    console.warn(`[MAIL CHƯA CẤU HÌNH] Gửi tới ${to} | ${subject}\n${text || ''}`);
+    return;
+  }
+  return transporter.sendMail({ from: env.mail.from, to, subject, html, text });
+}
+
+async function sendPasswordOtpMail(to, otp, ttlMinutes) {
+  return sendMail({
+    to,
+    subject: 'GoCinema – Mã xác nhận đổi mật khẩu',
+    text: `Mã OTP đổi mật khẩu của bạn là ${otp}. Mã có hiệu lực trong ${ttlMinutes} phút.`,
+    html: `<p>Bạn vừa yêu cầu đổi mật khẩu tài khoản GoCinema.</p>
+           <p>Mã xác nhận của bạn:</p>
+           <p style="font-size:28px;font-weight:bold;letter-spacing:6px">${otp}</p>
+           <p>Mã có hiệu lực trong ${ttlMinutes} phút. Tuyệt đối không chia sẻ mã này cho ai.</p>
+           <p>Nếu không phải bạn yêu cầu, hãy bỏ qua email này và đổi mật khẩu ngay.</p>`,
+  });
+}
+
+async function sendResetPasswordMail(to, resetUrl, ttlMinutes) {
+  return sendMail({
+    to,
+    subject: 'GoCinema – Đặt lại mật khẩu',
+    text: `Bạn vừa yêu cầu đặt lại mật khẩu. Mở liên kết sau (có hiệu lực ${ttlMinutes} phút): ${resetUrl}`,
+    html: `<p>Bạn vừa yêu cầu đặt lại mật khẩu tài khoản GoCinema.</p>
+           <p><a href="${resetUrl}">Bấm vào đây để đặt mật khẩu mới</a></p>
+           <p>Liên kết có hiệu lực trong ${ttlMinutes} phút và chỉ dùng được một lần.</p>
+           <p>Nếu không phải bạn yêu cầu, hãy bỏ qua email này, mật khẩu của bạn vẫn an toàn.</p>`,
+  });
+}
+
+module.exports = { sendMail, sendPasswordOtpMail, sendResetPasswordMail };

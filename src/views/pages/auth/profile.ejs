@@ -1,0 +1,63 @@
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <h2 class="mb-3">Thông tin cá nhân / này mới là example</h2>
+
+    <% if (errors.length) { %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% errors.forEach(function (msg) { %><li><%= msg %></li><% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="post" action="/profile" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control" id="email" value="<%= profile.email %>" disabled />
+      </div>
+
+      <% if (profile.editable) { %>
+        <div class="mb-3">
+          <label class="form-label" for="full_name">Họ và tên</label>
+          <input class="form-control" id="full_name" name="full_name" value="<%= values.full_name || '' %>" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="phone">Số điện thoại</label>
+          <input class="form-control" id="phone" name="phone" value="<%= values.phone || '' %>" />
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="dob">Ngày sinh</label>
+            <input type="date" class="form-control" id="dob" name="dob" value="<%= values.dob || '' %>" />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="gender">Giới tính</label>
+            <select class="form-select" id="gender" name="gender">
+              <option value="">-- Chọn --</option>
+              <option value="Male" <%= values.gender === 'Male' ? 'selected' : '' %>>Nam</option>
+              <option value="Female" <%= values.gender === 'Female' ? 'selected' : '' %>>Nữ</option>
+              <option value="Other" <%= values.gender === 'Other' ? 'selected' : '' %>>Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="address">Địa chỉ</label>
+          <input class="form-control" id="address" name="address" value="<%= values.address || '' %>" />
+        </div>
+        <p class="text-muted small">Tham gia từ: <%= profile.created_at %></p>
+        <button class="btn btn-primary">Lưu thay đổi</button>
+      <% } else { %>
+        <div class="mb-3">
+          <label class="form-label">Họ và tên</label>
+          <input class="form-control" value="<%= profile.full_name || '' %>" disabled />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Số điện thoại</label>
+          <input class="form-control" value="<%= profile.phone || '' %>" disabled />
+        </div>
+        <p class="text-muted small">Thông tin tài khoản này do quản trị viên quản lý.</p>
+      <% } %>
+      <a href="/profile/password" class="btn btn-outline-secondary ms-2">Đổi mật khẩu</a>
+    </form>
+  </div>
+</div>
