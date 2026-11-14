@@ -21,43 +21,33 @@ function renderCards(items) {
   const grid = document.getElementById('foodGrid');
   grid.innerHTML = '';
 
-  if (!items.length) {
-    grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">Không có dữ liệu món ăn</div>';
+  if (!items || !items.length) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">Không có dữ liệu món ăn</div>';
     return;
   }
 
   items.forEach(item => {
     const isSelling = item.status === 'Đang bán';
-    const badgeColor = isSelling ? 'bg-[#65D46E]' : 'bg-[#5A5A5A]';
-    const imgHtml = item.image_url
-      ? `<img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover">`
-      : `<div class="w-full h-full bg-white"></div>`;
+    const badgeClass = isSelling ? 'badge-selling' : 'badge-stopped';
+    const imgHtml = item.image_url ? `<img src="${item.image_url}" alt="${item.name}">` : '';
 
     const card = document.createElement('div');
-    card.className = 'food-card bg-[#DCDCDC] rounded-xl p-4 flex flex-col justify-between shadow-xs';
+    card.className = 'food-card';
     card.innerHTML = `
-      <div class="flex gap-3.5 items-start">
-        <div class="w-16 h-20 bg-white rounded-lg shrink-0 overflow-hidden">
-          ${imgHtml}
-        </div>
-        <div class="flex-1 min-w-0">
-          <span class="inline-block ${badgeColor} text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full mb-1.5">
-            ${item.status}
-          </span>
-          <h4 class="font-medium text-gray-900 text-sm truncate" title="${item.name}">${item.name}</h4>
-          <p class="text-xs text-gray-600 truncate mt-0.5" title="${item.description || ''}">${item.description || ''}</p>
+      <div class="card-top">
+        <div class="card-thumb">${imgHtml}</div>
+        <div class="card-info">
+          <span class="badge ${badgeClass}">${item.status}</span>
+          <div class="card-title" title="${item.name}">${item.name}</div>
+          <div class="card-desc" title="${item.description || ''}">${item.description || ''}</div>
         </div>
       </div>
 
-      <div class="flex justify-between items-center mt-4 pt-2">
-        <span class="text-[#D90404] font-semibold text-sm">${formatVND(item.price)}</span>
-        <div class="flex items-center gap-2">
-          <button onclick="openEditModal(${item.id})" class="bg-[#555555] hover:bg-gray-700 text-white text-xs px-3 py-1 rounded transition">
-            Chỉnh sửa
-          </button>
-          <button onclick="deleteFood(${item.id})" title="Xóa" class="text-[#D90404] hover:text-red-700 p-1 transition">
-            <i class="fa-regular fa-trash-can text-sm"></i>
-          </button>
+      <div class="card-bottom">
+        <span class="card-price">${formatVND(item.price)}</span>
+        <div class="card-actions">
+          <button type="button" class="btn-edit" data-id="${item.id}">Chỉnh sửa</button>
+          <button type="button" class="btn-delete" data-id="${item.id}" title="Xóa">🗑</button>
         </div>
       </div>
     `;
@@ -65,28 +55,15 @@ function renderCards(items) {
   });
 }
 
-function previewImage(event, previewId, placeholderId) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById(previewId);
-    img.src = e.target.result;
-    img.classList.remove('hidden');
-    document.getElementById(placeholderId).classList.add('hidden');
-  };
-  reader.readAsDataURL(file);
-}
-
 function openAddModal() {
   document.getElementById('addForm').reset();
   document.getElementById('addImagePreview').classList.add('hidden');
   document.getElementById('addImagePlaceholder').classList.remove('hidden');
-  document.getElementById('addModal').classList.replace('hidden', 'flex');
+  document.getElementById('addModal').classList.add('open');
 }
 
 function openEditModal(id) {
-  const item = foodList.find(f => f.id === id);
+  const item = foodList.find(f => Number(f.id) === Number(id));
   if (!item) return;
 
   document.getElementById('editModalTitle').innerText = `Sửa món: ${item.name}`;
@@ -96,44 +73,77 @@ function openEditModal(id) {
   document.getElementById('editPrice').value = item.price;
   document.getElementById('editStatus').value = item.status;
 
-  document.getElementById('editModal').classList.replace('hidden', 'flex');
+  document.getElementById('editModal').classList.add('open');
 }
 
 function closeModal(modalId) {
-  document.getElementById(modalId).classList.replace('flex', 'hidden');
+  document.getElementById(modalId).classList.remove('open');
 }
 
-async function handleAddSubmit(e) {
-  e.preventDefault();
-  const formData = new FormData(document.getElementById('addForm'));
-  const res = await fetch(API_URL, { method: 'POST', body: formData });
-  if (res.ok) {
-    closeModal('addModal');
-    fetchFoods();
-  } else {
-    const err = await res.json();
-    alert(err.message || 'Lỗi thêm món');
-  }
-}
+document.addEventListener('DOMContentLoaded', () => {
+  fetchFoods();
 
-async function handleEditSubmit(e) {
-  e.preventDefault();
-  const id = document.getElementById('editId').value;
-  const formData = new FormData(document.getElementById('editForm'));
-  const res = await fetch(`${API_URL}/${id}`, { method: 'PUT', body: formData });
-  if (res.ok) {
-    closeModal('editModal');
-    fetchFoods();
-  } else {
-    const err = await res.json();
-    alert(err.message || 'Lỗi cập nhật món');
-  }
-}
+  document.getElementById('searchInput').addEventListener('input', fetchFoods);
+  document.getElementById('filterStatus').addEventListener('change', fetchFoods);
 
-async function deleteFood(id) {
-  if (!confirm('Bạn có chắc muốn xóa món này?')) return;
-  const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-  if (res.ok) fetchFoods();
-}
+  document.getElementById('btnOpenAdd').addEventListener('click', openAddModal);
+  document.getElementById('btnCloseAdd').addEventListener('click', () => closeModal('addModal'));
+  document.getElementById('btnCloseEdit').addEventListener('click', () => closeModal('editModal'));
 
-document.addEventListener('DOMContentLoaded', fetchFoods);
+  document.getElementById('addImageInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.getElementById('addImagePreview');
+      img.src = ev.target.result;
+      img.classList.remove('hidden');
+      document.getElementById('addImagePlaceholder').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Event delegation cho nút Chỉnh sửa & Xóa trên từng card
+  document.getElementById('foodGrid').addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('.btn-edit');
+    if (editBtn) {
+      openEditModal(editBtn.dataset.id);
+      return;
+    }
+
+    const deleteBtn = e.target.closest('.btn-delete');
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.id;
+      if (!confirm('Bạn có chắc chắn muốn xóa món này?')) return;
+      const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchFoods();
+    }
+  });
+
+  document.getElementById('addForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const res = await fetch(API_URL, { method: 'POST', body: formData });
+    if (res.ok) {
+      closeModal('addModal');
+      fetchFoods();
+    } else {
+      const err = await res.json();
+      alert(err.message || 'Lỗi thêm món');
+    }
+  });
+
+  document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const formData = new FormData(e.target);
+    const res = await fetch(`${API_URL}/${id}`, { method: 'PUT', body: formData });
+    if (res.ok) {
+      closeModal('editModal');
+      fetchFoods();
+    } else {
+      const err = await res.json();
+      alert(err.message || 'Lỗi cập nhật món');
+    }
+  });
+});

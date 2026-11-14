@@ -1,7 +1,7 @@
 const FoodService = require('../services/foodService');
 
 exports.renderAdminPage = (req, res) => {
-  res.render('admin/foods');
+  res.render('admin/foods', { layout: false });
 };
 
 exports.getFoods = async (req, res) => {
