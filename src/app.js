@@ -1,29 +1,77 @@
-const express = require('express');
 const path = require('path');
-const cors = require('cors');
-require('dotenv').config();
-
+const express = require('express');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const methodOverride = require('method-override');
+const expressLayouts = require('express-ejs-layouts');
 const foodRoutes = require('./routes/foodRoutes');
+// ...
+app.use('/', foodRoutes); // hoặc app.use('/api/foods', foodRoutes) tùy cách cấu hình route của nhóm bạn
+// config
+const env = require('./config/env');
+const sessionMiddleware = require('./config/session');
+
+// middlewares
+const viewLocals = require('./middlewares/viewLocals');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
+// routes
+const webRoutes = require('./routes/web');
+const apiRoutes = require('./routes/api');
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app configuration
+app.disable('x-powered-by');
 
-// Static files (css, js, images)
-app.use(express.static(path.join(__dirname, '../public')));
-
-// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Routes
-app.use('/', foodRoutes);
+// ejs layout
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`GoCinema Server running at http://localhost:${PORT}/admin/foods`);
-});
+// security
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+        fontSrc: ["'self'", 'https://cdn.jsdelivr.net'],
+        imgSrc: ["'self'", 'data:'],
+        upgradeInsecureRequests: null,
+      },
+    },
+  }),
+);
+
+// logging
+if (!env.isTest) {
+  app.use(morgan('dev'));
+}
+
+// body parsing và method override
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+
+// static file
+app.use(express.static(path.join(__dirname, '../public')));
+
+// session và view locals
+app.use(sessionMiddleware);
+app.use(viewLocals);
+
+// routes
+app.use('/api', apiRoutes);
+app.use('/', webRoutes);
+
+// error handling
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;

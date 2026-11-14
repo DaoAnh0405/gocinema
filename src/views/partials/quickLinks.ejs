@@ -1,0 +1,12 @@
+<div class="row g-3">
+  <% menu.forEach((item) => { %>
+    <% if (!item.group && !item.exact && (!item.permission || can(item.permission))) { %>
+      <div class="col-6 col-md-4 col-xl-3">
+        <a class="gc-quick" href="<%= item.href %>">
+          <i class="bi <%= item.icon %>"></i>
+          <span><%= item.label %></span>
+        </a>
+      </div>
+    <% } %>
+  <% }) %>
+</div>

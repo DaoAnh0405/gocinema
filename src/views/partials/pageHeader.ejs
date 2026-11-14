@@ -1,0 +1,11 @@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h2 class="h5 mb-0"><%= heading %></h2>
+    <% if (locals.subtitle) { %><p class="text-muted small mb-0"><%= subtitle %></p><% } %>
+  </div>
+  <% if (locals.actionHref) { %>
+    <a class="btn btn-accent" href="<%= actionHref %>">
+      <i class="bi bi-plus-lg"></i> <%= locals.actionLabel || 'Thêm mới' %>
+    </a>
+  <% } %>
+</div>

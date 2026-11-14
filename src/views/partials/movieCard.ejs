@@ -1,0 +1,17 @@
+<a class="gc-movie" href="/movies/<%= movie.movie_id %>">
+  <div class="gc-movie__poster">
+    <i class="bi bi-film gc-movie__ph" aria-hidden="true"></i>
+    <% if (movie.poster_url) { %>
+      <img src="<%= movie.poster_url %>" alt="Poster <%= movie.title %>" loading="lazy">
+    <% } %>
+    <span class="gc-age gc-age--<%= String(movie.age_rating || 'P').toLowerCase() %>"><%= movie.age_rating || 'P' %></span>
+  </div>
+  <h3 class="gc-movie__title"><%= movie.title %></h3>
+  <p class="gc-movie__meta">
+    <% if (movie.status === 'COMING_SOON') { %>
+      Khởi chiếu <%= fmt.date(movie.release_date) %>
+    <% } else { %>
+      <%= movie.duration %> phút<%= movie.genres ? ' · ' + movie.genres : '' %>
+    <% } %>
+  </p>
+</a>

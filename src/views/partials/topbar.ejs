@@ -1,0 +1,28 @@
+<header class="gc-topbar">
+  <button class="btn btn-light d-lg-none" type="button" data-sidebar-toggle aria-label="Mở menu">
+    <i class="bi bi-list"></i>
+  </button>
+  <h1 class="gc-topbar__title"><%= typeof title !== 'undefined' ? title : '' %></h1>
+
+  <div class="ms-auto d-flex align-items-center gap-2">
+    <a href="/" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">
+      <i class="bi bi-box-arrow-up-right"></i> <span class="d-none d-sm-inline">Xem website</span>
+    </a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle"></i>
+        <span class="d-none d-sm-inline"><%= currentUser.fullName || currentUser.email %></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li class="dropdown-item-text small text-muted"><%= currentUser.email %></li>
+        <!-- <li><a class="dropdown-item" href="/profile/password"><i class="bi bi-key"></i> Đổi mật khẩu</a></li> -->
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form action="/logout" method="post" class="px-3">
+            <button class="btn btn-link text-danger p-0" type="submit"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

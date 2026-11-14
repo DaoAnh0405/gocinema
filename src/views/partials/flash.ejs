@@ -1,0 +1,14 @@
+<%
+  const raw = typeof flash !== 'undefined' ? flash : null;
+  let items = [];
+  if (Array.isArray(raw)) items = raw;
+  else if (raw && raw.message) items = [raw];
+  else if (raw) items = Object.entries(raw).flatMap(([type, msgs]) => [].concat(msgs || []).map((message) => ({ type, message })));
+  const cls = { success: 'success', error: 'danger', danger: 'danger', warning: 'warning', info: 'info' };
+%>
+<% items.forEach((f) => { %>
+  <div class="alert alert-<%= cls[f.type] || 'info' %> alert-dismissible fade show" role="alert">
+    <%= f.message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+  </div>
+<% }) %>

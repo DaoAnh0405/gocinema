@@ -15,17 +15,17 @@ class FoodModel {
     }
 
     sql += ' ORDER BY id DESC';
-    const [rows] = await db.query(sql, params);
-    return rows;
+    // db.query của nhóm trả về thẳng rows[cite: 18]
+    return await db.query(sql, params);
   }
 
   static async findById(id) {
-    const [rows] = await db.query('SELECT * FROM foods WHERE id = ?', [id]);
+    const rows = await db.query('SELECT * FROM foods WHERE id = ?', [id]);
     return rows[0];
   }
 
   static async create({ name, description, price, status, image_url }) {
-    const [result] = await db.query(
+    const result = await db.query(
       'INSERT INTO foods (name, description, price, status, image_url) VALUES (?, ?, ?, ?, ?)',
       [name, description, price, status, image_url]
     );
@@ -33,7 +33,7 @@ class FoodModel {
   }
 
   static async update(id, { name, description, price, status, image_url }) {
-    const [result] = await db.query(
+    const result = await db.query(
       'UPDATE foods SET name = ?, description = ?, price = ?, status = ?, image_url = ? WHERE id = ?',
       [name, description, price, status, image_url, id]
     );
@@ -41,7 +41,7 @@ class FoodModel {
   }
 
   static async delete(id) {
-    const [result] = await db.query('DELETE FROM foods WHERE id = ?', [id]);
+    const result = await db.query('DELETE FROM foods WHERE id = ?', [id]);
     return result.affectedRows;
   }
 }

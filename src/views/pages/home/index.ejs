@@ -1,0 +1,114 @@
+<%# BANNER PHIM HOT %>
+<% if (hotMovies.length) { %>
+<section class="gc-hero" aria-label="Phim hot">
+  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <% if (hotMovies.length > 1) { %>
+      <div class="carousel-indicators">
+        <% hotMovies.forEach((m, i) => { %>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<%= i %>"
+                  class="<%= i === 0 ? 'active' : '' %>" aria-label="Phim <%= i + 1 %>"></button>
+        <% }) %>
+      </div>
+    <% } %>
+    <div class="carousel-inner">
+      <% hotMovies.forEach((m, i) => { %>
+        <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+          <div class="gc-hero__slide">
+            <% if (m.poster_url) { %><img class="gc-hero__bg" src="<%= m.poster_url %>" alt=""><% } %>
+            <span class="gc-hero__tag" style="color: rgb(255, 0, 0);">PHIM HOT</span>
+            <div class="container position-relative">
+              <div class="row align-items-center g-4">
+                <div class="col-4 col-md-3 col-lg-2">
+                  <div class="gc-movie__poster gc-hero__poster">
+                    <i class="bi bi-film gc-movie__ph" aria-hidden="true"></i>
+                    <% if (m.poster_url) { %><img src="<%= m.poster_url %>" alt="Poster <%= m.title %>"><% } %>
+                  </div>
+                </div>
+                <div class="col-8 col-md-9 col-lg-10">
+                  <h2 class="gc-hero__title"><%= m.title %></h2>
+                  <p class="gc-hero__meta">
+                    <span class="gc-age gc-age--inline gc-age--<%= String(m.age_rating || 'P').toLowerCase() %>"><%= m.age_rating || 'P' %></span>
+                    <%= m.duration %> phút<%= m.genres ? ' · ' + m.genres : '' %>
+                  </p>
+                  <p class="gc-hero__desc d-none d-md-block"><%= m.description %></p>
+                  <a href="/movies/<%= m.movie_id %>" class="btn gc-btn-buy">Đặt vé ngay</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<div class="container">
+  <%# PHIM ĐANG CHIẾU / SẮP CHIẾU %>
+  <section class="gc-section">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <h2 class="gc-section__title">Phim</h2>
+      <ul class="nav gc-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-now" type="button" role="tab">Đang chiếu</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-soon" type="button" role="tab">Sắp chiếu</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="tab-now" role="tabpanel">
+        <% if (nowShowing.length) { %>
+          <div class="gc-grid">
+            <% nowShowing.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
+          </div>
+          <div class="text-center mt-4">
+            <a href="/movies?status=NOW_SHOWING" class="btn gc-btn-more">Xem thêm <i class="bi bi-chevron-right"></i></a>
+          </div>
+        <% } else { %>
+          <p class="text-muted">Chưa có phim đang chiếu.</p>
+        <% } %>
+      </div>
+
+      <div class="tab-pane fade" id="tab-soon" role="tabpanel">
+        <% if (comingSoon.length) { %>
+          <div class="gc-grid">
+            <% comingSoon.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
+          </div>
+          <div class="text-center mt-4">
+            <a href="/movies?status=COMING_SOON" class="btn gc-btn-more">Xem thêm <i class="bi bi-chevron-right"></i></a>
+          </div>
+        <% } else { %>
+          <p class="text-muted">Chưa có phim sắp chiếu.</p>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <%# KHUYẾN MÃI %>
+  <section class="gc-section">
+    <h2 class="gc-section__title mb-3">Khuyến mãi demo</h2>
+    <% if (promotions.length) { %>
+      <div class="gc-grid">
+        <% promotions.forEach((p) => { %>
+          <a class="gc-promo" href="/"> 
+            <!-- /promotions -->
+            <span class="gc-promo__badge">
+              <%= p.discount_type === 'PERCENT' ? '-' + Number(p.discount_value) + '%' : '-' + fmt.money(p.discount_value) %>
+            </span>
+            <h3 class="gc-promo__name"><%= p.promotion_name %></h3>
+            <p class="gc-promo__desc"><%= p.description %></p>
+            <div class="gc-promo__foot">
+              <span class="gc-promo__code"><%= p.promo_code %></span>
+              <span>HSD <%= fmt.date(p.end_date) %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="text-muted">Hiện chưa có chương trình khuyến mãi.</p>
+    <% } %>
+  </section>
+</div>

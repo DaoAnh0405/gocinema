@@ -1,14 +1,35 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const env = require('./env');
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || '127.0.0.1',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '123456',
-  database: process.env.DB_NAME || 'gocinema',
+  ...env.db,
   waitForConnections: true,
-  connectionLimit: 10
+  connectionLimit: 10,
+  charset: 'utf8mb4',
+  timezone: '+07:00',
+  decimalNumbers: true,
 });
 
-module.exports = pool;
+// truy vấn đơn giản, luôn truyền dữ liệu qua params (?) để chống SQL injection.
+async function query(sql, params = []) {
+  const [rows] = await pool.query(sql, params);
+  return rows;
+}
+
+// chạy nhiều lệnh trong 1 transaction, lỗi thì rollback toàn bộ.
+async function withTransaction(work) {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await work(conn);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+}
+
+module.exports = { pool, query, withTransaction };
