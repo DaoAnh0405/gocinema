@@ -4,9 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
-const foodRoutes = require('./routes/foodRoutes');
-// ...
-app.use('/', foodRoutes); // hoặc app.use('/api/foods', foodRoutes) tùy cách cấu hình route của nhóm bạn
+
 // config
 const env = require('./config/env');
 const sessionMiddleware = require('./config/session');
