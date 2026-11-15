@@ -31,7 +31,7 @@
                     <%= m.duration %> phút<%= m.genres ? ' · ' + m.genres : '' %>
                   </p>
                   <p class="gc-hero__desc d-none d-md-block"><%= m.description %></p>
-                  <a href="/movies/<%= m.movie_id %>" class="btn gc-btn-buy">Đặt vé ngay</a>
+                  <a href="/booking?movieId=<%= m.movie_id %>" class="btn gc-btn-buy">Mua vé ngay</a>
                 </div>
               </div>
             </div>
