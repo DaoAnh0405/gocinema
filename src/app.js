@@ -42,6 +42,7 @@ app.use(
         fontSrc: ["'self'", 'https://cdn.jsdelivr.net'],
         imgSrc: ["'self'", 'data:'],
         upgradeInsecureRequests: null,
+        formAction: ["'self'", 'https://pay-sandbox.sepay.vn', 'https://pay.sepay.vn' ],
       },
     },
   }),
