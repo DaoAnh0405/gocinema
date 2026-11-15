@@ -75,8 +75,6 @@ const setCancelled = (conn, orderId, status, reason) =>
 const cancelTickets = (conn, orderId) =>
   conn.query(`UPDATE tickets SET status = -1 WHERE order_id = ?`, [orderId]);
 
-// đọc cho trang xác nhận
-
 async function findByCode(orderCode, customerId) {
   const rows = await query(
     `SELECT o.order_id, o.order_code, o.status, o.subtotal, o.discount_amount, o.total_amount,
@@ -125,8 +123,17 @@ async function findPayment(orderId) {
   return rows[0] || null;
 }
 
+// tìm đơn theo mã, không ràng buộc chủ đơn (dùng cho kết quả trả về từ cổng thanh toán)
+async function findByCodeAny(orderCode) {
+  const rows = await query(
+    `SELECT order_id, order_code, customer_id, status, total_amount FROM orders WHERE order_code = ?`,
+    [orderCode],
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
   createPending, lockPendingForCustomer, lockExpiredPending, insertPayment,
   setPaid, setCancelled, cancelTickets,
-  findByCode, listTickets, listFoods, findPayment,
+  findByCode, listTickets, listFoods, findPayment, findByCodeAny,
 };

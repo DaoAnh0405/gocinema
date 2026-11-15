@@ -16,15 +16,18 @@ const maskEmail = require('../utils/maskEmail');
 const ticketMailService = require('./ticketMailService');
 
 const MAX_FOOD_PER_ITEM = 10;
-const PAYMENT_OPTIONS = [
-  { value: 'E_WALLET', label: 'VNPAY' },
+const GATEWAY_OPTIONS = {
+  sepay: [{ value: 'SEPAY', label: 'SePay (QR ngân hàng, thẻ)' }],
+};
+const PAYMENT_OPTIONS = GATEWAY_OPTIONS[env.payment.provider] || [
+  { value: 'E_WALLET', label: 'Ví điện tử' },
   { value: 'CARD', label: 'Thẻ ATM / Visa / Mastercard' },
   { value: 'BANK_TRANSFER', label: 'Chuyển khoản ngân hàng' },
 ];
 const holdMinutes = () => env.booking.holdMinutes;
 const sum = (list, pick) => list.reduce((total, item) => total + pick(item), 0);
 
-// Đọc đồ ăn từ form (các trường food_<id>=<số lượng>); số lượng 0 thì bỏ qua
+// đọc đồ ăn từ form (các trường food_<id>=<số lượng>); số lượng 0 thì bỏ qua
 function parseFoods(body) {
   const foods = [];
   for (const [key, value] of Object.entries(body || {})) {
@@ -39,8 +42,8 @@ function parseFoods(body) {
   return foods;
 }
 
-// Báo giá do SERVER tính từ ghế đang giữ + đồ ăn + mã khuyến mãi, không tin số tiền từ trình duyệt.
-// Không còn ghế giữ hợp lệ thì ném lỗi 409 (controller sẽ đưa về bước chọn ghế).
+// báo giá do server tính từ ghế đang giữ + đồ ăn + mã khuyến mãi, không tin số tiền từ trình duyệt.
+// không còn ghế giữ hợp lệ thì ném lỗi 409 (controller sẽ đưa về bước chọn ghế).
 async function buildQuote(accountId, rawShowtimeId, state = {}) {
   const showtime = await bookingService.getBookableShowtime(rawShowtimeId);
   const held = await bookingModel.getMyHeldSeats(showtime.showtime_id, accountId);
@@ -87,14 +90,14 @@ async function buildQuote(accountId, rawShowtimeId, state = {}) {
   };
 }
 
-// Kiểm tra mã khuyến mãi trên giá trị đơn hiện tại; trả về mã đã chuẩn hóa
+// kiểm tra mã khuyến mãi trên giá trị đơn hiện tại trả về mã đã chuẩn hóa
 async function checkPromo(accountId, rawShowtimeId, state, rawCode) {
   const quote = await buildQuote(accountId, rawShowtimeId, { ...state, promoCode: null });
   const promo = await promotionService.validate(rawCode, quote.subtotal);
   return promo.code;
 }
 
-// Nhả ghế, hủy vé, trả lượt mã khuyến mãi của một đơn PENDING (dùng khi thanh toán lỗi hoặc đơn hết hạn)
+// nhả ghế, hủy vé, trả lượt mã khuyến mãi của một đơn PENDING (dùng khi thanh toán lỗi hoặc đơn hết hạn)
 async function releasePendingOrder(conn, order, status, reason) {
   await orderModel.setCancelled(conn, order.order_id, status, reason);
   await orderModel.cancelTickets(conn, order.order_id);
@@ -102,7 +105,7 @@ async function releasePendingOrder(conn, order, status, reason) {
   if (order.promotion_id) await promotionModel.releaseUse(conn, order.promotion_id);
 }
 
-// Pha 1: tạo đơn PENDING + vé + đồ ăn trong MỘT transaction, đồng thời gia hạn ghế đúng bằng hạn thanh toán
+// 1 tạo đơn PENDING + vé + đồ ăn trong 1 transaction, đồng thời gia hạn ghế đúng bằng hạn thanh toán
 async function createPendingOrder(accountId, quote) {
   const showtimeId = quote.showtime.showtime_id;
   const seatIds = quote.seats.map((s) => s.id);
@@ -125,7 +128,7 @@ async function createPendingOrder(accountId, quote) {
   });
 }
 
-// Pha 2: thanh toán thành công -> ghi payments, đơn PAID, ghế SOLD (vé đã có sẵn từ pha 1)
+// 2 thanh toán thành công -> ghi payments, đơn PAID, ghế SOLD (vé đã có sẵn từ pha 1)
 async function markPaid(orderId, accountId, method, transactionRef) {
   await withTransaction(async (conn) => {
     const order = await orderModel.lockPendingForCustomer(conn, orderId, accountId);
@@ -143,6 +146,12 @@ async function cancelOrder(orderId, accountId, reason) {
   });
 }
 
+function sendTicketsInBackground(orderCode, accountId) {
+  ticketMailService.sendOrderTickets(orderCode, accountId)
+    .then((sent) => sent && console.log(`[mail] đã gửi vé đơn ${orderCode}`))
+    .catch((err) => console.error(`[mail] không gửi được vé đơn ${orderCode}:`, err.message));
+}
+
 async function checkout(accountId, rawShowtimeId, state, method) {
   if (!PAYMENT_OPTIONS.some((o) => o.value === method)) {
     throw new AppError('Vui lòng chọn phương thức thanh toán.', 400);
@@ -152,18 +161,74 @@ async function checkout(accountId, rawShowtimeId, state, method) {
 
   const order = await createPendingOrder(accountId, quote);
 
-  // mock xong ngay, với VNPay chuyển hướng sang cổng rồi gọi markPaid ở trang kết quả.
-  const result = await paymentService.pay({ orderCode: order.orderCode, amount: quote.total, method });
+  let result;
+  try {
+    result = await paymentService.pay({ orderCode: order.orderCode, amount: quote.total, method, accountId });
+  } catch (err) {
+    console.error('[payment]', err.message);
+    await cancelOrder(order.orderId, accountId, 'Không kết nối được cổng thanh toán');
+    throw new AppError('Không kết nối được cổng thanh toán. Vui lòng thử lại.', 502);
+  }
+
+  // sepay chuyển trình duyệt sang cổng, kết quả xử lý ở handlePaymentReturn
+  if (result.redirectUrl) return { ...order, redirectUrl: result.redirectUrl };
+
+  // mock thành công ngay
   if (!result.success) {
     await cancelOrder(order.orderId, accountId, 'Thanh toán không thành công');
     throw new AppError('Thanh toán không thành công. Vui lòng thử lại.', 402);
   }
   await markPaid(order.orderId, accountId, method, result.transactionRef);
-
-  ticketMailService.sendOrderTickets(order.orderCode, accountId)
-    .then(() => console.log(`[mail] đã gửi vé đơn ${order.orderCode}`))
-    .catch((err) => console.error(`[mail] không gửi được vé đơn ${order.orderCode}:`, err.message));
+  sendTicketsInBackground(order.orderCode, accountId);
   return order;
+}
+
+// trả về { redirectTo, flash? } chữ ký sai ném lỗi, các trường hợp còn lại đều chuyển trang
+async function handlePaymentReturn(query) {
+  const r = await paymentService.verifyReturn(query);
+  if (!r.valid) throw new AppError('Dữ liệu trả về từ cổng thanh toán không hợp lệ.', 400);
+
+  const order = await orderModel.findByCodeAny(r.orderCode);
+  if (!order) throw new AppError('Không tìm thấy đơn hàng.', 404);
+  const confirm = `/booking/orders/${order.order_code}/confirmation`;
+
+  if (order.status === 'PAID') return { redirectTo: confirm };          // tải lại trang hoặc IPN gọi lặp
+
+  if (r.pending) {
+    return {
+      redirectTo: '/booking',
+      flash: { type: 'warning', message: `Giao dịch của đơn ${order.order_code} đang được xử lý. Nếu ví đã bị trừ tiền, vui lòng chờ ít phút rồi kiểm tra email hoặc liên hệ GoCinema.` },
+    };
+  }
+
+  if (!r.success) {
+    if (order.status === 'PENDING') {
+      await cancelOrder(order.order_id, order.customer_id, `Cổng thanh toán mã ${r.responseCode}`);
+    }
+    const message = r.cancelled
+      ? 'Bạn đã hủy thanh toán. Ghế đã được nhả, vui lòng chọn lại.'
+      : `Thanh toán không thành công (mã ${r.responseCode}). Vui lòng thử lại.`;
+    return { redirectTo: '/booking', flash: { type: 'error', message } };
+  }
+
+  if (Number(order.total_amount) !== r.amount) {
+    console.error(`[payment] sai số tiền đơn ${order.order_code}: ${r.amount} != ${order.total_amount}`);
+    throw new AppError('Số tiền thanh toán không khớp với đơn hàng.', 400);
+  }
+
+  try {
+    await markPaid(order.order_id, order.customer_id, r.method, r.transactionRef);
+  } catch (err) {
+    if (!(err instanceof AppError)) throw err;
+    // khách đã trả tiền nhưng đơn đã hết hạn cần hoàn tiền thủ công
+    console.error(`[payment] ĐÃ THU TIỀN NHƯNG ĐƠN ${order.order_code} KHÔNG CÒN CHỜ THANH TOÁN (GD ${r.transactionRef})`);
+    return {
+      redirectTo: '/booking',
+      flash: { type: 'error', message: `Thanh toán đã được ghi nhận nhưng đơn ${order.order_code} đã hết hạn. Vui lòng liên hệ GoCinema để được hoàn tiền.` },
+    };
+  }
+  sendTicketsInBackground(order.order_code, order.customer_id);
+  return { redirectTo: confirm };
 }
 
 // job hủy các đơn pending quá hạn thanh toán, trả ghế và lượt mã khuyến mãi
@@ -200,7 +265,19 @@ async function getConfirmation(accountId, rawCode) {
   };
 }
 
+// dữ liệu form POST sang cổng thanh toán (chỉ chủ đơn, đơn còn chờ thanh toán)
+async function getHostedForm(accountId, rawCode) {
+  const code = String(rawCode || '').toUpperCase();
+  const order = /^[A-Z0-9]{4,20}$/.test(code) ? await orderModel.findByCode(code, accountId) : null;
+  if (!order) throw new AppError('Không tìm thấy đơn hàng.', 404);
+  if (order.status !== 'PENDING') return { done: true, code: order.order_code };
+  return {
+    done: false,
+    form: paymentService.buildCheckout({ orderCode: order.order_code, amount: Number(order.total_amount) }),
+  };
+}
+
 module.exports = {
   MAX_FOOD_PER_ITEM, PAYMENT_OPTIONS,
-  parseFoods, buildQuote, checkPromo, checkout, expireUnpaidOrders, getConfirmation,
+  parseFoods, buildQuote, checkPromo, checkout, expireUnpaidOrders, getConfirmation, handlePaymentReturn, getHostedForm,
 };
