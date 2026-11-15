@@ -8,16 +8,15 @@ const transporter = nodemailer.createTransport({
   auth: { user: env.mail.user, pass: env.mail.pass },
 });
 
-async function sendMail({ to, subject, html, text }) {
+async function sendMail({ to, subject, html, text, attachments }) {
   if (env.isTest) return;
 
-  // th chưa cấu hình mail: in nội dung ra terminal test
   if (!env.mail.user || !env.mail.pass) {
     if (env.isProd) throw new Error('Chưa cấu hình MAIL_USER / MAIL_PASS');
     console.warn(`[MAIL CHƯA CẤU HÌNH] Gửi tới ${to} | ${subject}\n${text || ''}`);
     return;
   }
-  return transporter.sendMail({ from: env.mail.from, to, subject, html, text });
+  return transporter.sendMail({ from: env.mail.from, to, subject, html, text, attachments });
 }
 
 async function sendPasswordOtpMail(to, otp, ttlMinutes) {

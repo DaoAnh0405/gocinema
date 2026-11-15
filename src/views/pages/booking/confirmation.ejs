@@ -1,0 +1,76 @@
+<link rel="stylesheet" href="/css/booking.css">
+<%
+  const METHOD_LABEL = { E_WALLET: 'VNPAY', CARD: 'Thẻ', BANK_TRANSFER: 'Chuyển khoản', CASH: 'Tiền mặt' };
+%>
+<div class="container py-4">
+  <% if (order.status === 'PAID') { %>
+    <div class="text-center mb-4">
+      <i class="bi bi-check-circle-fill text-success gc-bigicon" aria-hidden="true"></i>
+      <h1 class="h3 mt-2">Đặt vé thành công!</h1>
+      <p class="mb-1">Mã đơn <strong><%= order.order_code %></strong>. Hãy đưa mã QR bên dưới cho nhân viên soát vé.</p>
+      <div class="small text-muted">
+        Thông tin vé đã được gửi tới <strong><%= locals.maskedEmail || 'email của bạn' %></strong>.
+        <form class="d-inline" method="post" action="/booking/orders/<%= order.order_code %>/email" data-once id="resendForm">
+          <button class="btn btn-link btn-sm p-0 align-baseline" type="submit">Chưa nhận được? Gửi lại email</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <% tickets.forEach((t) => { %>
+          <div class="gc-ticket mb-3">
+            <img src="<%= t.qr_image %>" alt="Mã QR vé ghế <%= t.seat_row %><%= t.seat_number %>">
+            <div>
+              <h2 class="h6 fw-bold mb-1"><%= t.title %></h2>
+              <div class="small text-muted"><%= t.cinema_name %> · <%= t.room_name %></div>
+              <div class="small"><%= fmt.dateTime(t.start_time) %> · <%= t.screen_format %> · <%= t.language %></div>
+              <div class="mt-2">Ghế <strong class="fs-5"><%= t.seat_row %><%= t.seat_number %></strong>
+                <span class="text-muted small">(<%= t.seat_type_name %>)</span></div>
+              <div class="small text-muted">Mã vé: <%= t.qr_code %></div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card"><div class="card-body">
+          <h2 class="h6 mb-3">Chi tiết đơn</h2>
+          <% tickets.forEach((t) => { %>
+            <div class="d-flex justify-content-between small"><span>Vé <%= t.seat_row %><%= t.seat_number %></span><span><%= fmt.money(t.ticket_price) %></span></div>
+          <% }) %>
+          <% foods.forEach((f) => { %>
+            <div class="d-flex justify-content-between small"><span><%= f.food_name %> × <%= f.quantity %></span><span><%= fmt.money(f.unit_price * f.quantity) %></span></div>
+          <% }) %>
+          <hr>
+          <div class="d-flex justify-content-between small"><span>Tạm tính</span><span><%= fmt.money(order.subtotal) %></span></div>
+          <% if (order.discount_amount > 0) { %>
+            <div class="d-flex justify-content-between small text-success"><span>Giảm giá <%= order.promo_code ? '(' + order.promo_code + ')' : '' %></span><span>−<%= fmt.money(order.discount_amount) %></span></div>
+          <% } %>
+          <div class="d-flex justify-content-between fw-bold mt-2"><span>Tổng cộng</span><span class="text-danger"><%= fmt.money(order.total_amount) %></span></div>
+          <% if (payment) { %>
+            <p class="small text-muted mt-3 mb-0">
+              Thanh toán: <%= METHOD_LABEL[payment.payment_method] || payment.payment_method %><br>
+              Mã giao dịch: <%= payment.transaction_ref %><br>
+              Lúc: <%= fmt.dateTime(payment.paid_at) %>
+            </p>
+          <% } %>
+        </div></div>
+        <a class="btn btn-danger w-100 mt-3" href="/">Về trang chủ</a>
+        <a class="btn btn-outline-secondary w-100 mt-2" href="/booking">Mua thêm vé</a>
+      </div>
+    </div>
+
+  <% } else if (order.status === 'PENDING') { %>
+    <div class="alert alert-warning">Đơn <strong><%= order.order_code %></strong> đang chờ thanh toán. Vui lòng hoàn tất trước khi hết hạn giữ ghế.</div>
+    <a class="btn btn-outline-secondary" href="/booking">Về trang mua vé</a>
+  <% } else { %>
+    <div class="alert alert-secondary">
+      Đơn <strong><%= order.order_code %></strong> đã <%= order.status === 'EXPIRED' ? 'hết hạn thanh toán' : 'bị hủy' %>.
+      <%= order.cancel_reason ? '(' + order.cancel_reason + ')' : '' %>
+    </div>
+    <a class="btn btn-danger" href="/booking">Đặt vé lại</a>
+  <% } %>
+</div>
+
+<script src="/js/holdCountdown.js"></script>
