@@ -89,7 +89,40 @@ exports.pay = guard((req) => `${base(req)}/payment`, async (req, res) => {
   const order = await orderService.checkout(accountIdOf(req), id, bookingSession.get(req, id), req.body.method);
   bookingSession.clear(req);
   await saveSession(req);
-  res.redirect(`/booking/orders/${order.orderCode}/confirmation`);
+  res.redirect(order.redirectUrl || `/booking/orders/${order.orderCode}/confirmation`);
+});
+
+async function finishReturn(req, res, query) {
+  let result;
+  try {
+    result = await orderService.handlePaymentReturn(query);
+  } catch (err) {
+    if (!(err instanceof AppError)) throw err;
+    result = { redirectTo: '/booking', flash: { type: 'error', message: err.message } };
+  }
+  if (result.flash) req.flash(result.flash.type, result.flash.message);
+  await saveSession(req);
+  res.redirect(result.redirectTo);
+}
+
+// trang trung gian: form ẩn có chữ ký, tự gửi POST sang sepay
+exports.sepayPage = asyncHandler(async (req, res) => {
+  try {
+    const r = await orderService.getHostedForm(accountIdOf(req), req.params.code);
+    if (r.done) return res.redirect(`/booking/orders/${r.code}/confirmation`);
+    return res.render('pages/booking/gatewayRedirect', { title: 'Chuyển sang cổng thanh toán', form: r.form });
+  } catch (err) {
+    if (!(err instanceof AppError)) throw err;
+    req.flash('error', err.message);
+    await saveSession(req);
+    return res.redirect('/booking');
+  }
+});
+
+// sepay đưa khách về /booking/payment/sepay/:code/(success|error|cancel)
+exports.sepayReturn = asyncHandler((req, res) => {
+  const result = ['success', 'error', 'cancel'].includes(req.params.result) ? req.params.result : 'error';
+  return finishReturn(req, res, { order: req.params.code, result });
 });
 
 // xác nhận

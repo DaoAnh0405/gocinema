@@ -46,7 +46,9 @@
             </label>
           <% }) %>
           <% if (isMockPayment) { %>
-            <p class="small text-muted mt-3 mb-0">Giả lập</p>
+            <p class="small text-muted mt-3 mb-0">Cổng thanh toán đang ở chế độ giả lập, không trừ tiền thật.</p>
+          <% } else { %>
+            <p class="small text-muted mt-3 mb-0">Bạn sẽ được chuyển sang cổng SePay để hoàn tất thanh toán. Vui lòng không đóng trình duyệt cho đến khi quay lại GoCinema.</p>
           <% } %>
         </div></div>
       </form>

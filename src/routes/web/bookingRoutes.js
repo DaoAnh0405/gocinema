@@ -5,7 +5,6 @@ const bookingController = require('../../controllers/bookingController');
 const catalogController = require('../../controllers/catalogController');
 const checkoutController = require('../../controllers/checkoutController');
 
-// Router mount ở '/', nên gắn middleware cho từng route, KHÔNG dùng router.use
 const customerOnly = [requireLogin, requireRole(ROLE.CUSTOMER)];
 
 // 1 rạp -> phim -> suất (public)
@@ -13,6 +12,9 @@ router.get('/booking', bookingController.startPage);
 router.get('/api/booking/cinemas', catalogController.cinemas);
 router.get('/api/booking/cinemas/:cinemaId/movies', catalogController.movies);
 router.get('/api/booking/showtimes', catalogController.showtimes);
+// booking
+router.get('/booking/orders/:code/sepay', ...customerOnly, checkoutController.sepayPage);
+router.get('/booking/payment/sepay/:code/:result', checkoutController.sepayReturn);
 
 // 2 chọn ghế (auth)
 router.get('/booking/showtimes/:id/seats', ...customerOnly, bookingController.seatPage);
