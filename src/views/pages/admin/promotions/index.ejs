@@ -1,0 +1,214 @@
+<section class="gc-promotions">
+  <% if (modalValues) { %><span class="d-none" data-promotion-modal-open></span><% } %>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div>
+      <h2 class="h4 mb-1">Quản lý khuyến mãi</h2>
+      <p class="text-muted mb-0">Quản lý mã ưu đãi và điều kiện áp dụng.</p>
+    </div>
+    <button class="btn btn-accent" type="button" data-bs-toggle="modal" data-bs-target="#promotionModal" data-promotion-create>
+      <i class="bi bi-plus-lg"></i> Tạo khuyến mãi
+    </button>
+  </div>
+
+  <div class="gc-card">
+    <form class="row g-2 align-items-center mb-3" method="get" action="/admin/promotions">
+      <div class="col-12 col-md-5">
+        <label class="visually-hidden" for="promotionSearch">Tìm khuyến mãi</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input id="promotionSearch" class="form-control" type="search" name="search"
+                 value="<%= search %>" placeholder="Tìm theo mã hoặc tên chương trình">
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="visually-hidden" for="promotionStatus">Trạng thái</label>
+        <select id="promotionStatus" class="form-select" name="status">
+          <option value="ALL" <%= selectedStatus === 'ALL' ? 'selected' : '' %>>Tất cả trạng thái</option>
+          <option value="ACTIVE" <%= selectedStatus === 'ACTIVE' ? 'selected' : '' %>>Đang áp dụng</option>
+          <option value="UPCOMING" <%= selectedStatus === 'UPCOMING' ? 'selected' : '' %>>Sắp diễn ra</option>
+          <option value="EXPIRED" <%= selectedStatus === 'EXPIRED' ? 'selected' : '' %>>Hết hạn</option>
+          <option value="PAUSED" <%= selectedStatus === 'PAUSED' ? 'selected' : '' %>>Đã tạm dừng</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-secondary" type="submit">Lọc</button>
+      </div>
+      <% if (search || selectedStatus !== 'ALL') { %>
+        <div class="col-auto">
+          <a class="btn btn-link text-decoration-none" href="/admin/promotions">Xóa bộ lọc</a>
+        </div>
+      <% } %>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Mã</th>
+            <th scope="col">Tên chương trình</th>
+            <th scope="col">Mức giảm</th>
+            <th scope="col">Đơn tối thiểu</th>
+            <th scope="col">Hiệu lực</th>
+            <th scope="col">Lượt sử dụng</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col" class="text-end">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% promotions.forEach((promotion) => { %>
+            <% const effectiveStatus = promotion.effective_status; %>
+            <tr>
+              <td><code class="gc-promo-code"><%= promotion.promo_code %></code></td>
+              <td>
+                <strong><%= promotion.promotion_name %></strong>
+                <% if (promotion.description) { %>
+                  <small class="d-block text-muted gc-promo-description"><%= promotion.description %></small>
+                <% } %>
+              </td>
+              <td>
+                <strong><%= promotion.discount_type === 'PERCENT' ? `${Number(promotion.discount_value)}%` : fmt.money(promotion.discount_value) %></strong>
+                <% if (promotion.discount_type === 'PERCENT' && promotion.max_discount) { %>
+                  <small class="d-block text-muted">Tối đa <%= fmt.money(promotion.max_discount) %></small>
+                <% } %>
+              </td>
+              <td><%= fmt.money(promotion.min_order_value) %></td>
+              <td class="text-nowrap">
+                <%= promotion.start_date_display || 'Không giới hạn' %>
+                <% if (promotion.end_date_display) { %> – <%= promotion.end_date_display %><% } %>
+              </td>
+              <td class="text-nowrap">
+                <%= promotion.used_count %> / <%= promotion.quantity == null ? '∞' : promotion.quantity %>
+              </td>
+              <td>
+                <span class="badge gc-promo-status gc-promo-status--<%= effectiveStatus.toLowerCase() %>">
+                  <%= statusLabels[effectiveStatus] %>
+                </span>
+              </td>
+              <td class="text-end text-nowrap">
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                        data-bs-toggle="modal" data-bs-target="#promotionModal" data-promotion-edit
+                        data-id="<%= promotion.promotion_id %>"
+                        data-code="<%= promotion.promo_code %>"
+                        data-name="<%= promotion.promotion_name %>"
+                        data-description="<%= encodeURIComponent(promotion.description || '') %>"
+                        data-type="<%= promotion.discount_type %>"
+                        data-value="<%= promotion.discount_value %>"
+                        data-max-discount="<%= promotion.max_discount == null ? '' : promotion.max_discount %>"
+                        data-minimum="<%= promotion.min_order_value %>"
+                        data-start="<%= promotion.start_date || '' %>"
+                        data-end="<%= promotion.end_date || '' %>"
+                        data-quantity="<%= promotion.quantity == null ? '' : promotion.quantity %>"
+                        aria-label="Sửa <%= promotion.promo_code %>">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <form class="d-inline" method="post" action="/admin/promotions/<%= promotion.promotion_id %>/status">
+                  <input type="hidden" name="status" value="<%= promotion.status === -1 ? 'ACTIVE' : 'PAUSED' %>">
+                  <button class="btn btn-sm btn-outline-<%= promotion.status === -1 ? 'success' : 'warning' %>"
+                          type="submit" aria-label="<%= promotion.status === -1 ? 'Bật lại' : 'Tạm dừng' %> <%= promotion.promo_code %>">
+                    <i class="bi <%= promotion.status === -1 ? 'bi-play-fill' : 'bi-pause-fill' %>"></i>
+                  </button>
+                </form>
+                <form class="d-inline" method="post" action="/admin/promotions/<%= promotion.promotion_id %>"
+                      data-confirm="Xóa khuyến mãi <%= promotion.promo_code %>?">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button class="btn btn-sm btn-outline-danger" type="submit" aria-label="Xóa <%= promotion.promo_code %>">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (!promotions.length) { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-5">
+                <i class="bi bi-ticket-perforated fs-3 d-block mb-2"></i>
+                Không tìm thấy chương trình khuyến mãi phù hợp.
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal fade" id="promotionModal" tabindex="-1" aria-labelledby="promotionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form id="promotionForm" method="post" action="<%= editing && recordId ? `/admin/promotions/${recordId}` : '/admin/promotions' %>">
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="promotionModalTitle">Tạo khuyến mãi mới</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <% if (errors.length) { %>
+              <div class="alert alert-danger" role="alert">
+                <ul class="mb-0">
+                  <% errors.forEach((error) => { %><li><%= error %></li><% }) %>
+                </ul>
+              </div>
+            <% } %>
+            <input id="promotionMethod" type="hidden" name="_method" value="<%= editing ? 'PUT' : '' %>">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="promotionCode">Mã khuyến mãi <span class="text-danger">*</span></label>
+                <input id="promotionCode" class="form-control" name="promo_code" maxlength="30" required
+                       placeholder="VD: WELCOME10" value="<%= modalValues ? modalValues.promo_code : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionType">Loại giảm giá <span class="text-danger">*</span></label>
+                <select id="promotionType" class="form-select" name="discount_type" required>
+                  <option value="PERCENT" <%= !modalValues || modalValues.discount_type === 'PERCENT' ? 'selected' : '' %>>Phần trăm (%)</option>
+                  <option value="AMOUNT" <%= modalValues && modalValues.discount_type === 'AMOUNT' ? 'selected' : '' %>>Số tiền (đ)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionName">Tên chương trình <span class="text-danger">*</span></label>
+                <input id="promotionName" class="form-control" name="promotion_name" maxlength="100" required
+                       placeholder="Chào bạn mới" value="<%= modalValues ? modalValues.promotion_name : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionValue">Giá trị giảm <span class="text-danger">*</span></label>
+                <input id="promotionValue" class="form-control" type="number" name="discount_value"
+                       min="0.01" step="0.01" required value="<%= modalValues ? modalValues.discount_value : '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="promotionDescription">Mô tả</label>
+                <textarea id="promotionDescription" class="form-control" name="description" rows="2" maxlength="5000"><%= modalValues ? modalValues.description : '' %></textarea>
+              </div>
+              <div class="col-md-6" id="maxDiscountField">
+                <label class="form-label" for="promotionMaxDiscount">Giảm tối đa (đ)</label>
+                <input id="promotionMaxDiscount" class="form-control" type="number" name="max_discount"
+                       min="0" step="1" value="<%= modalValues ? modalValues.max_discount : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionMinimum">Đơn tối thiểu (đ) <span class="text-danger">*</span></label>
+                <input id="promotionMinimum" class="form-control" type="number" name="min_order_value"
+                       min="0" step="1" required value="<%= modalValues ? modalValues.min_order_value : '0' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionStart">Bắt đầu <span class="text-danger">*</span></label>
+                <input id="promotionStart" class="form-control" type="datetime-local" name="start_date" required
+                       value="<%= modalValues ? modalValues.start_date : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionEnd">Kết thúc <span class="text-danger">*</span></label>
+                <input id="promotionEnd" class="form-control" type="datetime-local" name="end_date" required
+                       value="<%= modalValues ? modalValues.end_date : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="promotionQuantity">Số lượng (để trống nếu không giới hạn)</label>
+                <input id="promotionQuantity" class="form-control" type="number" name="quantity" min="1" step="1"
+                       value="<%= modalValues ? modalValues.quantity : '' %>">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button class="btn btn-accent" type="submit"><i class="bi bi-check-lg"></i> Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="/js/admin-promotions.js"></script>

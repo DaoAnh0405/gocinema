@@ -36,3 +36,11 @@
   .gc-shell--open .gc-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1030; }
   .gc-content { padding: 1rem; }
 }
+
+.gc-promotions .gc-promo-code { color: #b4232d; font-weight: 700; }
+.gc-promotions .gc-promo-description { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc-promo-status--active { background: #198754; }
+.gc-promo-status--upcoming { background: #0dcaf0; color: #122; }
+.gc-promo-status--expired { background: #6c757d; }
+.gc-promo-status--paused { background: #ffc107; color: #222; }
+.gc-promotions .modal-body { max-height: 70vh; overflow-y: auto; }
