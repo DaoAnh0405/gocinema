@@ -1,4 +1,5 @@
 const freeze = Object.freeze;
+const BOOKING = Object.freeze({ MAX_SEATS_PER_ORDER: 8 });
 
 //quy ước
 module.exports = {
@@ -44,4 +45,5 @@ module.exports = {
   PROMO_STATUS: freeze({ PAUSED: -1, EXPIRED: 0, ACTIVE: 1 }),
   SHIFT_STATUS: freeze({ CLOSED: 0, OPEN: 1 }),
   DAY_TYPE: freeze({ WEEKDAY: 'WEEKDAY', WEEKEND: 'WEEKEND', HOLIDAY: 'HOLIDAY' }),
+  BOOKING
 };
