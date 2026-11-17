@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/css/booking.css">
+
+<div class="container py-4 gc-book" id="seatApp"
+     data-showtime-id="<%= showtime.showtime_id %>"
+     data-max-seats="<%= maxSeats %>"
+     data-next-url="/booking/showtimes/<%= showtime.showtime_id %>/food">
+  <%- include('../../partials/bookingSummary', {
+        showtime, seats: [], foods: [], total: 0,
+        backUrl: '/booking', timerId: 'holdTimer', secondsLeft: 0 }) %>
+
+  <div id="seatAlert" class="alert d-none mt-3" role="alert"></div>
+
+  <section class="card gc-seatcard mt-3"><div class="card-body">
+    <div id="seatLegend" class="gc-legend-bar"></div>
+    <div class="gc-screenbar"></div>
+    <div class="gc-screenlabel">MÀN HÌNH</div>
+    <div id="seatGrid" class="gc-seatgrid" aria-live="polite">
+      <p class="text-muted mb-0">Đang tải sơ đồ ghế...</p>
+    </div>
+    <p class="small text-muted text-center mt-3 mb-0">Tối đa <%= maxSeats %> ghế mỗi đơn. Ghế được giữ <%= holdMinutes %> phút sau khi bấm Tiếp tục.</p>
+  </div></section>
+</div>
+
+<script src="/js/seatMap.js"></script>
