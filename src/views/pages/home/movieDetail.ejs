@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="/css/movieDetail.css">
+<%
+  const age = movie.age_rating || 'P';
+  const AGE_TEXT = {
+    P: 'Phù hợp mọi lứa tuổi',
+    T13: 'Cấm khán giả dưới 13 tuổi',
+    T16: 'Cấm khán giả dưới 16 tuổi',
+    T18: 'Cấm khán giả dưới 18 tuổi',
+  };
+%>
+
+<section class="gc-md-hero" aria-label="Trailer phim">
+    <div class="gc-md-stage">
+        <% if (movie.poster_url) { %>
+            <img class="gc-md-stage__bg" src="<%= movie.poster_url %>" alt="">
+        <% } %>
+        <% if (trailer) { %>
+            <button type="button" class="gc-md-play" data-bs-toggle="modal" data-bs-target="#trailerModal"
+                    data-kind="<%= trailer.kind %>" data-src="<%= trailer.src %>"
+                    aria-label="Xem trailer phim <%= movie.title %>">
+            <i class="bi bi-play-fill" aria-hidden="true"></i>
+            </button>
+        <% } else { %>
+            <span class="gc-md-stage__note">Chưa có trailer</span>
+        <% } %>
+    </div>
+</section>
+
+<div class="container gc-md-body">
+  <div class="row g-4">
+    <div class="col-5 col-md-3">
+      <div class="gc-md-poster">
+        <i class="bi bi-film gc-md-poster__ph" aria-hidden="true"></i>
+        <% if (movie.poster_url) { %><img src="<%= movie.poster_url %>" alt="Poster <%= movie.title %>"><% } %>
+      </div>
+    </div>
+
+    <div class="col-7 col-md-9">
+      <h1 class="gc-md-title"><%= movie.title %></h1>
+
+      <ul class="gc-md-info list-unstyled">
+        <li>
+          <span class="gc-age gc-age--inline gc-age--<%= age.toLowerCase() %>"><%= age %></span>
+          <span class="text-muted"><%= AGE_TEXT[age] || '' %></span>
+        </li>
+        <li><i class="bi bi-clock" aria-hidden="true"></i> <%= movie.duration %> phút</li>
+        <% if (movie.release_date) { %>
+          <li><i class="bi bi-calendar-event" aria-hidden="true"></i> Khởi chiếu: <%= fmt.date(movie.release_date) %></li>
+        <% } %>
+        <% if (movie.genres) { %><li><i class="bi bi-tags" aria-hidden="true"></i> Thể loại: <%= movie.genres %></li><% } %>
+        <% if (movie.director) { %><li><i class="bi bi-camera-reels" aria-hidden="true"></i> Đạo diễn: <%= movie.director %></li><% } %>
+        <% if (movie.actors) { %><li><i class="bi bi-people" aria-hidden="true"></i> Diễn viên: <%= movie.actors %></li><% } %>
+      </ul>
+
+      <% if (bookable) { %>
+        <a class="btn gc-btn-buy" href="/booking?movieId=<%= movie.movie_id %>">Mua vé ngay</a>
+        <p class="small text-muted mt-2 mb-0">Đang chiếu tại: <%= cities.join(', ') %></p>
+      <% } else if (movie.status === 'COMING_SOON') { %>
+        <button type="button" class="btn btn-secondary" disabled>
+          Sắp khởi chiếu<%= movie.release_date ? ' ' + fmt.date(movie.release_date) : '' %>
+        </button>
+      <% } else if (movie.status === 'ENDED') { %>
+        <button type="button" class="btn btn-secondary" disabled>Phim đã kết thúc</button>
+      <% } else { %>
+        <button type="button" class="btn btn-secondary" disabled>Chưa có suất chiếu</button>
+      <% } %>
+    </div>
+  </div>
+
+  <section class="mt-5">
+    <h2 class="gc-md-h">Tóm tắt nội dung phim</h2>
+    <% if (paragraphs.length) { %>
+      <% paragraphs.forEach((p) => { %><p class="gc-md-text"><%= p %></p><% }) %>
+    <% } else { %>
+      <p class="text-muted">Nội dung phim đang được cập nhật.</p>
+    <% } %>
+  </section>
+</div>
+
+<% if (trailer) { %>
+  <div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-0">
+        <div class="modal-header border-0">
+          <h2 class="modal-title h6 mb-0" id="trailerTitle">Trailer: <%= movie.title %></h2>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body pt-0"><div class="ratio ratio-16x9" id="trailerStage"></div></div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/movieDetail.js"></script>
+<% } %>
