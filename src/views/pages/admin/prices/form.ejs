@@ -1,0 +1,25 @@
+<form method="post" action="<%= (editingId ? '/admin/prices/' + editingId : '/admin/prices') + pageQuery %>" data-price-form>
+  <input type="hidden" name="_csrf" value="<%= priceCsrf %>">
+  <% if (errors.length) { %><ul class="price-errors" role="alert"><% errors.forEach((error) => { %><li><%= error %></li><% }) %></ul><% } %>
+  <%- include('../../../components/prices/select', {
+    name: 'seat_type_id', label: 'Loại ghế', value: values.seat_type_id,
+    placeholder: 'Chọn loại ghế', options: seatTypes.map((seat) => ({ value: seat.seat_type_id, label: seat.seat_type_name })),
+  }) %>
+  <%- include('../../../components/prices/input', { name: 'price', label: 'Đơn giá (VND)', type: 'number', value: values.price, min: 0, max: 9999999999, step: 1, required: true }) %>
+  <details class="price-criteria" <%= errors.length ? 'open' : '' %>>
+    <summary>Điều kiện áp dụng</summary>
+    <div class="price-criteria__fields">
+      <%- include('../../../components/prices/select', { name: 'screen_format', label: 'Định dạng', value: values.screen_format, options: formats.map((format) => ({ value: format, label: format })) }) %>
+      <%- include('../../../components/prices/select', { name: 'day_type', label: 'Loại ngày', value: values.day_type, options: Object.entries(dayLabels).map(([value, label]) => ({ value, label })) }) %>
+      <%- include('../../../components/prices/input', { name: 'time_from', label: 'Giờ bắt đầu', type: 'time', value: values.time_from, step: 1 }) %>
+      <%- include('../../../components/prices/input', { name: 'time_to', label: 'Giờ kết thúc', type: 'time', value: values.time_to, step: 1 }) %>
+      <%- include('../../../components/prices/input', { name: 'valid_from', label: 'Từ ngày', type: 'date', value: values.valid_from, min: '1000-01-01', max: '9999-12-31' }) %>
+      <%- include('../../../components/prices/input', { name: 'valid_to', label: 'Đến ngày', type: 'date', value: values.valid_to, min: '1000-01-01', max: '9999-12-31' }) %>
+    </div>
+    <p class="price-field-hint">Để trống giờ hoặc ngày để không giới hạn đầu hoặc cuối khoảng áp dụng.</p>
+  </details>
+  <div class="price-dialog__actions">
+    <%- include('../../../components/prices/button', { href: listUrl, text: 'Hủy bỏ' }) %>
+    <%- include('../../../components/prices/button', { type: 'submit', variant: 'primary', text: 'Lưu' }) %>
+  </div>
+</form>
