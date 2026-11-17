@@ -1,6 +1,7 @@
 const AppError = require('../utils/AppError');
 const showtimeModel = require('../models/showtimeModel');
 const { partsOf, dayLabel } = require('../utils/vnTime');
+const movieModel = require('../models/movieModel');
 
 const toId = (raw, name) => {
   const n = Number.parseInt(raw, 10);
@@ -44,4 +45,21 @@ async function getShowtimes(rawCinemaId, rawMovieId) {
   return [...byDate.values()];
 }
 
-module.exports = { getCinemas, getMovies, getShowtimes };
+// phim đang chiếu và còn suất mở bán, kèm các rạp có suất, null nếu không đặt vé được
+async function getBookableMovie(rawId) {
+  const id = Number.parseInt(rawId, 10);
+  if (!Number.isInteger(id) || id < 1) return null;
+  const movie = await movieModel.findById(id);
+  if (!movie || movie.status !== 'NOW_SHOWING') return null;
+  const rows = await showtimeModel.listCinemaIdsByMovie(id);
+  if (!rows.length) return null;
+  return {
+    id: movie.movie_id,
+    title: movie.title,
+    posterUrl: movie.poster_url,
+    ageRating: movie.age_rating,
+    cinemaIds: rows.map((r) => r.cinema_id),
+  };
+}
+
+module.exports = { getCinemas, getMovies, getShowtimes, getBookableMovie };

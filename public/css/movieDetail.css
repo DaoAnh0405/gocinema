@@ -1,0 +1,47 @@
+/* Chặn thanh cuộn ngang do dải trailer rộng 100vw (chỉ áp dụng ở trang này) */
+body { overflow-x: hidden; }
+
+/* ----- Dải trailer: nền đen tràn hết chiều ngang trang ----- */
+.gc-md-hero { width: 100vw; margin-left: calc(50% - 50vw); background: #000; }
+.gc-md-stage {
+  position: relative; display: grid; place-items: center;
+  width: 100%; height: clamp(220px, 40vw, 640px);
+  overflow: hidden; background: #000;
+}
+/* Poster hiện rõ, nằm giữa, không bị cắt; hai bên là nền đen */
+.gc-md-stage__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.gc-md-stage__note { position: relative; color: #cbd5e1; }
+
+/* Nút play tròn trắng, tam giác đen */
+.gc-md-play {
+  position: relative; display: grid; place-items: center;
+  width: 80px; height: 80px; padding: 0; border: 0; border-radius: 50%;
+  background: #fff; color: #111; font-size: 2.6rem; line-height: 1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+  transition: transform .15s;
+}
+.gc-md-play .bi { margin-left: .2rem; }                 /* căn tam giác vào giữa vòng tròn */
+.gc-md-play:hover { transform: scale(1.08); }
+.gc-md-play:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* ----- Nội dung: poster dọc đè lên mép dưới dải trailer ----- */
+.gc-md-body { position: relative; z-index: 1; margin-top: -3rem; padding-bottom: 3rem; }
+.gc-md-poster {
+  position: relative; aspect-ratio: 2 / 3; overflow: hidden;
+  border: 4px solid #fff; border-radius: 10px; background: #9ca3af;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+}
+.gc-md-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gc-md-poster__ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.5rem; color: #e5e7eb; }
+
+.gc-md-title { margin: 4.2rem 0 .75rem; font-size: 1.9rem; font-weight: 800; }
+.gc-md-info { display: grid; gap: .35rem; margin-bottom: 1.25rem; font-size: .92rem; }
+.gc-md-info .bi { margin-right: .35rem; color: #6b7280; }
+.gc-md-h { margin-bottom: 1rem; padding-left: .75rem; border-left: 3px solid #1f2937; font-size: 1.1rem; font-weight: 700; }
+.gc-md-text { line-height: 1.7; }
+
+@media (max-width: 767.98px) {
+  .gc-md-play { width: 64px; height: 64px; font-size: 2.1rem; }
+  .gc-md-body { margin-top: -2rem; }
+  .gc-md-title { margin-top: 2.8rem; font-size: 1.4rem; }
+}
