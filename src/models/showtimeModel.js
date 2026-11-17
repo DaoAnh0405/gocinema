@@ -62,4 +62,18 @@ async function findForBooking(showtimeId) {
   return rows[0] || null;
 }
 
-module.exports = { listCinemas, listMoviesByCinema, listShowtimes, findForBooking };
+// các rạp (và khu vực) đang có suất chiếu còn mở bán của một phim đang chiếu
+async function listCinemaIdsByMovie(movieId) {
+  return query(
+    `SELECT DISTINCT c.cinema_id, c.city
+       FROM showtimes s
+       JOIN rooms r   ON r.room_id = s.room_id
+       JOIN cinemas c ON c.cinema_id = r.cinema_id
+       JOIN movies m  ON m.movie_id = s.movie_id
+      WHERE s.movie_id = ? AND m.status = 'NOW_SHOWING' AND ${OPEN}
+      ORDER BY c.city, c.cinema_id`,
+    [movieId],
+  );
+}
+
+module.exports = { listCinemas, listMoviesByCinema, listShowtimes, findForBooking, listCinemaIdsByMovie };
