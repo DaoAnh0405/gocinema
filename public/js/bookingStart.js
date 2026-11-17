@@ -4,7 +4,14 @@
   const root = document.getElementById('startApp');
   if (!root) return;
 
-  let preselect = Number(root.dataset.preselectMovie) || null;
+  // Mở từ trang chi tiết phim: phim được chọn sẵn, nhưng vẫn đổi được
+  const preset = root.dataset.lockedId ? {
+    id: Number(root.dataset.lockedId),
+    title: root.dataset.lockedTitle,
+    posterUrl: root.dataset.lockedPoster || null,
+    ageRating: root.dataset.lockedAge || 'P',
+  } : null;
+  const presetCinemaIds = new Set((root.dataset.cinemaIds || '').split(',').filter(Boolean).map(Number));
   const $ = (id) => document.getElementById(id);
   const ui = {
     cities: $('cityList'), movies: $('movieGrid'), moviePanel: $('moviePanel'), movieTitle: $('moviePanelTitle'),
@@ -12,7 +19,11 @@
     poster: $('sumPoster'), title: $('sumTitle'), format: $('sumFormat'), show: $('sumShow'), btn: $('btnNext'),
   };
   const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const state = { groups: [], city: null, movies: [], movie: null, shows: [], date: null, showtime: null };
+  const state = {
+    groups: [], city: null, movies: [],
+    movie: preset ? { ...preset, cinemas: [] } : null,
+    shows: [], date: null, showtime: null,
+  };
   const moviesCache = new Map();
 
   const el = (tag, className, text) => {
@@ -34,7 +45,7 @@
     return body.data;
   }
 
-  // thẻ tóm tắt top
+  // ----- Thẻ tóm tắt phía trên -----
   function renderSummary() {
     const { movie, showtime } = state;
     ui.title.textContent = movie ? movie.title : 'Tên phim';
@@ -53,12 +64,12 @@
       ui.show.textContent = `${showtime.cinema} · ${showtime.room} - Suất ${showtime.time} ${d.weekday}, ${d.dd}/${d.mm}/${d.yyyy}`;
     } else {
       ui.format.textContent = '';
-      ui.show.textContent = 'Chọn khu vực, phim và suất chiếu';
+      ui.show.textContent = movie ? 'Chọn khu vực và suất chiếu' : 'Chọn khu vực, phim và suất chiếu';
     }
     ui.btn.disabled = !showtime;
   }
 
-  // khụ vực
+  // ----- Khu vực -----
   function renderCities() {
     ui.cities.replaceChildren();
     state.groups.forEach((g) => {
@@ -69,7 +80,7 @@
     });
   }
 
-  // phim
+  // ----- Phim -----
   function renderMovies() {
     ui.movieTitle.textContent = state.movie ? `Chọn phim - ${state.movie.title}` : 'Chọn phim';
     ui.moviePanel.classList.toggle('is-collapsed', Boolean(state.movie));
@@ -78,7 +89,7 @@
     state.movies.forEach((m) => {
       const b = el('button', `gc-moviepick${state.movie && state.movie.id === m.id ? ' is-selected' : ''}`);
       b.type = 'button';
-      b.title = m.title;            
+      b.title = m.title;
       const poster = el('div', 'gc-movie__poster');
       poster.appendChild(el('i', 'bi bi-film gc-movie__ph'));
       if (m.posterUrl) {
@@ -96,7 +107,7 @@
     });
   }
 
-  // phim của một khu vực
+  // Phim của một khu vực = gộp phim của mọi rạp trong khu vực đó
   async function loadCityMovies(city) {
     if (moviesCache.has(city)) return moviesCache.get(city);
     const group = state.groups.find((g) => g.city === city);
@@ -111,12 +122,14 @@
     return movies;
   }
 
-  // suất chiếu
+  // ----- Suất chiếu -----
   function renderShows() {
     ui.dates.replaceChildren();
     ui.times.replaceChildren();
+    if (!state.movie) return hint(ui.times, 'Hãy chọn phim trước.');
 
     const dates = [...new Set(state.shows.flatMap((s) => s.days.map((d) => d.date)))].sort();
+    if (!dates.length) return hint(ui.times, 'Chưa có suất chiếu.');
 
     dates.forEach((iso) => {
       const d = parseDate(iso);
@@ -167,24 +180,33 @@
     });
   }
 
+  // ----- Hành động chọn -----
+  // Đổi khu vực: giữ phim đang chọn nếu khu vực mới cũng có phim đó, nếu không thì bỏ chọn
   async function chooseCity(city) {
-    Object.assign(state, { city, movies: [], movie: null, shows: [], date: null, showtime: null });
+    const previous = state.movie;
+    Object.assign(state, { city, movies: [], shows: [], date: null, showtime: null });
     renderCities();
-    renderSummary();
     renderShows();
     hint(ui.movies, 'Đang tải phim...');
+
+    let movies;
     try {
-      state.movies = await loadCityMovies(city);
+      movies = await loadCityMovies(city);
     } catch (err) {
+      state.movie = null;
+      renderSummary();
       return hint(ui.movies, err.message);
     }
-    if (state.city !== city) return;
-    renderMovies();
-    const pre = preselect && state.movies.find((m) => m.id === preselect);
-    if (pre) {
-      preselect = null;
-      chooseMovie(pre);
-    }
+    if (state.city !== city) return;        // người dùng đã bấm khu vực khác trong lúc chờ
+
+    state.movies = movies;
+    const same = previous && movies.find((m) => m.id === previous.id);
+    if (same) return chooseMovie(same);     // dùng bản của khu vực mới để có đúng danh sách rạp
+
+    state.movie = null;
+    renderMovies();                         // panel tự mở ra để chọn phim khác
+    renderSummary();
+    renderShows();
   }
 
   async function chooseMovie(movie) {
@@ -223,17 +245,14 @@
     } catch (err) {
       return hint(ui.movies, err.message);
     }
-    if (!state.groups.length) return hint(ui.movies, 'Hiện chưa có rạp nào có suất chiếu.');
-
-    // chọn "Mua vé ngay" tại banner or "Mua vé" tại cardMovie khi hover thì chọn sẵn khu vực đầu tiên có phim đó
-    let city = state.groups[0].city;
-    if (preselect) {
-      for (const g of state.groups) {
-        const list = await loadCityMovies(g.city).catch(() => []);
-        if (list.some((m) => m.id === preselect)) { city = g.city; break; }
-      }
+    if (!state.groups.length) {
+      renderCities();
+      return hint(ui.movies, 'Hiện chưa có rạp nào.');
     }
-    chooseCity(city);
+    // Khu vực đầu tiên mở ra là nơi đang chiếu phim chọn sẵn (nếu có)
+    const first = (preset && state.groups.find((g) => g.cinemas.some((c) => presetCinemaIds.has(c.id))))
+      || state.groups[0];
+    chooseCity(first.city);
   }
 
   renderSummary();

@@ -3,14 +3,22 @@ const env = require('../config/env');
 const { BOOKING } = require('../constants');
 const { accountIdOf } = require('../utils/currentAccount');
 const bookingService = require('../services/bookingService');
+const saveSession = require('../utils/saveSession');
+const catalogService = require('../services/catalogService');
 
 // 1 ?movieId=... để chọn sẵn phim 
 exports.startPage = asyncHandler(async (req, res) => {
-  const movieId = Number.parseInt(req.query.movieId, 10);
-  res.render('pages/booking/start', {
-    title: 'Mua vé',
-    preselectMovieId: Number.isInteger(movieId) && movieId > 0 ? movieId : '',
-  });
+  let locked = null;
+  if (req.query.movieId !== undefined) {
+    locked = await catalogService.getBookableMovie(req.query.movieId);
+    if (!locked) {
+      const id = Number.parseInt(req.query.movieId, 10);
+      req.flash('warning', 'Phim này hiện chưa có suất chiếu để đặt vé.');
+      await saveSession(req);
+      return res.redirect(Number.isInteger(id) && id > 0 ? `/movies/${id}` : '/booking');
+    }
+  }
+  return res.render('pages/booking/start', { title: 'Mua vé', locked });
 });
 
 // 2
