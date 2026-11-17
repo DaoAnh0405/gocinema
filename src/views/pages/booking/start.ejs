@@ -1,7 +1,16 @@
 <link rel="stylesheet" href="/css/booking.css">
 
-<div class="container py-4 gc-book" id="startApp" data-preselect-movie="<%= preselectMovieId %>">
-  <%- include('../../partials/bookingSummary', { showtime: null, seats: [], foods: [], total: 0, backUrl: '/' }) %>
+<div class="container py-4 gc-book" id="startApp"
+  <% if (locked) { %>
+     data-locked-id="<%= locked.id %>"
+     data-locked-title="<%= locked.title %>"
+     data-locked-poster="<%= locked.posterUrl || '' %>"
+     data-locked-age="<%= locked.ageRating || 'P' %>"
+     data-cinema-ids="<%= locked.cinemaIds.join(',') %>"
+  <% } %>>
+  <%- include('../../partials/bookingSummary', {
+        showtime: null, seats: [], foods: [], total: 0,
+        backUrl: locked ? `/movies/${locked.id}` : '/' }) %>
 
   <div class="row g-3 mt-1">
     <div class="col-md-3">

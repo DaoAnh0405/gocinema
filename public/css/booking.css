@@ -127,6 +127,11 @@
 .gc-ticket { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #fff; border: 1px dashed #cbd5e1; border-radius: 12px; }
 .gc-ticket img { width: 120px; height: 120px; flex: none; }
 
+.gc-panel[hidden] { display: none; }
+.gc-lockednote { margin-bottom: .75rem; padding: .6rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: .9rem; }
+.gc-lockednote a { color: var(--gc-red); text-decoration: none; }
+.gc-lockednote a:hover { text-decoration: underline; }
+
 /* res mobile */
 @media (max-width: 575px) {
   .gc-sum__body { flex-direction: column; }
