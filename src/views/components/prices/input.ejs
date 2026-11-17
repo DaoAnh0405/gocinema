@@ -1,0 +1,9 @@
+<div class="price-field">
+  <label for="<%= name %>"><%= label %></label>
+  <input id="<%= name %>" name="<%= name %>" type="<%= locals.type || 'text' %>" value="<%= value ?? '' %>"
+    <% if (locals.required) { %>required<% } %>
+    <% if (locals.maxlength) { %>maxlength="<%= maxlength %>"<% } %>
+    <% if (locals.min !== undefined) { %>min="<%= min %>"<% } %>
+    <% if (locals.max !== undefined) { %>max="<%= max %>"<% } %>
+    <% if (locals.step !== undefined) { %>step="<%= step %>"<% } %>>
+</div>

@@ -1,0 +1,146 @@
+.cinema-app {
+  --cinema-status-active: #72df88;
+  --cinema-status-inactive: #efdb83;
+  --cinema-status-text: #fff;
+  --cinema-inactive-text: #62521b;
+  --cinema-action-background: #626262;
+  --cinema-dialog-width: 284px;
+  --cinema-dialog-font: 7px;
+  --cinema-dialog-title: 8px;
+  --cinema-dialog-input-height: 16px;
+  --cinema-dialog-button-height: 21px;
+  --room-seat-standard: #f1f1f1;
+  --room-seat-vip: #efdb83;
+  --room-seat-couple: #d9dff5;
+  --room-seat-border: #bdc5d1;
+  --room-seat-muted: #64748b;
+  --room-seat-other: #b8cbd9;
+  --room-seat-size: 30px;
+  --cinema-filter-height: 34px;
+  --cinema-filter-font: 12px;
+  --price-table-row-height: 38px;
+}
+.cinema-app .price-topbar { min-height: 41px; }
+.cinema-app .price-topbar h1 { text-decoration: none; }
+.admin-page-heading { min-width: 0; }
+.admin-breadcrumbs { display: flex; flex-wrap: wrap; gap: var(--price-space-1); padding-top: 1px; font-size: var(--price-font-table); }
+.admin-breadcrumbs a:hover { text-decoration: underline; }
+.admin-breadcrumbs > span:last-child { opacity: .55; }
+.cinema-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--price-space-3); min-height: var(--price-toolbar-height); padding: var(--price-space-1) var(--price-space-4); margin-bottom: var(--price-space-5); border-radius: var(--price-radius-control); }
+.cinema-toolbar h2 { font-size: var(--price-font-title); font-weight: var(--price-font-weight); margin: 0; }
+.cinema-toolbar__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--price-space-3); }
+.cinema-back { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; min-height: var(--price-button-height); border: var(--price-border-width) solid var(--price-divider); border-radius: var(--price-radius-control); font-size: var(--price-font-title); }
+.cinema-back:hover { text-decoration: underline; }
+.cinema-filter-card { padding: var(--price-space-4); margin-bottom: var(--price-space-3); }
+.cinema-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--price-space-3); font-size: var(--cinema-filter-font); }
+.cinema-search { display: flex; align-items: center; gap: var(--price-space-2); flex: 1 1 170px; min-width: 0; padding: 0 var(--price-space-4); background: var(--price-header); border: var(--price-border-width) solid var(--price-filter-border); border-radius: var(--price-filter-radius); }
+.cinema-search > i { color: var(--price-filter-muted); }
+.cinema-search input { flex: 1; width: 100%; min-width: 0; height: var(--cinema-filter-height); padding: 0; background: none; border: 0; }
+.cinema-search input::placeholder { color: var(--price-filter-muted); }
+.cinema-app .cinema-search input:focus-visible { outline: none; }
+.cinema-search:focus-within { border-color: var(--price-accent); box-shadow: var(--price-filter-focus-shadow); }
+.cinema-filters select, .cinema-filter-button { height: var(--cinema-filter-height); border: var(--price-border-width) solid var(--price-filter-border); border-radius: var(--price-filter-radius); background: var(--price-header); padding: 0 var(--price-space-3); }
+.cinema-filters select { flex: 1 1 110px; min-width: 0; max-width: 160px; cursor: pointer; }
+.cinema-filter-button { display: inline-flex; align-items: center; justify-content: center; gap: var(--price-space-1); min-width: 58px; border-color: var(--price-accent); background: var(--price-accent); color: var(--price-text-inverse) !important; cursor: pointer; }
+.cinema-table-card { min-height: 140px; }
+.cinema-table { min-width: 420px; }
+.cinema-table th:nth-child(1) { width: 17%; }
+.cinema-table th:nth-child(2) { width: 18%; }
+.cinema-table th:nth-child(3) { width: 13%; }
+.cinema-table th:nth-child(4) { width: 17%; }
+.cinema-table th:nth-child(5) { width: 14%; }
+.cinema-table th:nth-child(6) { width: 21%; }
+.cinema-table td:nth-child(4), .cinema-table td:nth-child(5) { white-space: normal; }
+.cinema-table--rooms { min-width: 360px; }
+.cinema-table--rooms th:nth-child(1) { width: 18%; }
+.cinema-table--rooms th:nth-child(2) { width: 17%; }
+.cinema-table--rooms th:nth-child(3) { width: 12%; }
+.cinema-table--rooms th:nth-child(4) { width: 23%; }
+.cinema-table--rooms th:nth-child(5) { width: 16%; }
+.cinema-table--rooms th:nth-child(6) { width: 14%; }
+.cinema-status { display: inline-block; padding: 2px var(--price-space-2); border-radius: var(--price-radius-control); font-size: calc(var(--price-font-table) - 2px); white-space: nowrap; }
+.cinema-status--active { background: var(--cinema-status-active); color: var(--cinema-status-text); }
+.cinema-status--inactive { background: var(--cinema-status-inactive); color: var(--cinema-inactive-text); }
+.cinema-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--price-space-1); }
+.cinema-small-button { display: inline-block; padding: 2px var(--price-space-1); border: 0; border-radius: var(--price-radius-control); font-size: calc(var(--price-font-table) - 2px); background: var(--cinema-action-background); color: var(--price-text-inverse) !important; white-space: nowrap; cursor: pointer; }
+.cinema-row-actions form { margin: 0; }
+.cinema-edit { display: inline-flex; padding: var(--price-space-1) 0; }
+.cinema-app .price-dialog { width: 300px; }
+.cinema-app .price-dialog input, .cinema-app .price-dialog select { min-height: 25px; }
+.cinema-app .cinema-dialog { width: var(--cinema-dialog-width); padding: var(--price-space-2); font-size: var(--cinema-dialog-font); }
+.cinema-dialog h2 { font-size: var(--cinema-dialog-title); margin-bottom: var(--price-space-2); }
+.cinema-dialog .price-field { margin-bottom: var(--price-space-1); }
+.cinema-dialog .price-field label { margin-bottom: 2px; }
+.cinema-app .cinema-dialog .price-field input { height: var(--cinema-dialog-input-height); min-height: var(--cinema-dialog-input-height); background: var(--price-header); }
+.cinema-dialog .price-dialog__actions { margin-top: var(--price-space-1); }
+.cinema-dialog .price-button { min-width: 54px; min-height: var(--cinema-dialog-button-height); border-radius: var(--price-filter-radius); }
+.cinema-dialog .price-button--secondary { background: none; border: var(--price-border-width) solid var(--cinema-action-background); }
+.cinema-app .room-dialog { width: 294px; padding: var(--price-space-4); font-size: var(--cinema-dialog-font); }
+.room-dialog h2 { font-size: var(--cinema-dialog-title); margin-bottom: var(--price-space-2); }
+.room-dialog .price-field { margin-bottom: var(--price-space-1); }
+.room-dialog .price-field label { margin-bottom: 2px; }
+.cinema-app .room-dialog input, .cinema-app .room-dialog select { height: var(--cinema-dialog-input-height); min-height: var(--cinema-dialog-input-height); padding-block: 0; background: var(--price-header); }
+.room-grid-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--price-space-7); }
+.room-dialog .price-dialog__actions { margin-top: var(--price-space-2); }
+.room-dialog .price-button { min-width: 54px; min-height: var(--cinema-dialog-button-height); border-radius: var(--price-filter-radius); }
+.room-dialog .price-button--secondary { background: none; border: var(--price-border-width) solid var(--cinema-action-background); }
+.room-seat-card { padding: var(--price-space-6); }
+.room-seat-scroll { overflow: auto; max-height: 65vh; }
+.room-seat-map { width: max-content; min-width: 100%; padding-bottom: var(--price-space-4); }
+.room-screen { margin: 0 var(--price-space-7) var(--price-space-7); padding: var(--price-space-2); background: var(--price-header); text-align: center; border-radius: var(--price-radius-control); }
+.room-seat-row { display: flex; justify-content: center; align-items: center; gap: var(--price-space-1); margin-bottom: var(--price-space-1); }
+.room-seat-label { width: var(--room-seat-size); text-align: center; flex-shrink: 0; }
+.room-seat { display: inline-flex; align-items: center; justify-content: center; width: var(--room-seat-size); height: var(--room-seat-size); flex-shrink: 0; background: var(--room-seat-other); border-radius: var(--price-radius-control); font-size: var(--price-font-table); }
+.room-seat--standard { background: var(--room-seat-standard); }
+.room-seat--vip { background: var(--room-seat-vip); }
+.room-seat--couple { background: var(--room-seat-couple); }
+.room-seat--empty { visibility: hidden; }
+.room-seat-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--price-space-6); padding: var(--price-space-6) 0 0; margin: 0; list-style: none; }
+.room-seat-legend li { display: flex; align-items: center; gap: var(--price-space-2); }
+.seat-toolbar { align-items: flex-start; }
+.seat-toolbar p { margin: 2px 0 0; font-size: var(--price-font-table); color: var(--room-seat-muted); }
+.seat-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, 28%); gap: var(--price-space-2); align-items: start; --room-seat-size: 18px; }
+.seat-canvas { min-width: 0; padding: var(--price-space-3); border-radius: var(--price-radius-card); background: var(--price-header); }
+.seat-canvas .room-seat-row { gap: 2px; margin-bottom: 2px; }
+.seat-canvas .room-seat-label { width: 12px; font-size: var(--price-font-table); font-weight: var(--price-font-weight); color: var(--room-seat-muted); }
+.seat-canvas .room-seat { padding: 0; border: var(--price-border-width) solid var(--room-seat-border); font-size: calc(var(--price-font-table) - 2px); cursor: pointer; }
+.seat-canvas .room-seat:hover { outline: var(--price-border-width) solid var(--price-focus); }
+.seat-canvas .room-seat--empty { visibility: visible; color: var(--room-seat-muted); background: transparent; border-style: dashed; }
+.seat-canvas .room-seat--couple-pair { width: calc(var(--room-seat-size) * 2 + 2px); border-radius: var(--price-filter-radius); }
+.seat-canvas .room-seat--couple-single { border-style: dashed; }
+.seat-canvas .room-screen { margin: 0 var(--price-space-7) var(--price-space-5); padding-top: var(--price-space-1); border-top: 3px solid var(--room-seat-border); border-radius: 0; color: var(--room-seat-muted); font-size: calc(var(--price-font-table) - 2px); }
+.seat-count { margin: var(--price-space-2) 0 0; text-align: center; font-size: var(--price-font-table); color: var(--room-seat-muted); }
+.seat-generator { padding: var(--price-space-3); font-size: var(--price-font-table); }
+.seat-generator h3 { margin: 0 0 var(--price-space-2); font-size: var(--price-font-body); font-weight: var(--price-font-weight); }
+.seat-generator .price-field { margin-bottom: var(--price-space-2); }
+.seat-generator input, .seat-generator select { min-height: 24px; background: var(--price-header); }
+.seat-generate-button { width: 100%; background: var(--price-pagination-active); color: var(--price-text-inverse) !important; }
+.seat-generator .room-seat-legend { display: grid; justify-content: start; gap: var(--price-space-1); padding-top: var(--price-space-3); }
+.seat-generator .room-seat-legend .room-seat { width: 12px; height: 12px; border: var(--price-border-width) solid var(--room-seat-border); }
+.seat-cycle-hint { margin: var(--price-space-3) 0 0; color: var(--room-seat-muted); line-height: 1.5; }
+.seat-feedback { padding: var(--price-space-3); background: var(--price-header); border-radius: var(--price-radius-control); }
+.seat-feedback--error { color: var(--price-accent); }
+.seat-toolbar button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 575px) {
+  .cinema-app { --price-table-row-height: 52px; --cinema-dialog-width: 360px; --cinema-dialog-font: 14px; --cinema-dialog-title: 16px; --cinema-dialog-input-height: 44px; --cinema-dialog-button-height: 44px; }
+  .cinema-toolbar { flex-wrap: wrap; padding: var(--price-space-3); }
+  .cinema-toolbar__actions { margin-left: auto; }
+  .cinema-filters { gap: var(--price-space-3); }
+  .cinema-search { flex: 1 0 100%; }
+  .cinema-filters select { flex: 1; max-width: none; min-width: 0; }
+  .cinema-filter-button, .cinema-filters select, .cinema-search input { height: 44px; }
+  .cinema-table { min-width: 760px; }
+  .cinema-table--rooms { min-width: 760px; }
+  .cinema-small-button { padding: var(--price-space-3); font-size: var(--price-font-table); }
+  .cinema-status { font-size: var(--price-font-table); }
+  .cinema-app .price-dialog { width: 360px; }
+  .cinema-app .price-dialog input, .cinema-app .price-dialog select { min-height: 44px; }
+  .cinema-app .room-dialog { width: 360px; }
+  .cinema-back { min-width: 44px; min-height: 44px; }
+  .cinema-app { --room-seat-size: 40px; }
+  .seat-workspace { grid-template-columns: minmax(0, 1fr); --room-seat-size: 32px; }
+  .seat-canvas .room-seat { font-size: var(--price-font-table); }
+  .seat-canvas .room-seat-label { width: 24px; }
+  .seat-generator input, .seat-generator select { min-height: 44px; }
+  .seat-generator .room-seat-legend { display: flex; gap: var(--price-space-6); }
+}

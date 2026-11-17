@@ -1,10 +1,13 @@
 node_modules/
 .env
+/src/database/seed_test.sql
+/src/database/schema_test.sql
 coverage/
 *.log
 .DS_Store
 .vscode/
 tests/
+!/src/tests/
 
 # ảnh upload không commit, chỉ giữ .gitkeep
 public/uploads/**

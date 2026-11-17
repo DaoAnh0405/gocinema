@@ -57,7 +57,7 @@ if (!env.isTest) {
 
 // body parsing và method override
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(methodOverride('_method'));
 
 // static file
