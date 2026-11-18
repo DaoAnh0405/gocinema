@@ -1,4 +1,4 @@
-<form method="post" action="<%= base %>/<%= room.room_id %>/seats" data-seat-editor>
+<form method="post" action="<%= base %>/<%= room.room_id %>/seats" data-seatEditor>
   <input type="hidden" name="_csrf" value="<%= cinemaCsrf %>">
   <input type="hidden" name="version" value="<%= version %>">
   <input type="hidden" name="layout" value="<%= JSON.stringify(seatLayout) %>">
