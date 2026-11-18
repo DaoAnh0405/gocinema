@@ -17,6 +17,7 @@ let originalCinemas;
 let originalRooms;
 let originalSeats;
 
+
 const cinemaData = (suffix = 'A', overrides = {}) => ({
   cinema_name: `${prefix}_${suffix}`, address: 'Địa chỉ kiểm thử', city: `${prefix}_City`,
   phone_number: '0901234567', status: '1', ...overrides,

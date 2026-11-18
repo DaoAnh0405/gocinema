@@ -58,13 +58,47 @@ async function render(req, res, { rooms = false, status = 200, dialog = null, va
     rooms ? model.listRooms(cinema.cinema_id, req.query.page, filters) : model.listCinemas(req.query.page, filters),
     rooms ? Promise.resolve([]) : model.listCities(),
   ]);
+  
   return res.status(status).render('pages/admin/cinemas/index', {
-    layout: 'layouts/prices', moduleClass: 'cinema-app', moduleStylesheet: '/css/cinemas.css',
-    title: 'Quản lý Rạp & phòng chiếu', rooms, cinema, rows, cities, formats, filters, pagination,
-    breadcrumbs: rooms ? [{ label: 'Rạp', href: '/admin/cinemas' }, { label: cinema.cinema_name }, { label: 'Phòng chiếu' }] : [{ label: 'Rạp' }],
-    base, listUrl: base + queryString(pagination.page, filters), pageQuery: queryString(pagination.page, filters),
+    adminModule: true,
+    // Sử dụng layout dashboard chung
+    moduleClass: 'cinema-app',
+    // CSS của chức năng Cinemas
+    pageStyles: [
+      '/css/pricesTheme.css',
+      '/css/prices.css',
+      '/css/cinemas.css',
+    ],
+    // JS của chức năng Cinemas
+    pageScripts: [
+      '/js/prices.js',
+    ],
+    title: 'Quản lý Rạp & phòng chiếu',
+    rooms,
+    cinema,
+    rows,
+    cities,
+    formats,
+    filters,
+    pagination,
+    breadcrumbs: rooms
+      ? [
+          { label: 'Rạp', href: '/admin/cinemas' },
+          { label: cinema.cinema_name },
+          { label: 'Phòng chiếu' },
+        ]
+      : [
+          { label: 'Rạp' },
+        ],
+    base,
+    listUrl: base + queryString(pagination.page, filters),
+    pageQuery: queryString(pagination.page, filters),
     pageUrl: (page) => base + queryString(page, filters),
-    dialog, values, errors, editingId, priceAssets: getPriceAssets(),
+    dialog,
+    values,
+    errors,
+    editingId,
+    priceAssets: getPriceAssets(),
   });
 }
 
@@ -139,11 +173,33 @@ const seats = asyncHandler(async (req, res) => {
   layout.cells = Array.from({ length: layout.rows }, (_, row) => Array.from({ length: layout.columns }, (_, column) =>
     positions.get(`${model.rowLabel(row + 1)}:${column + 1}`)?.seat_type_id || 0));
   const base = `/admin/cinemas/${cinema.cinema_id}/rooms`;
+  
   return res.render('pages/admin/cinemas/seats', {
-    layout: 'layouts/prices', moduleClass: 'cinema-app', moduleStylesheet: '/css/cinemas.css',
-    title: 'Quản lý Rạp & phòng chiếu', cinema, room, seatLayout: layout, types, version, base,
-    breadcrumbs: [{ label: 'Rạp', href: '/admin/cinemas' }, { label: cinema.cinema_name, href: base },
-      { label: room.room_name, href: base }, { label: 'Ghế' }], priceAssets: getPriceAssets(),
+    adminModule: true,
+    moduleClass: 'cinema-app',
+    pageStyles: [
+      '/css/pricesTheme.css',
+      '/css/prices.css',
+      '/css/cinemas.css',
+    ],
+    pageScripts: [
+      '/js/seat-pairs.js',
+      '/js/seat-editor.js',
+    ],
+    title: 'Quản lý Rạp & phòng chiếu',
+    cinema,
+    room,
+    seatLayout: layout,
+    types,
+    version,
+    base,
+    breadcrumbs: [
+      { label: 'Rạp', href: '/admin/cinemas' },
+      { label: cinema.cinema_name, href: base },
+      { label: room.room_name, href: base },
+      { label: 'Ghế' },
+    ],
+    priceAssets: getPriceAssets(),
   });
 });
 
