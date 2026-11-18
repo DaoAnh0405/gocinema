@@ -12,6 +12,7 @@ router.use(requireLogin, requireRole(ROLE.ADMIN), adminLayout);
 
 router.get('/', (req, res) => res.render('pages/admin/dashboard', { title: 'Tổng quan' }));
 
+router.use(require('./adminCatalogRoutes'));
 // mount module ở đây
 router.use('/cinemas', requirePermission(PERMISSION.MANAGE_CINEMAS), cinemas.csrf);
 router.get('/cinemas', cinemas.index);
