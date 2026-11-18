@@ -39,4 +39,12 @@ async function listHot(limit = 5) {
   );
 }
 
-module.exports = { listByStatus, listHot };
+async function findById(movieId) {
+  const rows = await query(
+    `SELECT m.*, ${GENRES_SUBQUERY} AS genres FROM movies m WHERE m.movie_id = ?`,
+    [movieId],
+  );
+  return rows[0] || null;
+}
+
+module.exports = { listByStatus, listHot, findById };

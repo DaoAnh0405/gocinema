@@ -1,0 +1,6 @@
+<% const bootstrapIcons = { plus: 'bi-plus-lg', edit: 'bi-pencil-fill', delete: 'bi-trash-fill', avatar: 'bi-person', 'account-arrow': 'bi-caret-down-fill' }; %>
+<% if (priceAssets[name]) { %>
+  <img class="price-icon price-icon--<%= name %>" src="<%= priceAssets[name] %>" alt="" aria-hidden="true">
+<% } else if (bootstrapIcons[name]) { %>
+  <i class="bi <%= bootstrapIcons[name] %> price-icon price-icon--<%= name %>" aria-hidden="true"></i>
+<% } %>

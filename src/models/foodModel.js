@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { query } = require('../config/db');
 const { FOOD_STATUS } = require('../constants/foodConstants');
 
 class FoodModel {
@@ -39,7 +40,7 @@ class FoodModel {
       sql += ' AND (food_name LIKE ? OR category LIKE ?)';
       params.push(`%${search}%`, `%${search}%`);
     }
-    if (status) {
+    if (status !== undefined && status !== null && status !== '') {
       const normalizedStatus = status === FOOD_STATUS.SELLING ? 1 : status === FOOD_STATUS.STOPPED ? 0 : Number(status);
       sql += ' AND status = ?';
       params.push(normalizedStatus);
@@ -90,4 +91,20 @@ class FoodModel {
   }
 }
 
-module.exports = FoodModel;
+async function listActive() {
+  return query(
+    `SELECT food_id, food_name, category, price, image_url
+       FROM food_items WHERE status = 1
+      ORDER BY FIELD(category, 'COMBO', 'POPCORN', 'DRINK'), price`,
+  );
+}
+
+async function findActiveByIds(ids) {
+  if (!ids.length) return [];
+  return query(
+    `SELECT food_id, food_name, price FROM food_items WHERE status = 1 AND food_id IN (?)`,
+    [ids],
+  );
+}
+
+module.exports = { listActive, findActiveByIds, FoodModel };

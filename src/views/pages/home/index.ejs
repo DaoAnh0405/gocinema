@@ -31,7 +31,7 @@
                     <%= m.duration %> phút<%= m.genres ? ' · ' + m.genres : '' %>
                   </p>
                   <p class="gc-hero__desc d-none d-md-block"><%= m.description %></p>
-                  <a href="/movies/<%= m.movie_id %>" class="btn gc-btn-buy">Đặt vé ngay</a>
+                  <a href="/booking?movieId=<%= m.movie_id %>" class="btn gc-btn-buy">Mua vé ngay</a>
                 </div>
               </div>
             </div>
@@ -58,14 +58,21 @@
       </ul>
     </div>
 
+    <% const PAGE_SIZE = 8; %>
     <div class="tab-content">
       <div class="tab-pane fade show active" id="tab-now" role="tabpanel">
         <% if (nowShowing.length) { %>
-          <div class="gc-grid">
-            <% nowShowing.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
-          </div>
-          <div class="text-center mt-4">
-            <a href="/movies?status=NOW_SHOWING" class="btn gc-btn-more">Xem thêm <i class="bi bi-chevron-right"></i></a>
+          <div data-more-group data-step="<%= PAGE_SIZE %>">
+            <div class="gc-grid">
+              <% nowShowing.forEach((movie, i) => { %>
+                <div class="gc-more-item"<%= i >= PAGE_SIZE ? ' hidden' : '' %>><%- include('../../partials/movieCard', { movie }) %></div>
+              <% }) %>
+            </div>
+            <% if (nowShowing.length > PAGE_SIZE) { %>
+              <div class="text-center mt-4">
+                <button type="button" class="btn gc-btn-more" data-more-btn>Xem thêm <i class="bi bi-chevron-down"></i></button>
+              </div>
+            <% } %>
           </div>
         <% } else { %>
           <p class="text-muted">Chưa có phim đang chiếu.</p>
@@ -74,11 +81,17 @@
 
       <div class="tab-pane fade" id="tab-soon" role="tabpanel">
         <% if (comingSoon.length) { %>
-          <div class="gc-grid">
-            <% comingSoon.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
-          </div>
-          <div class="text-center mt-4">
-            <a href="/movies?status=COMING_SOON" class="btn gc-btn-more">Xem thêm <i class="bi bi-chevron-right"></i></a>
+          <div data-more-group data-step="<%= PAGE_SIZE %>">
+            <div class="gc-grid">
+              <% comingSoon.forEach((movie, i) => { %>
+                <div class="gc-more-item"<%= i >= PAGE_SIZE ? ' hidden' : '' %>><%- include('../../partials/movieCard', { movie }) %></div>
+              <% }) %>
+            </div>
+            <% if (comingSoon.length > PAGE_SIZE) { %>
+              <div class="text-center mt-4">
+                <button type="button" class="btn gc-btn-more" data-more-btn>Xem thêm <i class="bi bi-chevron-down"></i></button>
+              </div>
+            <% } %>
           </div>
         <% } else { %>
           <p class="text-muted">Chưa có phim sắp chiếu.</p>
@@ -89,12 +102,12 @@
 
   <%# KHUYẾN MÃI %>
   <section class="gc-section">
-    <h2 class="gc-section__title mb-3">Khuyến mãi demo</h2>
+    <h2 class="gc-section__title mb-3">Khuyến mãi</h2>
     <% if (promotions.length) { %>
       <div class="gc-grid">
         <% promotions.forEach((p) => { %>
-          <a class="gc-promo" href="/"> 
-            <!-- /promotions -->
+          <div class="gc-promo">
+            <img class="gc-promo__bg" src="/images/promoBg.jpg" alt="" loading="lazy">
             <span class="gc-promo__badge">
               <%= p.discount_type === 'PERCENT' ? '-' + Number(p.discount_value) + '%' : '-' + fmt.money(p.discount_value) %>
             </span>
@@ -104,7 +117,7 @@
               <span class="gc-promo__code"><%= p.promo_code %></span>
               <span>HSD <%= fmt.date(p.end_date) %></span>
             </div>
-          </a>
+          </div>
         <% }) %>
       </div>
     <% } else { %>
@@ -112,3 +125,5 @@
     <% } %>
   </section>
 </div>
+
+<script src="/js/loadMore.js"></script>

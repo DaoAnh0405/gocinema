@@ -41,7 +41,10 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
         fontSrc: ["'self'", 'https://cdn.jsdelivr.net'],
         imgSrc: ["'self'", 'data:'],
+        frameSrc: ["'self'", 'https://www.youtube-nocookie.com', 'https://www.youtube.com'],
+        mediaSrc: ["'self'", 'https:'],
         upgradeInsecureRequests: null,
+        formAction: ["'self'", 'https://pay-sandbox.sepay.vn', 'https://pay.sepay.vn' ],
       },
     },
   }),
@@ -54,7 +57,7 @@ if (!env.isTest) {
 
 // body parsing và method override
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(methodOverride('_method'));
 
 // static file

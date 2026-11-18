@@ -1,0 +1,5 @@
+<h2><%= rooms ? 'Phòng chiếu - ' + cinema.cinema_name : 'Rạp' %></h2>
+<div class="cinema-toolbar__actions">
+  <% if (rooms) { %><a class="cinema-back" href="/admin/cinemas" aria-label="Về danh sách rạp" title="Về danh sách rạp"><i class="bi bi-arrow-left" aria-hidden="true"></i></a><% } %>
+  <%- include('../../../components/admin/button', { href: base + '/new' + pageQuery, variant: 'primary', text: rooms ? 'Thêm phòng' : 'Thêm rạp', icon: 'plus' }) %>
+</div>
