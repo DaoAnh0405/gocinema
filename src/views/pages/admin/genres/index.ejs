@@ -1,73 +1,319 @@
-<link rel="stylesheet" href="/css/admin-catalog.css">
+<link rel="stylesheet" href="/css/adminCatalog.css">
 <%
   const problems = fieldErrors || {};
-  const messages = [...new Set([...(errors || []), ...Object.values(problems)].filter((message) => typeof message === 'string' && message))];
-  const isEditing = editingGenreId !== null && editingGenreId !== undefined;
+  const messages = [...new Set([
+    ...(errors || []),
+    ...Object.values(problems)
+  ].filter((message) => typeof message === 'string' && message))];
+  const isEditing =
+    editingGenreId !== null &&
+    editingGenreId !== undefined;
 %>
 <section class="gc-catalog" aria-label="Quản lý thể loại">
   <% if (messages.length) { %>
-    <div class="gc-catalog__errors" role="alert" tabindex="-1" data-error-summary><h2>Không thể lưu thay đổi</h2><ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul></div>
+    <div class="gc-catalog__errors"
+         role="alert"
+         tabindex="-1"
+         data-error-summary>
+      <h2>Không thể lưu thay đổi</h2>
+      <ul>
+        <% messages.forEach((message) => { %>
+          <li><%= message %></li>
+        <% }) %>
+      </ul>
+    </div>
   <% } %>
+
+  <!-- Thêm thể loại -->
   <div class="gc-catalog__toolbar">
-    <form class="gc-catalog__genre-create" action="/admin/genres" method="post">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <label class="form-label" for="new-genre-name">Thể loại</label>
+    <form class="gc-catalog__genre-create"
+          action="/admin/genres"
+          method="post">
+      <input type="hidden"
+             name="_csrf"
+             value="<%= csrfToken %>">
+      <label class="form-label" for="new-genre-name">
+        Thể loại
+      </label>
+
       <div class="gc-catalog__genre-create-input">
-        <input class="form-control <%= !isEditing && problems.genre_name ? 'is-invalid' : '' %>" id="new-genre-name" name="genre_name" value="<%= !isEditing ? values.genre_name || '' : '' %>" maxlength="50" required placeholder="Nhập tên thể loại..." aria-invalid="<%= Boolean(!isEditing && problems.genre_name) %>" <%= !isEditing && problems.genre_name ? 'aria-describedby=new-genre-error' : '' %>>
-        <% if (!isEditing && problems.genre_name) { %><p class="gc-catalog__field-error" id="new-genre-error"><%= problems.genre_name %></p><% } %>
+
+        <input
+          class="form-control <%= !isEditing && problems.genre_name ? 'is-invalid' : '' %>"
+          id="new-genre-name"
+          name="genre_name"
+          value="<%= !isEditing ? values.genre_name || '' : '' %>"
+          maxlength="50"
+          required
+          placeholder="Nhập tên thể loại..."
+          aria-invalid="<%= Boolean(!isEditing && problems.genre_name) %>"
+          <%= !isEditing && problems.genre_name
+            ? 'aria-describedby=new-genre-error'
+            : '' %>
+        >
+
+        <% if (!isEditing && problems.genre_name) { %>
+          <p class="gc-catalog__field-error"
+             id="new-genre-error">
+            <%= problems.genre_name %>
+          </p>
+        <% } %>
+
       </div>
-      <button class="btn gc-catalog__primary" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Thêm thể loại</button>
+
+      <button class="btn gc-catalog__primary" type="submit">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        Thêm thể loại
+      </button>
+
     </form>
   </div>
+
+  <!-- Danh sách thể loại -->
   <div class="gc-catalog__table-panel">
+
     <div class="gc-catalog__table-scroll">
+
       <table class="table gc-catalog__table gc-catalog__genre-table">
-        <caption class="visually-hidden">Danh sách thể loại phim</caption>
-        <thead><tr><th scope="col">#</th><th scope="col">Tên thể loại</th><th scope="col">Số lượng phim</th><th scope="col">Thao tác</th></tr></thead>
+
+        <caption class="visually-hidden">
+          Danh sách thể loại phim
+        </caption>
+
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên thể loại</th>
+            <th scope="col">Số lượng phim</th>
+            <th scope="col">Thao tác</th>
+          </tr>
+        </thead>
+
         <tbody>
-          <% if (!genres.length) { %><tr><td colspan="4" class="gc-catalog__empty"><i class="bi bi-collection" aria-hidden="true"></i><p>Chưa có thể loại nào. Thêm thể loại đầu tiên ở trên.</p></td></tr><% } %>
-          <% genres.forEach((genre, index) => {
-            const editing = isEditing && String(editingGenreId) === String(genre.genre_id);
-            const editFormId = 'genre-update-' + genre.genre_id;
-            const linked = Number(genre.movie_count) > 0;
-          %>
-            <tr id="genre-row-<%= genre.genre_id %>" data-genre-row>
-              <td><%= index + 1 %></td>
-              <th scope="row">
-                <span data-genre-display <%= editing ? 'hidden' : '' %>><%= genre.genre_name %></span>
-                <div data-genre-editor <%= editing ? '' : 'hidden' %>>
-                  <label class="visually-hidden" for="genre-name-<%= genre.genre_id %>">Tên thể loại <%= genre.genre_name %></label>
-                  <input class="form-control <%= editing && problems.genre_name ? 'is-invalid' : '' %>" form="<%= editFormId %>" id="genre-name-<%= genre.genre_id %>" name="genre_name" value="<%= editing ? values.genre_name || '' : genre.genre_name %>" data-original-value="<%= genre.genre_name %>" maxlength="50" required aria-invalid="<%= Boolean(editing && problems.genre_name) %>" <%= editing && problems.genre_name ? 'aria-describedby=genre-error-' + genre.genre_id : '' %>>
-                  <% if (editing && problems.genre_name) { %><p class="gc-catalog__field-error" id="genre-error-<%= genre.genre_id %>"><%= problems.genre_name %></p><% } %>
-                </div>
-              </th>
-              <td><%= Number(genre.movie_count) || 0 %></td>
-              <td>
-                <div class="gc-catalog__actions">
-                  <button class="gc-catalog__icon-button" type="button" data-edit-genre aria-controls="genre-name-<%= genre.genre_id %>" aria-expanded="<%= editing %>" aria-label="Sửa thể loại <%= genre.genre_name %>" title="Sửa tên thể loại" <%= editing ? 'hidden' : '' %>><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
-                  <span class="gc-catalog__inline-actions" data-genre-editor <%= editing ? '' : 'hidden' %>>
-                    <button class="btn btn-sm gc-catalog__primary" form="<%= editFormId %>" type="submit" aria-label="Lưu tên thể loại <%= genre.genre_name %>">Lưu</button>
-                    <button class="btn btn-sm gc-catalog__secondary" type="button" data-cancel-genre>Hủy</button>
-                  </span>
-                  <button class="gc-catalog__icon-button gc-catalog__icon-button--danger" type="submit" form="genre-delete-<%= genre.genre_id %>" <%= linked ? 'disabled aria-describedby=genre-delete-help' : '' %> aria-label="Xóa thể loại <%= genre.genre_name %>" title="<%= linked ? 'Không thể xóa thể loại gắn với phim!' : 'Xóa thể loại' %>"><i class="bi bi-trash" aria-hidden="true"></i></button>
-                </div>
+
+          <% if (!genres.length) { %>
+            <tr>
+              <td colspan="4" class="gc-catalog__empty">
+                <i class="bi bi-collection" aria-hidden="true"></i>
+                <p>
+                  Chưa có thể loại nào.
+                  Thêm thể loại đầu tiên ở trên.
+                </p>
               </td>
             </tr>
+          <% } %>
+
+          <% genres.forEach((genre, index) => {
+            const editing =
+              isEditing &&
+              String(editingGenreId) === String(genre.genre_id);
+
+            const editFormId =
+              'genre-update-' + genre.genre_id;
+
+            const linked = Number(genre.movie_count) > 0;
+          %>
+
+            <tr id="genre-row-<%= genre.genre_id %>"
+                data-genre-row>
+
+              <td><%= index + 1 %></td>
+
+              <th scope="row">
+
+                <span data-genre-display <%= editing ? 'hidden' : '' %>>
+                  <%= genre.genre_name %>
+                </span>
+
+                <div data-genre-editor <%= editing ? '' : 'hidden' %>>
+
+                  <label class="visually-hidden"
+                         for="genre-name-<%= genre.genre_id %>">
+                    Tên thể loại <%= genre.genre_name %>
+                  </label>
+
+                  <input
+                    class="form-control <%= editing && problems.genre_name ? 'is-invalid' : '' %>"
+                    form="<%= editFormId %>"
+                    id="genre-name-<%= genre.genre_id %>"
+                    name="genre_name"
+                    value="<%= editing ? values.genre_name || '' : genre.genre_name %>"
+                    data-original-value="<%= genre.genre_name %>"
+                    maxlength="50"
+                    required
+                    aria-invalid="<%= Boolean(editing && problems.genre_name) %>"
+                    <%= editing && problems.genre_name
+                      ? 'aria-describedby=genre-error-' + genre.genre_id
+                      : '' %>
+                  >
+
+                  <% if (editing && problems.genre_name) { %>
+                    <p class="gc-catalog__field-error"
+                       id="genre-error-<%= genre.genre_id %>">
+                      <%= problems.genre_name %>
+                    </p>
+                  <% } %>
+
+                </div>
+              </th>
+
+              <td>
+                <%= Number(genre.movie_count) || 0 %>
+              </td>
+
+              <td>
+
+                <div class="gc-catalog__actions">
+
+                  <button
+                    class="gc-catalog__icon-button"
+                    type="button"
+                    data-edit-genre
+                    aria-controls="genre-name-<%= genre.genre_id %>"
+                    aria-expanded="<%= editing %>"
+                    aria-label="Sửa thể loại <%= genre.genre_name %>"
+                    title="Sửa tên thể loại"
+                    <%= editing ? 'hidden' : '' %>
+                  >
+                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                  </button>
+
+                  <span class="gc-catalog__inline-actions"
+                        data-genre-editor
+                        <%= editing ? '' : 'hidden' %>>
+
+                    <button
+                      class="btn btn-sm gc-catalog__primary"
+                      form="<%= editFormId %>"
+                      type="submit">
+                      Lưu
+                    </button>
+
+                    <button
+                      class="btn btn-sm gc-catalog__secondary"
+                      type="button"
+                      data-cancel-genre>
+                      Hủy
+                    </button>
+
+                  </span>
+
+                  <button
+                    class="gc-catalog__icon-button gc-catalog__icon-button--danger"
+                    type="submit"
+                    form="genre-delete-<%= genre.genre_id %>"
+                    <%= linked
+                      ? 'disabled aria-describedby=genre-delete-help'
+                      : '' %>
+                    aria-label="Xóa thể loại <%= genre.genre_name %>"
+                    title="<%= linked
+                      ? 'Không thể xóa thể loại gắn với phim!'
+                      : 'Xóa thể loại' %>"
+                  >
+                    <i class="bi bi-trash" aria-hidden="true"></i>
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
           <% }) %>
+
         </tbody>
       </table>
+
     </div>
-    <footer class="gc-catalog__table-footer gc-catalog__genre-footer"><p>Tổng cộng <strong><%= genres.length %></strong> thể loại</p></footer>
+
+    <footer class="gc-catalog__table-footer gc-catalog__genre-footer">
+      <p>
+        Tổng cộng
+        <strong><%= genres.length %></strong>
+        thể loại
+      </p>
+    </footer>
+
   </div>
-  <div class="gc-catalog__notes"><p id="genre-delete-help"><i class="bi bi-info-circle" aria-hidden="true"></i> Không thể xóa thể loại gắn với phim!</p><p><i class="bi bi-pencil-square" aria-hidden="true"></i> Sửa tên thể loại trực tiếp trên dòng!</p></div>
+
+  <div class="gc-catalog__notes">
+    <p id="genre-delete-help">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      Không thể xóa thể loại gắn với phim!
+    </p>
+
+    <p>
+      <i class="bi bi-pencil-square" aria-hidden="true"></i>
+      Sửa tên thể loại trực tiếp trên dòng!
+    </p>
+  </div>
+
+  <!-- Form cập nhật và xóa -->
   <% genres.forEach((genre) => { %>
-    <form id="genre-update-<%= genre.genre_id %>" method="post" action="/admin/genres/<%= genre.genre_id %>/update"><input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
-    <form id="genre-delete-<%= genre.genre_id %>" method="post" action="/admin/genres/<%= genre.genre_id %>/delete" data-confirm-delete data-confirm-message="Bạn có chắc muốn xóa thể loại “<%= genre.genre_name %>”? Hành động này không thể hoàn tác."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="genre_name" value="<%= genre.genre_name %>"></form>
+
+    <form
+      id="genre-update-<%= genre.genre_id %>"
+      method="post"
+      action="/admin/genres/<%= genre.genre_id %>/update">
+
+      <input type="hidden"
+             name="_csrf"
+             value="<%= csrfToken %>">
+    </form>
+
+    <form
+      id="genre-delete-<%= genre.genre_id %>"
+      method="post"
+      action="/admin/genres/<%= genre.genre_id %>/delete"
+      data-confirm-delete
+      data-confirm-message="Bạn có chắc muốn xóa thể loại “<%= genre.genre_name %>”? Hành động này không thể hoàn tác.">
+
+      <input type="hidden"
+             name="_csrf"
+             value="<%= csrfToken %>">
+
+      <input type="hidden"
+             name="genre_name"
+             value="<%= genre.genre_name %>">
+    </form>
+
   <% }) %>
-  <dialog class="gc-catalog__dialog" data-delete-dialog aria-labelledby="catalog-dialog-title" aria-describedby="catalog-dialog-message">
-    <h2 id="catalog-dialog-title">Xác nhận xóa</h2>
-    <p id="catalog-dialog-message" data-dialog-message>Bạn có chắc muốn xóa thể loại này?</p>
-    <div class="gc-catalog__dialog-actions"><button class="btn gc-catalog__secondary" type="button" data-dialog-cancel autofocus>Hủy</button><button class="btn gc-catalog__primary" type="button" data-dialog-confirm>Xóa</button></div>
+
+  <!-- Dialog xác nhận -->
+  <dialog
+    class="gc-catalog__dialog"
+    data-delete-dialog
+    aria-labelledby="catalog-dialog-title"
+    aria-describedby="catalog-dialog-message">
+
+    <h2 id="catalog-dialog-title">
+      Xác nhận xóa
+    </h2>
+
+    <p id="catalog-dialog-message" data-dialog-message>
+      Bạn có chắc muốn xóa thể loại này?
+    </p>
+
+    <div class="gc-catalog__dialog-actions">
+
+      <button
+        class="btn gc-catalog__secondary"
+        type="button"
+        data-dialog-cancel
+        autofocus>
+        Hủy
+      </button>
+
+      <button
+        class="btn gc-catalog__primary"
+        type="button"
+        data-dialog-confirm>
+        Xóa
+      </button>
+
+    </div>
   </dialog>
+
 </section>
-<script src="/js/admin-catalog.js"></script>
+
+<script src="/js/adminCatalog.js"></script>

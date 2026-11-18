@@ -262,7 +262,7 @@ describe('Room management', () => {
     const page = await admin.get(`${roomBase()}/${room.room_id}/seats`);
     expect(page.status).toBe(200);
     expect(page.text).toContain('MÀN HÌNH');
-    expect(page.text).toContain('data-seat-editor');
+    expect(page.text).toContain('data-seatEditor');
   });
 
   test('rolls back room updates when shrinking over a sold seat', async () => {
