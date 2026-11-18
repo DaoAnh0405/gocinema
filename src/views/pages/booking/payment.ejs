@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="/css/booking.css">
+<% const id = quote.showtime.showtime_id; %>
+
+<div class="container py-4 gc-book" id="payApp"
+     data-seconds-left="<%= quote.secondsLeft %>"
+     data-seats-url="/booking/showtimes/<%= id %>/seats">
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <%- include('../../partials/bookingSummary', {
+            showtime: quote.showtime, seats: quote.seats, foods: quote.foods,
+            discount: quote.discount, total: quote.total,
+            backUrl: `/booking/showtimes/${id}/food`, nextForm: 'payForm', nextLabel: 'Thanh toán' }) %>
+      <div class="gc-bigtimer gc-timer-payment" id="holdBadge">
+        Giữ ghế còn <strong id="holdCountdown">--:--</strong>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card mb-3"><div class="card-body">
+        <h2 class="h6 mb-3">Khuyến mãi</h2>
+        <% if (quote.promo) { %>
+          <div class="alert alert-success d-flex justify-content-between align-items-center py-2 mb-0">
+            <span><strong><%= quote.promo.code %></strong> · <%= quote.promo.name %> (−<%= fmt.money(quote.promo.discount) %>)</span>
+            <form method="post" action="/booking/showtimes/<%= id %>/promo">
+              <input type="hidden" name="remove" value="1">
+              <button class="btn btn-sm btn-link text-danger" type="submit">Bỏ mã</button>
+            </form>
+          </div>
+        <% } else { %>
+          <form class="input-group" method="post" action="/booking/showtimes/<%= id %>/promo">
+            <input class="form-control" name="code" maxlength="30" placeholder="Nhập mã khuyến mãi" aria-label="Mã khuyến mãi">
+            <button class="btn btn-danger" type="submit">Áp dụng</button>
+          </form>
+        <% } %>
+        <% if (quote.promoError) { %><p class="small text-danger mt-2 mb-0"><%= quote.promoError %></p><% } %>
+      </div></div>
+
+      <form id="payForm" method="post" action="/booking/showtimes/<%= id %>/payment" data-once>
+        <div class="card"><div class="card-body">
+          <h2 class="h6 mb-3">Phương thức thanh toán</h2>
+          <% methods.forEach((m) => { %>
+            <label class="gc-method">
+              <input type="radio" name="method" value="<%= m.value %>" required>
+              <span><%= m.label %></span>
+            </label>
+          <% }) %>
+          <% if (isMockPayment) { %>
+            <p class="small text-muted mt-3 mb-0">Cổng thanh toán đang ở chế độ giả lập, không trừ tiền thật.</p>
+          <% } else { %>
+            <p class="small text-muted mt-3 mb-0">Bạn sẽ được chuyển sang cổng SePay để hoàn tất thanh toán. Vui lòng không đóng trình duyệt cho đến khi quay lại GoCinema.</p>
+          <% } %>
+        </div></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/holdCountdown.js"></script>

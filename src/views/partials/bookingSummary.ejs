@@ -1,0 +1,59 @@
+<%
+  const p = locals;
+  const stx = p.showtime || null;
+  const seatList = p.seats || [];
+  const foodList = p.foods || [];
+  const seatSum = seatList.reduce((n, s) => n + s.price, 0);
+%>
+<section class="gc-sum card" id="bookingSummary">
+  <div class="gc-sum__body">
+    <div class="gc-sum__poster" id="sumPoster">
+      <% if (stx && stx.poster_url) { %>
+        <img src="<%= stx.poster_url %>" alt="Poster <%= stx.title %>">
+      <% } else { %>
+        <i class="bi bi-film" aria-hidden="true"></i>
+      <% } %>
+    </div>
+
+    <div class="gc-sum__info">
+      <div class="gc-sum__title" id="sumTitle"><%= stx ? stx.title : 'Tên phim' %></div>
+      <div class="gc-sum__format" id="sumFormat"><%= stx ? `${stx.screen_format} ${stx.language}` : '' %></div>
+      <div class="gc-sum__show" id="sumShow">
+        <%= stx ? `${stx.cinema_name} · ${stx.room_name} - Suất ${fmt.showLabel(stx.start_time)}` : 'Chọn khu vực, phim và suất chiếu' %>
+      </div>
+
+      <div class="gc-sum__lines">
+        <div class="gc-sum__line<%= seatList.length ? '' : ' d-none' %>" id="sumSeatsRow">
+          <span id="sumSeatsText"><%= seatList.length %> Ghế đã chọn - <%= seatList.map((s) => s.label).join(', ') %></span>
+          <span id="sumSeatsPrice"><%= fmt.money(seatSum) %></span>
+        </div>
+        <div id="sumFoods">
+          <% foodList.forEach((f) => { %>
+            <div class="gc-sum__line"><span><%= f.quantity %>x <%= f.name %></span><span><%= fmt.money(f.lineTotal) %></span></div>
+          <% }) %>
+        </div>
+        <% if (p.discount) { %>
+          <div class="gc-sum__line text-success"><span>Giảm giá</span><span>−<%= fmt.money(p.discount) %></span></div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (p.timerId) { %>
+      <div class="gc-timer<%= p.secondsLeft > 0 ? '' : ' d-none' %>" id="holdBadge">
+        Giữ ghế còn <strong id="<%= p.timerId %>">--:--</strong>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="gc-sum__foot">
+    <div class="gc-sum__total">Tổng cộng: <strong id="sumTotal"><%= fmt.money(p.total || 0) %></strong></div>
+    <div class="gc-sum__actions">
+      <a class="gc-link" id="btnBack" href="<%= p.backUrl || '/booking' %>">Quay lại</a>
+      <% if (p.nextForm) { %>
+        <button type="submit" form="<%= p.nextForm %>" id="btnNext" class="btn btn-danger"><%= p.nextLabel || 'Tiếp tục' %></button>
+      <% } else { %>
+        <button type="button" id="btnNext" class="btn btn-danger" disabled><%= p.nextLabel || 'Tiếp tục' %></button>
+      <% } %>
+    </div>
+  </div>
+</section>

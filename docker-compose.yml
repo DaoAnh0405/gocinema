@@ -19,7 +19,8 @@ services:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 20s
 
   adminer:
     image: adminer
