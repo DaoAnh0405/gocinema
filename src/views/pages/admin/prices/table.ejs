@@ -15,10 +15,10 @@
           <td>
             <div class="price-row-actions">
               <a href="/admin/prices/<%= row.price_id %>/edit<%= pageQuery %>" aria-label="Sửa mức giá <%= row.seat_type_name %>, <%= row.screen_format %>, <%= dayLabels[row.day_type] %>" title="Sửa mức giá">
-                <%- include('../../../components/prices/icon', { name: 'edit' }) %>
+                <%- include('../../../components/admin/icon', { name: 'edit' }) %>
               </a>
               <a href="/admin/prices/<%= row.price_id %>/delete<%= pageQuery %>" aria-label="Xóa mức giá <%= row.seat_type_name %>, <%= row.screen_format %>, <%= dayLabels[row.day_type] %>" title="Xóa mức giá">
-                <%- include('../../../components/prices/icon', { name: 'delete' }) %>
+                <%- include('../../../components/admin/icon', { name: 'delete' }) %>
               </a>
             </div>
           </td>

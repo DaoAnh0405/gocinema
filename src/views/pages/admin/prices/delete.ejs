@@ -3,7 +3,7 @@
   <p>Bạn có chắc chắn muốn xóa mức giá này?</p>
   <p><%= values.seat_type_name %> · <%= values.screen_format %> · <%= dayLabels[values.day_type] %><br><%= fmt.money(values.price) %></p>
   <div class="price-dialog__actions">
-    <%- include('../../../components/prices/button', { href: listUrl, text: 'Hủy bỏ' }) %>
-    <%- include('../../../components/prices/button', { type: 'submit', variant: 'primary', text: 'Xóa' }) %>
+    <%- include('../../../components/admin/button', { href: listUrl, text: 'Hủy bỏ' }) %>
+    <%- include('../../../components/admin/button', { type: 'submit', variant: 'primary', text: 'Xóa' }) %>
   </div>
 </form>
