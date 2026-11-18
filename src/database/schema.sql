@@ -123,6 +123,16 @@ CREATE TABLE rooms (
     CONSTRAINT chk_rooms_status CHECK (status IN (0, 1))
 ) ENGINE=InnoDB;
 
+CREATE TABLE room_layouts (
+  room_id       INT PRIMARY KEY,
+  row_count     INT NOT NULL,
+  column_count  INT NOT NULL,
+  couple_pairs  JSON NULL,
+  CONSTRAINT fk_room_layout_room FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE,
+  CONSTRAINT chk_room_layout_rows CHECK (row_count BETWEEN 1 AND 702),
+  CONSTRAINT chk_room_layout_columns CHECK (column_count BETWEEN 1 AND 100)
+) ENGINE=InnoDB;
+
 CREATE TABLE seat_types (
     seat_type_id    INT AUTO_INCREMENT PRIMARY KEY,
     seat_type_name  VARCHAR(30) NOT NULL UNIQUE COMMENT 'Standard / VIP / Couple'
