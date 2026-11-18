@@ -1,0 +1,104 @@
+<link rel="stylesheet" href="/css/admin-catalog.css">
+<%
+  const statusLabels = { NOW_SHOWING: 'Đang chiếu', COMING_SOON: 'Sắp chiếu', ENDED: 'Ngừng chiếu' };
+  const formValues = values || {};
+  const problems = fieldErrors || {};
+  const messages = [...new Set([...(errors || []), ...Object.values(problems)].filter((message) => typeof message === 'string' && message))];
+  const selectedIds = new Set((Array.isArray(formValues.genre_ids) ? formValues.genre_ids : (selectedGenreIds || [])).map(String));
+  const existingPoster = (movie && movie.poster_url) || formValues.poster_url || '';
+  const fieldGroups = [
+    [{ name: 'title', label: 'Tên phim', max: 200, required: true }],
+    [{ name: 'director', label: 'Đạo diễn', max: 100 }],
+    [{ name: 'actors', label: 'Diễn viên', max: 500 }],
+    [{ name: 'duration', label: 'Thời lượng (phút)', type: 'number', required: true }, { name: 'age_rating', label: 'Phân loại độ tuổi', options: ageRatings }],
+    [{ name: 'release_date', label: 'Ngày khởi chiếu', type: 'date' }, { name: 'end_date', label: 'Ngày kết thúc', type: 'date' }],
+  ];
+%>
+<section class="gc-catalog" aria-label="<%= isEdit ? 'Chỉnh sửa phim' : 'Thêm phim mới' %>">
+  <% if (messages.length) { %>
+    <div class="gc-catalog__errors" role="alert" tabindex="-1" data-error-summary>
+      <h2>Không thể lưu phim</h2><ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul>
+      <p>Vui lòng kiểm tra thông tin bên dưới. Nếu đã chọn poster mới, bạn cần chọn lại tệp.</p>
+    </div>
+  <% } %>
+  <form method="post" action="<%= formAction %>" enctype="multipart/form-data" class="gc-catalog__movie-form" data-movie-form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="gc-catalog__form-grid">
+      <section class="gc-catalog__form-panel" aria-labelledby="movie-information-heading">
+        <h2 id="movie-information-heading">Thông tin phim</h2>
+        <% fieldGroups.forEach((group) => { %>
+          <div class="gc-catalog__field-row">
+            <% group.forEach((field) => { const value = formValues[field.name] == null ? '' : String(formValues[field.name]); %>
+              <div class="gc-catalog__field">
+                <label class="form-label" for="movie-<%= field.name %>"><%= field.label %><% if (field.required) { %> <span class="gc-catalog__required" aria-hidden="true">*</span><% } %></label>
+                <% if (field.options) { %>
+                  <select class="form-select <%= problems[field.name] ? 'is-invalid' : '' %>" name="<%= field.name %>" id="movie-<%= field.name %>" aria-invalid="<%= Boolean(problems[field.name]) %>" <%= problems[field.name] ? 'aria-describedby=error-' + field.name : '' %>>
+                    <option value="" <%= !value ? 'selected' : '' %>>Chọn độ tuổi</option>
+                    <% if (value && !field.options.includes(value)) { %><option value="<%= value %>" selected><%= value %> (không hợp lệ)</option><% } %>
+                    <% field.options.forEach((option) => { %><option value="<%= option %>" <%= value === option ? 'selected' : '' %>><%= option === 'P' ? 'P - Mọi lứa tuổi' : option %></option><% }) %>
+                  </select>
+                <% } else { %>
+                  <input class="form-control <%= problems[field.name] ? 'is-invalid' : '' %>" id="movie-<%= field.name %>" name="<%= field.name %>" type="<%= field.type || 'text' %>" value="<%= value %>" <%= field.required ? 'required' : '' %> <%= field.max ? 'maxlength=' + field.max : '' %> <%= field.type === 'number' ? 'min=1 max=2147483647 step=1' : '' %> aria-invalid="<%= Boolean(problems[field.name]) %>" <%= problems[field.name] ? 'aria-describedby=error-' + field.name : '' %>>
+                <% } %>
+                <% if (problems[field.name]) { %><p class="gc-catalog__field-error" id="error-<%= field.name %>"><%= problems[field.name] %></p><% } %>
+              </div>
+            <% }) %>
+          </div>
+        <% }) %>
+        <div class="gc-catalog__field gc-catalog__description">
+          <label class="form-label" for="movie-description">Mô tả phim</label>
+          <textarea class="form-control <%= problems.description ? 'is-invalid' : '' %>" id="movie-description" name="description" rows="6" maxlength="65535" aria-invalid="<%= Boolean(problems.description) %>" <%= problems.description ? 'aria-describedby=error-description' : '' %>><%= formValues.description || '' %></textarea>
+          <% if (problems.description) { %><p class="gc-catalog__field-error" id="error-description"><%= problems.description %></p><% } %>
+        </div>
+      </section>
+
+      <section class="gc-catalog__form-panel" aria-labelledby="movie-media-heading">
+        <h2 id="movie-media-heading">Hình ảnh và phân loại</h2>
+        <div class="gc-catalog__field gc-catalog__poster-field" data-poster-field>
+          <label class="form-label" for="movie-poster">Poster phim</label>
+          <div class="gc-catalog__poster-preview">
+            <img data-poster-preview <%= existingPoster ? '' : 'hidden' %> src="<%= existingPoster || '/images/favicon.png' %>" alt="Xem trước poster phim">
+            <span class="gc-catalog__upload-placeholder" data-poster-placeholder <%= existingPoster ? 'hidden' : '' %>><i class="bi bi-image" aria-hidden="true"></i><span>Chọn ảnh poster phim</span></span>
+          </div>
+          <input class="form-control <%= problems.poster ? 'is-invalid' : '' %>" id="movie-poster" name="poster" type="file" accept="image/jpeg,.jpg,.jpeg" data-poster-input aria-describedby="poster-help poster-client-error<%= problems.poster ? ' error-poster' : '' %>" aria-invalid="<%= Boolean(problems.poster) %>">
+          <p class="gc-catalog__hint" id="poster-help">JPG/JPEG, tối đa 5 MB. <% if (isEdit) { %>Để trống để giữ poster hiện tại.<% } else { %>Không bắt buộc.<% } %></p>
+          <p class="gc-catalog__field-error" id="poster-client-error" data-poster-error aria-live="polite" hidden></p>
+          <% if (problems.poster) { %><p class="gc-catalog__field-error" id="error-poster"><%= problems.poster %></p><% } %>
+        </div>
+        <div class="gc-catalog__field">
+          <label class="form-label" for="movie-trailer">URL trailer</label>
+          <input class="form-control <%= problems.trailer_url ? 'is-invalid' : '' %>" id="movie-trailer" name="trailer_url" type="url" maxlength="255" value="<%= formValues.trailer_url || '' %>" placeholder="https://www.youtube.com/watch?v=..." aria-invalid="<%= Boolean(problems.trailer_url) %>" <%= problems.trailer_url ? 'aria-describedby=error-trailer_url' : '' %>>
+          <% if (problems.trailer_url) { %><p class="gc-catalog__field-error" id="error-trailer_url"><%= problems.trailer_url %></p><% } %>
+        </div>
+        <div class="gc-catalog__field">
+          <label class="form-label" for="movie-status">Trạng thái</label>
+          <select class="form-select <%= problems.status ? 'is-invalid' : '' %>" id="movie-status" name="status" aria-invalid="<%= Boolean(problems.status) %>" <%= problems.status ? 'aria-describedby=error-status' : '' %>>
+            <option value="" <%= !formValues.status ? 'selected' : '' %>>Chọn trạng thái</option>
+            <% if (formValues.status && !statuses.includes(formValues.status)) { %><option value="<%= formValues.status %>" selected><%= formValues.status %> (không hợp lệ)</option><% } %>
+            <% statuses.forEach((status) => { %><option value="<%= status %>" <%= formValues.status === status ? 'selected' : '' %>><%= statusLabels[status] || status %></option><% }) %>
+          </select>
+          <% if (problems.status) { %><p class="gc-catalog__field-error" id="error-status"><%= problems.status %></p><% } %>
+        </div>
+        <fieldset class="gc-catalog__field gc-catalog__genre-fieldset" <%= problems.genre_ids ? 'aria-describedby=error-genre_ids' : '' %>>
+          <legend class="form-label">Thể loại</legend>
+          <details class="gc-catalog__genre-picker" data-genre-picker <%= problems.genre_ids ? 'open' : '' %>>
+            <summary><span data-genre-summary><%= selectedIds.size ? 'Đã chọn ' + selectedIds.size + ' thể loại' : 'Chọn thể loại' %></span></summary>
+            <div class="gc-catalog__genre-options">
+              <% if (!genres.length) { %><p class="gc-catalog__hint">Chưa có thể loại. <a href="/admin/genres">Quản lý thể loại</a></p><% } %>
+              <% genres.forEach((genre) => { %>
+                <label class="gc-catalog__genre-option" for="movie-genre-<%= genre.genre_id %>"><input class="form-check-input" type="checkbox" id="movie-genre-<%= genre.genre_id %>" name="genre_ids[]" value="<%= genre.genre_id %>" <%= selectedIds.has(String(genre.genre_id)) ? 'checked' : '' %>><span><%= genre.genre_name %></span></label>
+              <% }) %>
+              <% [...selectedIds].filter((id) => !genres.some((genre) => String(genre.genre_id) === id)).forEach((id, index) => { %>
+                <label class="gc-catalog__genre-option" for="movie-genre-unavailable-<%= index %>"><input class="form-check-input" type="checkbox" id="movie-genre-unavailable-<%= index %>" name="genre_ids[]" value="<%= id %>" checked><span>Thể loại #<%= id %> (không khả dụng)</span></label>
+              <% }) %>
+            </div>
+          </details>
+          <p class="gc-catalog__hint">Có thể chọn nhiều thể loại.</p>
+          <% if (problems.genre_ids) { %><p class="gc-catalog__field-error" id="error-genre_ids"><%= problems.genre_ids %></p><% } %>
+        </fieldset>
+      </section>
+    </div>
+    <footer class="gc-catalog__form-footer"><a class="btn gc-catalog__secondary" href="/admin/movies">Hủy bỏ</a><button class="btn gc-catalog__primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> Lưu</button></footer>
+  </form>
+</section>
+<script src="/js/admin-catalog.js"></script>
