@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="/css/booking.css">
+
+<div class="container py-4 gc-book" id="startApp"
+  <% if (locked) { %>
+     data-locked-id="<%= locked.id %>"
+     data-locked-title="<%= locked.title %>"
+     data-locked-poster="<%= locked.posterUrl || '' %>"
+     data-locked-age="<%= locked.ageRating || 'P' %>"
+     data-cinema-ids="<%= locked.cinemaIds.join(',') %>"
+  <% } %>>
+  <%- include('../../partials/bookingSummary', {
+        showtime: null, seats: [], foods: [], total: 0,
+        backUrl: locked ? `/movies/${locked.id}` : '/' }) %>
+
+  <div class="row g-3 mt-1">
+    <div class="col-md-3">
+      <div class="gc-areas-box">
+        <div class="gc-areas-box__head">Khu vực</div>
+        <div id="cityList" class="gc-areas"></div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <section class="gc-panel" id="moviePanel">
+        <button type="button" class="gc-panel__head"><span id="moviePanelTitle">Chọn phim</span></button>
+        <div class="gc-panel__body">
+          <div class="gc-moviescroll">
+            <button type="button" class="gc-arrow gc-arrow--prev" id="moviePrev" aria-label="Trước"><i class="bi bi-chevron-left"></i></button>
+            <div class="gc-moviegrid" id="movieGrid"></div>
+            <button type="button" class="gc-arrow gc-arrow--next" id="movieNext" aria-label="Sau"><i class="bi bi-chevron-right"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="gc-panel">
+        <div class="gc-panel__head gc-panel__head--static">Chọn suất</div>
+        <div class="gc-panel__body">
+          <div id="dateTabs" class="gc-dates"></div>
+          <div id="timeList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="/js/bookingStart.js"></script>

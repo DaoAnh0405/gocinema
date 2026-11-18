@@ -1,0 +1,10 @@
+<% const buttonClass = 'price-button price-button--' + (locals.variant || 'secondary'); %>
+<% if (locals.href) { %>
+  <a class="<%= buttonClass %>" href="<%= href %>" <% if (locals.label) { %>aria-label="<%= label %>"<% } %>>
+    <% if (locals.icon) { %><%- include('icon', { name: icon }) %><% } %><span><%= text %></span>
+  </a>
+<% } else { %>
+  <button class="<%= buttonClass %>" type="<%= locals.type || 'button' %>">
+    <% if (locals.icon) { %><%- include('icon', { name: icon }) %><% } %><span><%= text %></span>
+  </button>
+<% } %>

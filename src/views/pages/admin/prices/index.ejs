@@ -1,0 +1,22 @@
+<%- include('../../../components/admin/card', {
+  className: 'price-toolbar',
+  content: include('toolbar'),
+}) %>
+<%- include('../../../components/admin/card', {
+  className: 'price-table-card',
+  content: include('table'),
+}) %>
+<%- include('../../../components/admin/pagination') %>
+<% if (dialog === 'form') { %>
+  <%- include('../../../components/admin/dialog', {
+    heading: editingId
+      ? 'Cập nhật đơn giá vé'
+      : 'Thêm mức giá vé mới',
+    content: include('form'),
+  }) %>
+<% } else if (dialog === 'delete') { %>
+  <%- include('../../../components/admin/dialog', {
+    heading: 'Xóa mức giá vé',
+    content: include('delete'),
+  }) %>
+<% } %>

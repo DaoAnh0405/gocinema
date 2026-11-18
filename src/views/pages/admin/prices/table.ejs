@@ -1,0 +1,30 @@
+<div class="price-table-scroll" role="region" aria-label="Bảng giá vé" tabindex="0">
+  <table class="price-table">
+    <thead><tr>
+      <th scope="col">Loại ghế</th><th scope="col">Định dạng</th><th scope="col">Loại ngày</th>
+      <th scope="col">Khung giờ</th><th scope="col">Giá (đ)</th><th scope="col">Thao tác</th>
+    </tr></thead>
+    <tbody>
+      <% rows.forEach((row) => { %>
+        <tr>
+          <td><%= row.seat_type_name %></td>
+          <td><%= row.screen_format || '—' %></td>
+          <td><%= dayLabels[row.day_type] || row.day_type || '—' %></td>
+          <td><time><%= (row.time_from || '00:00').slice(0, 5) %></time> - <time><%= (row.time_to || '23:59').slice(0, 5) %></time></td>
+          <td><%= new Intl.NumberFormat('vi-VN').format(row.price) %></td>
+          <td>
+            <div class="price-row-actions">
+              <a href="/admin/prices/<%= row.price_id %>/edit<%= pageQuery %>" aria-label="Sửa mức giá <%= row.seat_type_name %>, <%= row.screen_format %>, <%= dayLabels[row.day_type] %>" title="Sửa mức giá">
+                <%- include('../../../components/admin/icon', { name: 'edit' }) %>
+              </a>
+              <a href="/admin/prices/<%= row.price_id %>/delete<%= pageQuery %>" aria-label="Xóa mức giá <%= row.seat_type_name %>, <%= row.screen_format %>, <%= dayLabels[row.day_type] %>" title="Xóa mức giá">
+                <%- include('../../../components/admin/icon', { name: 'delete' }) %>
+              </a>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!rows.length) { %><tr><td class="price-table__empty" colspan="6"><%= filters.q || filters.seat || filters.format || filters.day ? 'Không tìm thấy mức giá phù hợp với bộ lọc.' : 'Chưa có mức giá vé. Chọn “Thêm mức giá” để bắt đầu.' %></td></tr><% } %>
+    </tbody>
+  </table>
+</div>

@@ -15,7 +15,7 @@
 
 /* Khung chính */
 .gc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.gc-topbar { position: sticky; top: 0; z-index: 1020; display: flex; align-items: center; gap: .75rem; padding: .6rem 1.5rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
+.gc-topbar { position: sticky; top: 0; z-index: 1020; display: flex; align-items: center; gap: .75rem; padding: .6rem 1.5rem; background: #fff; border-bottom: 1px solid #e5e7eb; height: 64px;}
 .gc-topbar__title { font-size: 1.1rem; font-weight: 700; margin: 0; }
 .gc-content { flex: 1; padding: 1.5rem; }
 
@@ -35,4 +35,11 @@
   .gc-shell--open .gc-sidebar { transform: none; }
   .gc-shell--open .gc-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1030; }
   .gc-content { padding: 1rem; }
+}
+
+/* Keep the admin navigation beside the page in narrower desktop and tablet views. */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .gc-dash--admin .gc-sidebar { position: sticky; transform: none; z-index: auto; }
+  .gc-dash--admin .gc-backdrop { display: none; }
+  .gc-dash--admin button[data-sidebar-toggle] { display: none; }
 }

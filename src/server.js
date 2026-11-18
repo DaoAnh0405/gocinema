@@ -7,7 +7,7 @@ async function start() {
     await pool.query('SELECT 1');
     console.log('MySQL: kết nối thành công');
   } catch (err) {
-    console.error(`MySQL: không kết nối được (${err.code || err.message})`);
+    console.error(`MySQL: không kết nối được (${err.code || err.message})`, err);
     process.exit(1);
   }
 

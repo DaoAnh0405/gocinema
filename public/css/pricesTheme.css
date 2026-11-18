@@ -1,0 +1,85 @@
+.price-app {
+  --price-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --price-font-weight: 400;
+  --price-text: #000;
+  --price-text-inverse: #fff;
+  --price-canvas: #f1f1f1;
+  --price-surface: #d9d9d9;
+  --price-header: #fff;
+  --price-control: #f1f1f1;
+  --price-accent: #d30000;
+  --price-brand: #f00;
+  --price-divider: #e3e3e3;
+  --price-overlay: rgb(0 0 0 / 35%);
+  --price-focus: #000;
+  --price-font-body: 10px;
+  --price-font-table: 8px;
+  --price-font-title: 12px;
+  --price-font-pagination: 8px;
+  --price-filter-height: 20px;
+  --price-filter-font: 8px;
+  --price-filter-text: #000;
+  --price-filter-muted: #555;
+  --price-filter-border: #d9d9d9;
+  --price-filter-background: #fff;
+  --price-filter-radius: 5px;
+  --price-filter-focus-shadow: 0 0 0 3px rgb(211 0 0 / 10%);
+  --price-pagination-size: 16px;
+  --price-pagination-active: #1677ff;
+  --price-icon-edit-color: #626262;
+  --price-icon-delete-color: #e85a78;
+  --price-icon-avatar-color: #9866cb;
+  --price-font-dialog: 10px;
+  --price-font-brand: 13px;
+  --price-line-height: 1.25;
+  --price-header-height: 39px;
+  --price-toolbar-height: 29px;
+  --price-table-heading-height: 24px;
+  --price-table-row-height: 54px;
+  --price-control-height: 17px;
+  --price-button-height: 20px;
+  --price-add-width: 96px;
+  --price-dialog-width: 252px;
+  --price-radius-card: 9px;
+  --price-radius-control: 3px;
+  --price-border-width: 1px;
+  --price-shadow: none;
+  --price-space-1: 4px;
+  --price-space-2: 6px;
+  --price-space-3: 8px;
+  --price-space-4: 10px;
+  --price-space-5: 12px;
+  --price-space-6: 16px;
+  --price-space-7: 20px;
+  --price-focus-width: 2px;
+  --price-icon-plus: 8px;
+  --price-icon-edit: 10px;
+  --price-icon-delete: 9px;
+  --price-icon-avatar: 11px;
+  --price-icon-arrow: 16px;
+}
+
+@media (max-width: 575px) {
+  .price-app {
+    --price-font-body: 14px;
+    --price-font-table: 14px;
+    --price-font-title: 16px;
+    --price-font-pagination: 12px;
+    --price-filter-height: 40px;
+    --price-filter-font: 12px;
+    --price-pagination-size: 32px;
+    --price-font-dialog: 16px;
+    --price-font-brand: 18px;
+    --price-header-height: 56px;
+    --price-toolbar-height: 44px;
+    --price-table-heading-height: 44px;
+    --price-table-row-height: 52px;
+    --price-control-height: 44px;
+    --price-button-height: 44px;
+    --price-dialog-width: 360px;
+    --price-add-width: auto;
+    --price-icon-edit: 18px;
+    --price-icon-delete: 18px;
+    --price-icon-plus: 12px;
+  }
+}
