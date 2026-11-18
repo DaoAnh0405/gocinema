@@ -183,8 +183,8 @@ const seats = asyncHandler(async (req, res) => {
       '/css/cinemas.css',
     ],
     pageScripts: [
-      '/js/seat-pairs.js',
-      '/js/seat-editor.js',
+      '/js/seatPairs.js',
+      '/js/seatEditor.js',
     ],
     title: 'Quản lý Rạp & phòng chiếu',
     cinema,

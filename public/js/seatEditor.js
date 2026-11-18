@@ -1,5 +1,5 @@
 (() => {
-  const form = document.querySelector('[data-seat-editor]');
+  const form = document.querySelector('[data-seatEditor]');
   if (!form) return;
   const layoutField = form.elements.layout;
   const versionField = form.elements.version;
