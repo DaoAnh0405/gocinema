@@ -18,7 +18,7 @@
             <div class="cinema-row-actions">
               <% if (!rooms) { %><a class="cinema-small-button" href="/admin/cinemas/<%= id %>/rooms" aria-label="Phòng chiếu của <%= row.cinema_name %>">Phòng</a><% } %>
               <% if (rooms) { %><a class="cinema-small-button" href="<%= base %>/<%= id %>/seats" aria-label="Ghế của <%= row.room_name %>">Ghế</a><% } %>
-              <a class="cinema-edit" href="<%= base %>/<%= id %>/edit<%= pageQuery %>" title="Chỉnh sửa" aria-label="Sửa <%= rooms ? row.room_name : row.cinema_name %>"><%- include('../../../components/prices/icon', { name: 'edit' }) %></a>
+              <a class="cinema-edit" href="<%= base %>/<%= id %>/edit<%= pageQuery %>" title="Chỉnh sửa" aria-label="Sửa <%= rooms ? row.room_name : row.cinema_name %>"><%- include('../../../components/admin/icon', { name: 'edit' }) %></a>
               <% if (!rooms) { %><form method="post" action="<%= base %>/<%= id %>/status<%= pageQuery %>" data-price-form>
                 <input type="hidden" name="_csrf" value="<%= cinemaCsrf %>">
                 <input type="hidden" name="status" value="<%= row.status === 1 ? 0 : 1 %>">
