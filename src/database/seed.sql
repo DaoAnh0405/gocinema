@@ -15,6 +15,7 @@ TRUNCATE TABLE ticket_prices;
 TRUNCATE TABLE promotions;
 TRUNCATE TABLE food_items;
 TRUNCATE TABLE seats;
+TRUNCATE TABLE room_layouts;
 TRUNCATE TABLE rooms;
 TRUNCATE TABLE staff;
 TRUNCATE TABLE cinemas;
@@ -432,8 +433,8 @@ FROM showtimes sh
 JOIN seats se ON se.room_id = sh.room_id;
 
 -- NHÓM 5b: CA LÀM VIỆC
-INSERT INTO work_shifts (staff_id, start_time, end_time, opening_cash, closing_cash, status)
-SELECT a.account_id, s.st, s.et, s.oc, s.cc, s.status
+INSERT INTO work_shifts (staff_id, cinema_id, start_time, end_time, opening_cash, closing_cash, status)
+SELECT a.account_id, sf.cinema_id, s.st, s.et, s.oc, s.cc, s.status
 FROM (
   SELECT 'staff1@gocinema.vn' AS email, TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 2 DAY), '08:00:00') AS st,
          TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 2 DAY), '16:00:00') AS et, 2000000 AS oc, 6350000 AS cc, 0 AS status
@@ -441,7 +442,8 @@ FROM (
          TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '23:30:00'), 2000000, 5120000, 0
   UNION ALL SELECT 'staff1@gocinema.vn', TIMESTAMP(CURDATE(), '08:00:00'), NULL, 2000000, NULL, 1
 ) s
-JOIN accounts a ON a.email = s.email;
+JOIN accounts a ON a.email = s.email
+JOIN staff sf ON sf.account_id = a.account_id;
 
 -- NHÓM 5c: ĐƠN HÀNG MẪU, VÉ, ĐỒ ĂN, THANH TOÁN
 -- Ghi chú ghế: hàng A-D Standard, E-G VIP, H Couple
@@ -563,5 +565,14 @@ WHERE o.status = 'PAID' AND t.status IN (0, 1);
 UPDATE promotions p
 SET p.used_count = (SELECT COUNT(*) FROM orders o WHERE o.promotion_id = p.promotion_id AND o.status = 'PAID')
 WHERE p.promo_code = 'WELCOME10';
+
+UPDATE orders o
+JOIN (SELECT t.order_id, MIN(r.cinema_id) AS cinema_id
+        FROM tickets t
+        JOIN showtimes s ON s.showtime_id = t.showtime_id
+        JOIN rooms r ON r.room_id = s.room_id
+       GROUP BY t.order_id) x ON x.order_id = o.order_id
+SET o.cinema_id = x.cinema_id
+WHERE o.cinema_id IS NULL;
 
 SET SQL_SAFE_UPDATES = 1;
