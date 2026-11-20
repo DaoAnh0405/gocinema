@@ -1,0 +1,45 @@
+<style>@import url('/css/customer-account.css');</style>
+<div class="customer-account">
+  <%- include('./summary') %>
+  <section class="customer-content" aria-label="Thông tin cá nhân">
+    <%- include('./tabs', { activeTab: 'profile' }) %>
+    <% if (errors.length) { %>
+      <div class="alert alert-danger" role="alert">
+        <ul class="mb-0"><% errors.forEach(function (message) { %><li><%= message %></li><% }) %></ul>
+      </div>
+    <% } %>
+    <form method="post" action="/profile" class="customer-profile" novalidate>
+      <div class="customer-profile__fields">
+        <div>
+          <label for="full_name">Họ và tên</label>
+          <input class="form-control" id="full_name" name="full_name" value="<%= values.full_name || '' %>" autocomplete="name" maxlength="100" required>
+        </div>
+        <div>
+          <label for="phone">Số điện thoại</label>
+          <input class="form-control" type="tel" id="phone" name="phone" value="<%= values.phone || '' %>" autocomplete="tel" maxlength="15">
+        </div>
+        <div>
+          <label for="dob">Ngày sinh</label>
+          <input class="form-control" type="date" id="dob" name="dob" value="<%= values.dob || '' %>" autocomplete="bday">
+        </div>
+        <div>
+          <label for="gender">Giới tính</label>
+          <select class="form-select" id="gender" name="gender">
+            <option value="">Chọn giới tính</option>
+            <option value="Male" <%= values.gender === 'Male' ? 'selected' : '' %>>Nam</option>
+            <option value="Female" <%= values.gender === 'Female' ? 'selected' : '' %>>Nữ</option>
+            <option value="Other" <%= values.gender === 'Other' ? 'selected' : '' %>>Khác</option>
+          </select>
+        </div>
+        <div class="customer-profile__address">
+          <label for="address">Địa chỉ</label>
+          <input class="form-control" id="address" name="address" value="<%= values.address || '' %>" autocomplete="street-address" maxlength="255">
+        </div>
+      </div>
+      <div class="customer-profile__actions">
+        <a class="btn btn-outline-secondary" href="/profile">Khôi phục</a>
+        <button class="btn btn-primary" type="submit">Cập nhật</button>
+      </div>
+    </form>
+  </section>
+</div>

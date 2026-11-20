@@ -1,0 +1,5 @@
+<nav class="customer-tabs" aria-label="Tài khoản cá nhân">
+  <a href="/profile" class="customer-tabs__link <%= activeTab === 'profile' ? 'is-active' : '' %>" <%- activeTab === 'profile' ? 'aria-current="page"' : '' %>>Thông tin cá nhân</a>
+  <a href="/orders" class="customer-tabs__link <%= activeTab === 'orders' ? 'is-active' : '' %>" <%- activeTab === 'orders' ? 'aria-current="page"' : '' %>>Lịch sử giao dịch</a>
+  <a href="/profile/password" class="customer-tabs__link">Đổi mật khẩu</a>
+</nav>
