@@ -1,0 +1,51 @@
+<style>@import url('/css/customer-account.css');</style>
+<div class="customer-account">
+  <%- include('./summary') %>
+  <section class="customer-content" aria-label="Lịch sử giao dịch">
+    <%- include('./tabs', { activeTab: 'orders' }) %>
+    <nav class="customer-filters" aria-label="Lọc trạng thái giao dịch">
+      <% Object.entries(statusLabels).forEach(function ([value, label]) { %>
+        <a href="/orders<%= value === 'ALL' ? '' : '?status=' + value %>" class="customer-filters__link <%= status === value ? 'is-active' : '' %>" <%- status === value ? 'aria-current="page"' : '' %>><%= label %></a>
+      <% }) %>
+    </nav>
+    <% if (!orders.length) { %>
+      <div class="customer-empty" role="status">
+        <p><%= summary.orderCount === 0 ? 'Bạn chưa có giao dịch nào trước đây!' : 'Chưa có giao dịch ở trạng thái này.' %></p>
+        <small>Lưu ý chỉ hiển thị tối đa 10 giao dịch gần nhất.</small>
+      </div>
+    <% } else { %>
+      <div class="customer-orders">
+        <% orders.forEach(function (order) { %>
+          <article class="customer-order" aria-label="Giao dịch <%= order.order_code %>">
+            <header class="customer-order__header">
+              <strong>#<%= order.order_code %></strong>
+              <span>Đặt lúc <%= fmt.dateTime(order.created_at) %></span>
+              <span class="customer-order__status customer-order__status--<%= order.status.toLowerCase() %>"><%= statusLabels[order.status] %></span>
+            </header>
+            <% order.screenings.forEach(function (screening) { %>
+              <div class="customer-order__screening">
+                <% if (screening.poster_url && screening.poster_url.startsWith('/images/')) { %>
+                  <img class="customer-order__poster" src="<%= screening.poster_url %>" alt="Áp phích <%= screening.title %>" width="60" height="84" loading="lazy">
+                <% } %>
+                <div class="customer-order__details">
+                  <h2><%= screening.title %></h2>
+                  <p><%= screening.cinema_name %> – <%= screening.room_name %> (<%= screening.screen_format %><%= screening.language ? ' – ' + screening.language : '' %>)</p>
+                  <p>Suất chiếu <%= fmt.dateTime(screening.start_time) %> → <%= fmt.dateTime(screening.movie_end_time) %></p>
+                  <p>Ghế đã chọn <%= screening.seats.join(', ') %></p>
+                </div>
+              </div>
+            <% }) %>
+            <% if (order.foods.length) { %>
+              <p class="customer-order__food">Đồ ăn <%= order.foods.map(function (food) { return food.quantity + ' × ' + food.food_name; }).join(', ') %></p>
+            <% } %>
+            <footer class="customer-order__total">
+              <span>Tổng thanh toán</span>
+              <strong><%= fmt.money(order.total_amount) %></strong>
+            </footer>
+          </article>
+        <% }) %>
+      </div>
+      <p class="customer-orders__note">Hiển thị tối đa 10 giao dịch gần nhất<%= status === 'ALL' ? '' : ' theo trạng thái đã chọn' %>.</p>
+    <% } %>
+  </section>
+</div>
