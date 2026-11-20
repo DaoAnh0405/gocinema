@@ -15,7 +15,7 @@ async function findApplicable({ screenFormat, dayType, time, ymd }) {
       ORDER BY valid_from DESC, price_id DESC`,
     [screenFormat, dayType, time, time, ymd, ymd],
   );
-};
+}
 
 const columns = `p.*, st.seat_type_name,
   DATE_FORMAT(p.valid_from, '%Y-%m-%d') AS valid_from,

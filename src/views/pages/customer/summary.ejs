@@ -1,0 +1,12 @@
+<aside class="customer-summary" aria-label="Thông tin thành viên">
+  <div class="customer-summary__identity">
+    <i class="bi bi-person-circle customer-summary__avatar" aria-hidden="true"></i>
+    <h1><%= profile.full_name %></h1>
+    <p class="customer-summary__email"><%= profile.email %></p>
+    <p class="customer-summary__joined">Thành viên từ <%= profile.created_at %></p>
+  </div>
+  <div class="customer-summary__stats">
+    <p>Đơn giao dịch <strong><%= summary.orderCount %></strong></p>
+    <p>Vé đã mua <strong><%= summary.ticketCount %></strong></p>
+  </div>
+</aside>
