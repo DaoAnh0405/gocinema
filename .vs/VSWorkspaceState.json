@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\database",
+    "\\src\\routes",
+    "\\src\\routes\\web",
+    "\\src\\utils",
+    "\\src\\validators",
+    "\\src\\views",
+    "\\src\\views\\errors",
+    "\\src\\views\\layouts"
+  ],
+  "SelectedNode": "\\src\\database\\schema.sql",
+  "PreviewInSolutionExplorer": false
+}
