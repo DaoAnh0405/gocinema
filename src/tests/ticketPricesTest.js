@@ -17,7 +17,7 @@ let initialPrices;
 let originalSql;
 
 function sqlHashes() {
-  return ['seed.sql', 'schema.sql', 'seed_test.sql'].map((name) =>
+  return ['seed.sql', 'schema.sql'].map((name) =>
     crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, '../database', name))).digest('hex'));
 }
 

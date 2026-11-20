@@ -1,25 +1,51 @@
-<header class="gc-topbar">
-  <button class="btn btn-light d-lg-none" type="button" data-sidebar-toggle aria-label="Mở menu">
-    <i class="bi bi-list"></i>
-  </button>
-  <h1 class="gc-topbar__title"><%= typeof title !== 'undefined' ? title : '' %></h1>
-
+<header class="gc-topbar<%= locals.moduleClass ? ' price-topbar' : '' %>">
+  <button class="btn btn-light d-lg-none" type="button" data-sidebar-toggle aria-label="Mở menu"><i class="bi bi-list"></i></button>
+  <div class="admin-page-heading">
+    <h1 class="gc-topbar__title">
+      <%= typeof title !== 'undefined' ? title : '' %>
+    </h1>
+    <% if (Array.isArray(locals.breadcrumbs) && breadcrumbs.length) { %>
+      <nav class="admin-breadcrumbs" aria-label="Đường dẫn">
+        <% breadcrumbs.forEach((crumb, index) => { %>
+          <% if (index) { %>
+            <span aria-hidden="true">›</span>
+          <% } %>
+          <% if (crumb.href) { %>
+            <a href="<%= crumb.href %>">
+              <%= crumb.label %>
+            </a>
+          <% } else { %>
+            <span><%= crumb.label %></span>
+          <% } %>
+        <% }) %>
+      </nav>
+    <% } %>
+  </div>
   <div class="ms-auto d-flex align-items-center gap-2">
     <a href="/" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">
-      <i class="bi bi-box-arrow-up-right"></i> <span class="d-none d-sm-inline">Xem website</span>
+      <i class="bi bi-box-arrow-up-right"></i>
+      <span class="d-none d-sm-inline">
+        Xem website
+      </span>
     </a>
     <div class="dropdown">
       <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-person-circle"></i>
-        <span class="d-none d-sm-inline"><%= currentUser.fullName || currentUser.email %></span>
+        <span class="d-none d-sm-inline">
+          <%= currentUser.fullName || currentUser.email %>
+        </span>
       </button>
       <ul class="dropdown-menu dropdown-menu-end">
-        <li class="dropdown-item-text small text-muted"><%= currentUser.email %></li>
-        <!-- <li><a class="dropdown-item" href="/profile/password"><i class="bi bi-key"></i> Đổi mật khẩu</a></li> -->
+        <li class="dropdown-item-text small text-muted">
+          <%= currentUser.email %>
+        </li>
         <li><hr class="dropdown-divider"></li>
         <li>
           <form action="/logout" method="post" class="px-3">
-            <button class="btn btn-link text-danger p-0" type="submit"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+            <button class="btn btn-link text-danger p-0" type="submit">
+              <i class="bi bi-box-arrow-right"></i>
+              Đăng xuất
+            </button>
           </form>
         </li>
       </ul>

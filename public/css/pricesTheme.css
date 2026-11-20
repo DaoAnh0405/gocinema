@@ -1,4 +1,3 @@
-/* Native desktop measurements come from the 588 × 393 Figma screen. */
 .price-app {
   --price-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --price-font-weight: 400;
@@ -60,7 +59,6 @@
   --price-icon-arrow: 16px;
 }
 
-/* The supplied design has a desktop screen. These values adapt it for touch. */
 @media (max-width: 575px) {
   .price-app {
     --price-font-body: 14px;

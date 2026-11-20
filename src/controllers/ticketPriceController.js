@@ -43,10 +43,31 @@ function csrf(req, res, next) {
 async function render(req, res, { status = 200, errors = [], values = {}, dialog = null, editingId = null } = {}) {
   const filters = readFilters(req.query);
   const [{ rows, pagination }, seatTypes] = await Promise.all([prices.listPage(req.query.page, filters), prices.listSeatTypes()]);
+  
   return res.status(status).render('pages/admin/prices/index', {
-    layout: 'layouts/prices', title: 'Quản lý Giá vé', rows, seatTypes, formats, dayLabels,
-    errors, values, dialog, editingId, priceAssets: getPriceAssets(), pagination,
-    filters, listUrl: listUrl(pagination.page, filters), pageQuery: queryString(pagination.page, filters),
+    adminModule: true,
+    moduleClass: 'prices-app',
+    pageStyles: [
+      '/css/pricesTheme.css',
+      '/css/prices.css',
+    ],
+    pageScripts: [
+      '/js/prices.js',
+    ],
+    title: 'Quản lý Giá vé',
+    rows,
+    seatTypes,
+    formats,
+    dayLabels,
+    errors,
+    values,
+    dialog,
+    editingId,
+    priceAssets: getPriceAssets(),
+    pagination,
+    filters,
+    listUrl: listUrl(pagination.page, filters),
+    pageQuery: queryString(pagination.page, filters),
     pageUrl: (page) => listUrl(page, filters),
   });
 }

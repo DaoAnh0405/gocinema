@@ -15,7 +15,7 @@
 
 /* Khung chính */
 .gc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.gc-topbar { position: sticky; top: 0; z-index: 1020; display: flex; align-items: center; gap: .75rem; padding: .6rem 1.5rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
+.gc-topbar { position: sticky; top: 0; z-index: 1020; display: flex; align-items: center; gap: .75rem; padding: .6rem 1.5rem; background: #fff; border-bottom: 1px solid #e5e7eb; height: 64px;}
 .gc-topbar__title { font-size: 1.1rem; font-weight: 700; margin: 0; }
 .gc-content { flex: 1; padding: 1.5rem; }
 

@@ -8,10 +8,10 @@ const { partsOf } = require('../utils/vnTime');
 async function createPending(conn, { customerId, quote }) {
   const tempCode = `T${crypto.randomBytes(8).toString('hex')}`;
   const [res] = await conn.query(
-    `INSERT INTO orders (order_code, customer_id, channel, promotion_id,
+    `INSERT INTO orders (order_code, cinema_id, customer_id, channel, promotion_id,
                          subtotal, discount_amount, total_amount, status)
-     VALUES (?, ?, 'ONLINE', ?, ?, ?, ?, 'PENDING')`,
-    [tempCode, customerId, quote.promo ? quote.promo.promotionId : null,
+     VALUES (?, ?, ?, 'ONLINE', ?, ?, ?, ?, 'PENDING')`,
+    [tempCode, quote.showtime.cinema_id, customerId, quote.promo ? quote.promo.promotionId : null,
       quote.subtotal, quote.discount, quote.total],
   );
   const orderId = res.insertId;

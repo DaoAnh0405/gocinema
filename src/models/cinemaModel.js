@@ -2,7 +2,7 @@ const { query, withTransaction } = require('../config/db');
 const AppError = require('../utils/AppError');
 const crypto = require('crypto');
 const parseLayout = require('../validators/seatLayoutValidator');
-const pairCoupleSeats = require('../../public/js/seat-pairs');
+const pairCoupleSeats = require('../../public/js/seatPairs');
 
 // Row labels support both existing single-letter and two-letter seat rows.
 const seatSummary = `LEFT JOIN (SELECT room_id, COUNT(*) AS seat_count,
