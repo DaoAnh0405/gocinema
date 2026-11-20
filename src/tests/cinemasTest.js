@@ -233,8 +233,12 @@ describe('Room management', () => {
     expect((await model.listRooms(firstId, 2, filter)).rows).toHaveLength(2);
     const response = await admin.get(roomBase()).query({ ...filter, page: 2 });
     expect(response.status).toBe(200);
-    expect(response.text).toContain('11 - 12/12');
-    expect(response.text).toContain('type=3D');
+    const text = response.text.replace(/\s+/g, ' ');
+    expect(text).toContain('11 - 12 / 12');
+    expect(text).toContain('Room 10');
+    expect(text).toContain('Room 11');
+    expect(text).not.toContain('Room 9');
+    expect(text).toContain('type=3D');
   });
 
   test('resizes an unused grid while preserving IDs and types of retained seats', async () => {

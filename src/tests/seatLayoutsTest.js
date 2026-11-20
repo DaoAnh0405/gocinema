@@ -2,7 +2,7 @@ const request = require('supertest');
 const app = require('../app');
 const model = require('../models/cinemaModel');
 const { pool } = require('../config/db');
-const pairCoupleSeats = require('../../public/js/seat-pairs');
+const pairCoupleSeats = require('../../public/js/seatPairs');
 
 let admin;
 let token;
@@ -62,7 +62,7 @@ test('loads the editor through the room seat route', async () => {
   const page = await admin.get(base());
   expect(page.status).toBe(200);
   expect(page.text).toContain('Sinh ghế tự động');
-  expect(page.text).toContain('/js/seat-editor.js');
+  expect(page.text).toContain('/js/seatEditor.js');
   expect(page.text).toContain('Lưu sơ đồ');
 });
 
