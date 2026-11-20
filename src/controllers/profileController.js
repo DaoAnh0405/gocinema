@@ -4,14 +4,20 @@ const asyncHandler = require('../utils/asyncHandler');
 const maskEmail = require('../utils/maskEmail');
 const { errorMessages } = require('../middlewares/validate');
 const saveSession = require('../utils/saveSession');
+const orderHistoryModel = require('../models/orderHistoryModel');
 
 // profile
 
 async function renderProfile(req, res, { status = 200, errors = [], values } = {}) {
   const profile = await profileService.getProfile(req.session.user);
-  res.status(status).render('pages/auth/profile', {
+  const summary = profile.editable
+    ? await orderHistoryModel.getSummary(req.session.user.id)
+    : null;
+  res.status(status).render(profile.editable ? 'pages/customer/profile' : 'pages/auth/profile', {
+    layout: 'layouts/main',
     title: 'Hồ sơ cá nhân',
     profile,
+    summary,
     errors,
     values: values || profile,
   });

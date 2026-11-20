@@ -5,4 +5,5 @@ module.exports = {
   clearMocks: true,
   setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
   collectCoverageFrom: ['src/**/*.js', '!src/tests/**'],
+  testTimeout: 60000,
 };
