@@ -65,6 +65,10 @@ Sau mỗi đầu việc hoàn thành, cập nhật file `dukien.md` bằng một
 
 Đã hoàn thành quản lý phim (CRUD, tìm kiếm/lọc, phân trang 7 phim/trang, tải/xem trước poster JPEG tối đa 5 MB, chọn nhiều thể loại) và thể loại (thêm, sửa trực tiếp trên dòng, xóa, đếm phim), có phân quyền và CSRF. Kiểm thử: 203/203 ca đạt, không có lỗi/chú ý từ diagnostics; đọc MySQL thật thành công với 18 phim, 8 thể loại và truy vấn tìm kiếm/lọc/phân trang hợp lệ. Chưa kiểm tra trực quan trong trình duyệt hoặc thao tác ghi trên MySQL thật. Không thay schema, reset database hay dùng Git/GitHub. Tiếp theo: đăng nhập ADMIN để kiểm tra giao diện và luồng sử dụng.
 
+### Sửa lỗi sau merge — ưu tiên phim, thể loại, suất chiếu
+
+Đã sửa dấu `}` bị thiếu ở `findApplicable()` trong `src/models/ticketPriceModel.js` gây lỗi cú pháp toàn ứng dụng; bỏ lời gọi file migration không tồn tại trong `src/server.js`; nối lại `/admin/showtimes` trong `src/routes/web/adminRoutes.js`. Giữ nguyên nội dung ban đầu của `schema.sql`, không reset database, không dùng Git/GitHub. Kiểm tra đạt: cú pháp 109 file JS, 456/456 ca kiểm thử riêng, khởi động ứng dụng và 7 trang danh sách/thêm/sửa trả HTTP 200 với MySQL thật và phiên ADMIN mô phỏng. Bộ kiểm thử tích hợp chung vẫn yêu cầu database `gocinema_test` và setup migration riêng nên chưa chạy; chưa thử ghi dữ liệu CRUD thật. Khi chẩn đoán trước đó đã tạo bổ sung bảng `room_layouts` rỗng; số bản ghi phim, thể loại, suất chiếu, rạp, phòng, ghế, vé và giá vé đều không đổi.
+
 ### Cách mở chức năng
 
 Chạy `npm run dev` (nếu ứng dụng chưa chạy), đăng nhập tài khoản ADMIN có quyền `MANAGE_MOVIES`, rồi mở http://localhost:3000/admin/movies hoặc http://localhost:3000/admin/genres. Không cần chạy lại schema/seed hay reset database. Poster tải lên được lưu cục bộ tại `public/images/posters/uploads/` (tự tạo khi tải ảnh đầu tiên); cần giữ thư mục này khi sao lưu dữ liệu.

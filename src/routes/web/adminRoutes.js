@@ -15,5 +15,8 @@ router.get("/", (req, res) =>
 );
 
 router.use(require("./adminCatalogRoutes"));
+router.use("/showtimes", require("./adminShowtimeRoutes"));
+
+
 
 module.exports = router;
