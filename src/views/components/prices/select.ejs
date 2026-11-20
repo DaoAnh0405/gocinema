@@ -1,0 +1,9 @@
+<div class="price-field">
+  <label for="<%= name %>"><%= label %></label>
+  <select id="<%= name %>" name="<%= name %>" required>
+    <% if (locals.placeholder) { %><option value=""><%= placeholder %></option><% } %>
+    <% options.forEach((option) => { %>
+      <option value="<%= option.value %>" <%= String(value) === String(option.value) ? 'selected' : '' %>><%= option.label %></option>
+    <% }) %>
+  </select>
+</div>

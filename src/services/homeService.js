@@ -2,7 +2,7 @@ const { MOVIE_STATUS } = require('../constants');
 const movieModel = require('../models/movieModel');
 const promotionModel = require('../models/promotionModel');
 
-const MOVIES_PER_TAB = 8;
+const MOVIES_PER_TAB = 36;
 
 async function getHomeData() {
   const [hotMovies, nowShowing, comingSoon, promotions] = await Promise.all([

@@ -1,0 +1,30 @@
+<div class="price-pagination">
+  <p aria-label="Hiển thị <%= pagination.start %> đến <%= pagination.end %> trên <%= pagination.total %> <%= locals.paginationLabel || 'mức giá' %>"><%= pagination.start %> - <%= pagination.end %>/<%= pagination.total %></p>
+  <% if (pagination.totalPages > 1) { %>
+    <nav aria-label="Phân trang giá vé">
+      <ul>
+        <li>
+          <% if (pagination.page > 1) { %>
+            <a href="<%= pageUrl(pagination.page - 1) %>" rel="prev" aria-label="Trang trước"><i class="bi bi-caret-left-fill" aria-hidden="true"></i></a>
+          <% } else { %><span aria-disabled="true" aria-label="Trang trước"><i class="bi bi-caret-left-fill" aria-hidden="true"></i></span><% } %>
+        </li>
+        <%
+          const pageNumbers = [...new Set([1, pagination.page - 1, pagination.page, pagination.page + 1, pagination.totalPages])]
+            .filter((number) => number >= 1 && number <= pagination.totalPages).sort((a, b) => a - b);
+          pageNumbers.forEach((number, index) => {
+        %>
+          <% if (index > 0 && number - pageNumbers[index - 1] > 1) { %><li><span class="price-pagination__ellipsis">…</span></li><% } %>
+          <li>
+            <% if (number === pagination.page) { %><span aria-current="page" aria-label="Trang <%= number %>"><%= number %></span>
+            <% } else { %><a href="<%= pageUrl(number) %>" aria-label="Trang <%= number %>"><%= number %></a><% } %>
+          </li>
+        <% }) %>
+        <li>
+          <% if (pagination.page < pagination.totalPages) { %>
+            <a href="<%= pageUrl(pagination.page + 1) %>" rel="next" aria-label="Trang sau"><i class="bi bi-caret-right-fill" aria-hidden="true"></i></a>
+          <% } else { %><span aria-disabled="true" aria-label="Trang sau"><i class="bi bi-caret-right-fill" aria-hidden="true"></i></span><% } %>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
+</div>

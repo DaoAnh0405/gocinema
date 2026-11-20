@@ -1,0 +1,42 @@
+<form method="post" action="<%= base %>/<%= room.room_id %>/seats" data-seat-editor>
+  <input type="hidden" name="_csrf" value="<%= cinemaCsrf %>">
+  <input type="hidden" name="version" value="<%= version %>">
+  <input type="hidden" name="layout" value="<%= JSON.stringify(seatLayout) %>">
+  <textarea hidden data-seat-types><%= JSON.stringify(types) %></textarea>
+  <section class="price-card cinema-toolbar seat-toolbar">
+    <div><h2>Sơ đồ ghế - <%= room.room_name %></h2><p>Bấm vào từng ghế để đổi loại ghế hoặc bỏ ghế.</p></div>
+    <div class="cinema-toolbar__actions">
+      <a class="cinema-back" href="<%= base %>" aria-label="Về danh sách phòng chiếu"><i class="bi bi-arrow-left" aria-hidden="true"></i></a>
+      <%- include('../../../components/prices/button', { type: 'submit', variant: 'primary', text: 'Lưu sơ đồ', icon: 'plus' }) %>
+    </div>
+  </section>
+  <p class="seat-feedback" role="status" aria-live="polite" data-seat-feedback hidden></p>
+  <div class="seat-workspace">
+    <section class="room-seat-card seat-canvas" aria-label="Sơ đồ ghế">
+      <div class="room-seat-scroll" tabindex="0" role="region" aria-label="Lưới ghế phòng chiếu">
+        <div class="room-seat-map">
+          <div class="room-screen">MÀN HÌNH</div>
+          <div data-seat-grid></div>
+        </div>
+      </div>
+      <p class="seat-count" data-seat-count><%= room.seat_count %> ghế</p>
+    </section>
+    <aside class="price-card seat-generator" aria-label="Sinh ghế tự động">
+      <h3>Sinh ghế tự động</h3>
+      <%- include('../../../components/prices/input', { name: 'grid_rows', label: 'Số hàng (A, B, C…)', type: 'number', value: seatLayout.rows, min: 1, max: 702, step: 1, required: true }) %>
+      <%- include('../../../components/prices/input', { name: 'grid_columns', label: 'Số cột', type: 'number', value: seatLayout.columns, min: 1, max: 100, step: 1, required: true }) %>
+      <%- include('../../../components/prices/select', { name: 'default_type', label: 'Loại ghế mặc định', value: types.find((type) => type.seat_type_name === 'Standard')?.seat_type_id,
+        options: types.filter((type) => ['Standard', 'VIP', 'Couple'].includes(type.seat_type_name)).map((type) => ({ value: type.seat_type_id, label: type.seat_type_name })) }) %>
+      <button type="button" class="price-button seat-generate-button" data-generate-seats>Sinh sơ đồ</button>
+      <ul class="room-seat-legend">
+        <% types.filter((type) => ['Standard', 'VIP', 'Couple'].includes(type.seat_type_name)).forEach((type) => { %>
+          <li><span class="room-seat room-seat--<%= type.seat_type_name.toLowerCase() %>" aria-hidden="true"></span><%= type.seat_type_name %></li>
+        <% }) %>
+      </ul>
+      <p class="seat-cycle-hint">Standard → VIP → Couple → Bỏ ghế. Hai ô Couple liền nhau cùng hàng, chưa thuộc cặp khác, sẽ ghép thành ghế đôi.</p>
+    </aside>
+  </div>
+  <noscript><p>Bật JavaScript để sinh và chỉnh sửa sơ đồ ghế.</p></noscript>
+</form>
+<script src="/js/seat-pairs.js" defer></script>
+<script src="/js/seat-editor.js" defer></script>
