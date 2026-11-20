@@ -1,20 +1,20 @@
 CREATE DATABASE IF NOT EXISTS gocinema CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE gocinema;
 
-CREATE TABLE IF NOT EXISTS foods (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,
-    description VARCHAR(500) NULL,
-    price DECIMAL(12, 0) NOT NULL,
-    status ENUM('Đang bán', 'Ngừng bán') DEFAULT 'Đang bán',
-    image_url VARCHAR(255) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS food_items (
+    food_id INT AUTO_INCREMENT PRIMARY KEY,
+    food_name VARCHAR(100) NOT NULL,
+    category VARCHAR(30) COMMENT 'POPCORN / DRINK / COMBO',
+    price DECIMAL(10, 0) NOT NULL,
+    image_url VARCHAR(255),
+    status TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = available, 0 = unavailable',
+    CONSTRAINT chk_food_price CHECK (price >= 0),
+    CONSTRAINT chk_food_status CHECK (status IN (0, 1))
+) ENGINE=InnoDB;
 
-INSERT INTO foods (name, description, price, status) VALUES
-('Combo Bỏng Nước 1', '1 Bỏng vừa + 1 nước', 69000, 'Đang bán'),
-('Combo Bỏng Nước 2', '1 Bỏng lớn + 1 nước', 69000, 'Đang bán'),
-('Combo Couple', '2 Bỏng + 2 nước', 109000, 'Đang bán'),
-('Bỏng Phô Mai', '1 Bỏng vị phô mai', 69000, 'Đang bán'),
-('Combo Gia Đình', '2 Bỏng lớn + 4 nước', 69000, 'Ngừng bán');  
+INSERT INTO food_items (food_name, category, price, status, image_url) VALUES
+('Combo Bỏng Nước 1', 'COMBO', 69000, 1, NULL),
+('Combo Bỏng Nước 2', 'COMBO', 69000, 1, NULL),
+('Combo Couple', 'COMBO', 109000, 1, NULL),
+('Bỏng Phô Mai', 'POPCORN', 69000, 1, NULL),
+('Combo Gia Đình', 'COMBO', 69000, 0, NULL);
