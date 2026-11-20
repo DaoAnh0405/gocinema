@@ -1,0 +1,167 @@
+<link rel="stylesheet" href="/css/admin-catalog.css">
+<link rel="stylesheet" href="/css/admin-showtimes.css">
+<%
+  const formValues = values || {};
+  const problems = fieldErrors || {};
+  const messages = [...new Set([...(errors || []), ...Object.values(problems)].flat().filter((message) => typeof message === 'string' && message))];
+  const isEdit = editingId !== null && editingId !== undefined;
+  const showEditor = Boolean(modalOpen);
+  const statusOptions = [{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Đóng' }, { value: '-1', label: 'Hủy' }];
+  const currentPage = Math.max(1, Number(pagination.page) || 1);
+  const totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+  const total = Number(pagination.total) || 0;
+  const pageSize = Number(pagination.pageSize) || 10;
+  const firstItem = total && showtimes.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const lastItem = firstItem ? Math.min(total, firstItem + showtimes.length - 1) : 0;
+  const listUrl = (extra = {}) => {
+    const params = new URLSearchParams();
+    for (const key of ['date', 'cinema', 'movie', 'status']) {
+      if (filters[key] !== undefined && filters[key] !== null && String(filters[key]) !== '') params.set(key, String(filters[key]));
+    }
+    params.set('page', String(currentPage));
+    Object.entries(extra).forEach(([key, value]) => params.set(key, String(value)));
+    return '/admin/showtimes?' + params.toString();
+  };
+  const pageNumbers = [...new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1])].filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  const displayDate = (date) => /^\d{4}-\d{2}-\d{2}$/.test(String(date)) ? String(date).split('-').reverse().join('/') : '—';
+  const fieldGroups = [
+    [{ name: 'movie_id', label: 'Phim chiếu', placeholder: 'Chọn phim', options: movies.map((movie) => ({ value: movie.movie_id, label: movie.title + (movie.status === 'ENDED' ? ' (đã ngừng chiếu)' : ''), disabled: movie.status === 'ENDED' && !(isEdit && String(formValues.movie_id) === String(movie.movie_id)) })) }],
+    [{ name: 'cinema_id', label: 'Rạp', placeholder: 'Chọn rạp', options: cinemas.map((cinema) => ({ value: cinema.cinema_id, label: cinema.cinema_name + (Number(cinema.status) !== 1 ? ' (ngừng hoạt động)' : ''), disabled: Number(cinema.status) !== 1 })) }],
+    [{ name: 'room_id', label: 'Phòng chiếu', placeholder: 'Chọn phòng', options: rooms.map((room) => {
+      const cinema = cinemas.find((item) => String(item.cinema_id) === String(room.cinema_id));
+      const unavailable = Number(room.status) !== 1 || !cinema || Number(cinema.status) !== 1 || Number(room.seat_count) <= 0;
+      return { value: room.room_id, label: room.room_name + ' · ' + (cinema ? cinema.cinema_name : 'Rạp không khả dụng') + ' · ' + room.room_type + (unavailable ? ' (không khả dụng)' : ''), disabled: unavailable, cinemaId: room.cinema_id, roomType: room.room_type };
+    }) }],
+    [{ name: 'date', label: 'Ngày chiếu', type: 'date' }, { name: 'start_time', label: 'Giờ bắt đầu', type: 'time' }],
+    [{ name: 'screen_format', label: 'Định dạng', placeholder: 'Chọn định dạng', options: ['2D', '3D', 'IMAX'].map((value) => ({ value, label: value })) }, { name: 'language', label: 'Ngôn ngữ', placeholder: 'Chọn ngôn ngữ', options: ['Phụ đề', 'Lồng tiếng', 'Tiếng Việt'].map((value) => ({ value, label: value })) }]
+  ];
+%>
+<section class="gc-showtimes" aria-label="Quản lý Suất chiếu">
+  <div class="gc-showtimes__toolbar">
+    <form class="gc-showtimes__filters" method="get" action="/admin/showtimes" role="search" aria-label="Lọc suất chiếu">
+      <div class="gc-showtimes__filter gc-showtimes__filter--date">
+        <label for="showtimes-filter-date">Ngày</label>
+        <input class="gc-showtimes__control" id="showtimes-filter-date" name="date" type="date" value="<%= filters.date || '' %>">
+      </div>
+      <div class="gc-showtimes__filter">
+        <label for="showtimes-filter-cinema">Rạp</label>
+        <select class="gc-showtimes__control" id="showtimes-filter-cinema" name="cinema">
+          <option value="">Tất cả rạp</option>
+          <% cinemas.forEach((cinema) => { %><option value="<%= cinema.cinema_id %>" <%= String(filters.cinema) === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option><% }) %>
+        </select>
+      </div>
+      <div class="gc-showtimes__filter gc-showtimes__filter--movie">
+        <label for="showtimes-filter-movie">Phim</label>
+        <select class="gc-showtimes__control" id="showtimes-filter-movie" name="movie">
+          <option value="">Tất cả phim</option>
+          <% movies.forEach((movie) => { %><option value="<%= movie.movie_id %>" <%= String(filters.movie) === String(movie.movie_id) ? 'selected' : '' %>><%= movie.title %></option><% }) %>
+        </select>
+      </div>
+      <div class="gc-showtimes__filter">
+        <label for="showtimes-filter-status">Trạng thái</label>
+        <select class="gc-showtimes__control" id="showtimes-filter-status" name="status">
+          <option value="">Tất cả trạng thái</option>
+          <% statusOptions.forEach((status) => { %><option value="<%= status.value %>" <%= String(filters.status) === status.value ? 'selected' : '' %>><%= status.label %></option><% }) %>
+        </select>
+      </div>
+      <button class="gc-showtimes__button gc-showtimes__button--secondary" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+    </form>
+    <a class="gc-showtimes__button gc-showtimes__button--primary" href="<%= listUrl({ new: 1 }) %>"><i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo suất chiếu</a>
+  </div>
+
+  <% if (messages.length && !showEditor) { %>
+    <div class="gc-showtimes__errors" role="alert" tabindex="-1" data-showtimes-errors><h2>Không thể thực hiện yêu cầu</h2><ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul></div>
+  <% } %>
+
+  <div class="gc-showtimes__table-panel">
+    <div class="gc-showtimes__table-scroll" role="region" aria-label="Bảng suất chiếu" tabindex="0">
+      <table class="gc-showtimes__table">
+        <caption class="visually-hidden">Danh sách suất chiếu</caption>
+        <thead><tr><th scope="col">Phim chiếu</th><th scope="col">Rạp &amp; Phòng</th><th scope="col">Ngày/Khung giờ</th><th scope="col">Định dạng</th><th scope="col">Ghế đã bán</th><th scope="col">Trạng thái</th><th scope="col">Thao tác</th></tr></thead>
+        <tbody>
+          <% if (!showtimes.length) { %>
+            <tr><td colspan="7" class="gc-showtimes__empty"><i class="bi bi-calendar2-week" aria-hidden="true"></i><p>Không tìm thấy suất chiếu phù hợp.</p><a href="/admin/showtimes">Xem tất cả suất chiếu</a></td></tr>
+          <% } %>
+          <% showtimes.forEach((showtime) => { %>
+            <tr>
+              <th scope="row" class="gc-showtimes__movie"><%= showtime.title %></th>
+              <td><span class="gc-showtimes__line"><%= showtime.cinema_name %></span><span class="gc-showtimes__muted"><%= showtime.room_name %></span></td>
+              <td class="gc-showtimes__schedule"><span class="gc-showtimes__line"><%= showtime.start_clock %> – <%= showtime.film_end_clock %><% if (showtime.film_end_date && showtime.film_end_date !== showtime.show_date) { %> <small>(<%= displayDate(showtime.film_end_date) %>)</small><% } %></span><time class="gc-showtimes__muted" datetime="<%= showtime.show_date %>"><%= displayDate(showtime.show_date) %></time></td>
+              <td><span class="gc-showtimes__line"><%= showtime.screen_format %></span><span class="gc-showtimes__muted"><%= showtime.language || '—' %></span></td>
+              <td class="gc-showtimes__seats"><%= showtime.sold_count %>/<%= showtime.total_count %></td>
+              <td>
+                <form method="post" action="/admin/showtimes/<%= showtime.showtime_id %>/status" class="gc-showtimes__status-form" data-showtimes-status data-showtime-title="<%= showtime.title %>">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <label class="visually-hidden" for="showtimes-status-<%= showtime.showtime_id %>">Trạng thái suất chiếu <%= showtime.title %>, <%= showtime.start_clock %> ngày <%= displayDate(showtime.show_date) %></label>
+                  <select class="gc-showtimes__status <%= Number(showtime.status) === 1 ? 'gc-showtimes__status--active' : 'gc-showtimes__status--inactive' %>" id="showtimes-status-<%= showtime.showtime_id %>" name="status" data-original-status="<%= showtime.status %>">
+                    <% statusOptions.forEach((status) => { %><option value="<%= status.value %>" <%= String(showtime.status) === status.value ? 'selected' : '' %>><%= status.label %></option><% }) %>
+                  </select>
+                  <button class="gc-showtimes__status-save" type="submit" aria-label="Lưu trạng thái suất chiếu <%= showtime.title %>" title="Lưu trạng thái"><i class="bi bi-check-lg" aria-hidden="true"></i></button>
+                </form>
+              </td>
+              <td>
+                <div class="gc-showtimes__actions">
+                  <a class="gc-showtimes__icon-button" href="<%= listUrl({ edit: showtime.showtime_id }) %>" aria-label="Sửa suất chiếu <%= showtime.title %>" title="Sửa suất chiếu"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+                  <form method="post" action="/admin/showtimes/<%= showtime.showtime_id %>/delete" data-showtimes-delete data-confirm-message="Xóa suất chiếu “<%= showtime.title %>” lúc <%= showtime.start_clock %> ngày <%= displayDate(showtime.show_date) %>? Hành động này không thể hoàn tác; suất chiếu đã có vé có thể không được phép xóa.">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="gc-showtimes__icon-button gc-showtimes__icon-button--danger" type="submit" aria-label="Xóa suất chiếu <%= showtime.title %>" title="Xóa suất chiếu"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <footer class="gc-showtimes__table-footer">
+      <p>Hiển thị <strong><%= firstItem %>–<%= lastItem %></strong> trong <strong><%= total %></strong> suất chiếu</p>
+      <% if (totalPages > 1) { %>
+        <nav aria-label="Phân trang suất chiếu"><ul class="gc-showtimes__pagination">
+          <li><% if (pagination.hasPrevious) { %><a href="<%= listUrl({ page: currentPage - 1 }) %>" aria-label="Trang trước" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i></a><% } else { %><span aria-disabled="true" aria-label="Trang trước"><i class="bi bi-chevron-left" aria-hidden="true"></i></span><% } %></li>
+          <% pageNumbers.forEach((page, index) => { %>
+            <% if (index && page - pageNumbers[index - 1] > 1) { %><li><span aria-hidden="true">…</span></li><% } %>
+            <li><% if (page === currentPage) { %><span aria-current="page"><%= page %></span><% } else { %><a href="<%= listUrl({ page }) %>" aria-label="Trang <%= page %>"><%= page %></a><% } %></li>
+          <% }) %>
+          <li><% if (pagination.hasNext) { %><a href="<%= listUrl({ page: currentPage + 1 }) %>" aria-label="Trang sau" rel="next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a><% } else { %><span aria-disabled="true" aria-label="Trang sau"><i class="bi bi-chevron-right" aria-hidden="true"></i></span><% } %></li>
+        </ul></nav>
+      <% } %>
+    </footer>
+  </div>
+
+  <% if (showEditor) { %>
+    <dialog class="gc-showtimes__dialog" open data-showtimes-editor aria-labelledby="showtimes-dialog-title">
+      <h2 id="showtimes-dialog-title"><%= isEdit ? 'Sửa suất chiếu' : 'Tạo suất chiếu' %></h2>
+      <% if (messages.length) { %>
+        <div class="gc-showtimes__errors" role="alert" tabindex="-1" data-showtimes-errors><h3>Không thể lưu suất chiếu</h3><ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul></div>
+      <% } %>
+      <form method="post" action="<%= isEdit ? '/admin/showtimes/' + editingId + '/update' : '/admin/showtimes' %>" data-showtimes-form>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <% fieldGroups.forEach((group) => { %>
+          <div class="gc-showtimes__field-row">
+            <% group.forEach((field) => { const value = formValues[field.name] == null ? '' : String(formValues[field.name]); %>
+              <div class="gc-showtimes__field">
+                <label for="showtimes-<%= field.name %>"><%= field.label %></label>
+                <% if (field.options) { %>
+                  <select class="gc-showtimes__control" id="showtimes-<%= field.name %>" name="<%= field.name %>" required aria-invalid="<%= Boolean(problems[field.name]) %>" <%= problems[field.name] ? 'aria-describedby=showtimes-error-' + field.name : '' %>>
+                    <option value="" <%= !value ? 'selected' : '' %>><%= field.placeholder %></option>
+                    <% if (value && !field.options.some((option) => String(option.value) === value)) { %><option value="<%= value %>" selected><%= value %> (không hợp lệ)</option><% } %>
+                    <% field.options.forEach((option) => { %>
+                      <option value="<%= option.value %>" <%= value === String(option.value) ? 'selected' : '' %> <%= option.disabled ? 'disabled' : '' %><% if (field.name === 'room_id') { %> data-cinema-id="<%= option.cinemaId %>" data-room-type="<%= option.roomType %>"<% } %>><%= option.label %></option>
+                    <% }) %>
+                  </select>
+                <% } else { %>
+                  <input class="gc-showtimes__control" id="showtimes-<%= field.name %>" name="<%= field.name %>" type="<%= field.type %>" value="<%= value %>" required aria-invalid="<%= Boolean(problems[field.name]) %>" <%= problems[field.name] ? 'aria-describedby=showtimes-error-' + field.name : '' %>>
+                <% } %>
+                <% if (problems[field.name]) { %><p class="gc-showtimes__field-error" id="showtimes-error-<%= field.name %>"><%= problems[field.name] %></p><% } %>
+              </div>
+            <% }) %>
+          </div>
+        <% }) %>
+        <p class="gc-showtimes__hint" id="showtimes-room-help" data-showtimes-room-help aria-live="polite">Chỉ chọn phòng thuộc rạp đã chọn, đang hoạt động và có ghế.</p>
+        <p class="gc-showtimes__hint">Thay đổi lịch hoặc hủy suất chiếu đã có vé có thể bị từ chối.</p>
+        <footer class="gc-showtimes__dialog-actions"><a class="gc-showtimes__button gc-showtimes__button--secondary" href="<%= listUrl() %>" data-showtimes-close>Hủy bỏ</a><button class="gc-showtimes__button gc-showtimes__button--primary" type="submit">Lưu</button></footer>
+      </form>
+    </dialog>
+  <% } %>
+</section>
+<script src="/js/admin-showtimes.js"></script>
