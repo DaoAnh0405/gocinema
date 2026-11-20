@@ -5,10 +5,9 @@ const { pool } = require('./config/db');
 async function start() {
   try {
     await pool.query('SELECT 1');
-    await require('./database/migrate')();
     console.log('MySQL: kết nối thành công');
   } catch (err) {
-    console.error(`MySQL: không kết nối được (${err.code || err.message})`);
+    console.error(`MySQL: không kết nối được (${err.code || err.message})`, err);
     process.exit(1);
   }
 

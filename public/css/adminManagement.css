@@ -1,0 +1,761 @@
+/* 1 Design tokens dùng chung */
+.price-app {
+  --price-font-family: system-ui, -apple-system, "Segoe UI",
+    Roboto, Arial, sans-serif;
+
+  --price-font-weight: 400;
+
+  --price-text: #1d1f27;
+  --price-text-inverse: #fff;
+
+  --price-canvas: #f4f5f7;
+  --price-surface: #fff;
+  --price-header: #f8fafc;
+  --price-control: #f8fafc;
+
+  --price-accent: #e50914;
+  --price-brand: #e50914;
+
+  --price-divider: #e5e7eb;
+  --price-overlay: rgb(0 0 0 / 45%);
+  --price-focus: #e50914;
+
+  --price-font-body: 15px;
+  --price-font-table: 14px;
+  --price-font-title: 20px;
+  --price-font-pagination: 14px;
+  --price-font-dialog: 17px;
+
+  --price-filter-height: 40px;
+  --price-filter-font: 14px;
+
+  --price-filter-text: #1d1f27;
+  --price-filter-muted: #64748b;
+  --price-filter-border: #d1d5db;
+  --price-filter-background: #fff;
+  --price-filter-radius: 6px;
+
+  --price-filter-focus-shadow: 0 0 0 3px rgb(229 9 20 / 10%);
+
+  --price-pagination-size: 36px;
+  --price-pagination-active: #e50914;
+
+  --price-font-brand: 20px;
+  --price-line-height: 1.5;
+
+  --price-header-height: 64px;
+  --price-toolbar-height: 60px;
+  --price-table-heading-height: 48px;
+  --price-table-row-height: 54px;
+
+  --price-control-height: 40px;
+  --price-button-height: 38px;
+  --price-add-width: auto;
+
+  --price-dialog-width: 520px;
+
+  --price-radius-card: 10px;
+  --price-radius-control: 6px;
+
+  --price-border-width: 1px;
+  --price-shadow: none;
+
+  --price-space-1: 4px;
+  --price-space-2: 8px;
+  --price-space-3: 12px;
+  --price-space-4: 16px;
+  --price-space-5: 20px;
+  --price-space-6: 24px;
+  --price-space-7: 32px;
+
+  --price-focus-width: 2px;
+
+  --price-icon-plus: 15px;
+  --price-icon-edit: 14px;
+  --price-icon-delete: 14px;
+  --price-icon-avatar: 18px;
+  --price-icon-arrow: 18px;
+
+  --price-icon-edit-color: #64748b;
+  --price-icon-delete-color: #dc3545;
+  --price-icon-avatar-color: #64748b;
+}
+/* 2 Nền và font chữ */
+.price-app {
+  font-family: var(--price-font-family);
+  font-size: var(--price-font-body);
+  line-height: var(--price-line-height);
+  color: var(--price-text);
+  background: var(--price-canvas);
+}
+.price-app,
+.price-app * {
+  box-sizing: border-box;
+}
+.price-app button,
+.price-app input,
+.price-app select {
+  font: inherit;
+}
+.price-app a {
+  color: inherit;
+  text-decoration: none;
+}
+.price-app :focus-visible {
+  outline: 2px solid var(--price-accent);
+  outline-offset: 2px;
+}
+
+/* 3 Topbar */
+.price-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.price-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.price-topbar h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #1d1f27;
+}
+.admin-page-heading {
+  min-width: 0;
+}
+.admin-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 12px;
+  color: #64748b;
+}
+.admin-breadcrumbs a {
+  color: #64748b;
+}
+.admin-breadcrumbs a:hover {
+  color: var(--price-accent);
+  text-decoration: underline;
+}
+.admin-breadcrumbs > span:last-child {
+  color: #1d1f27;
+  opacity: 1;
+}
+/* 4 Content*/
+.price-content {
+  flex: 1;
+  padding: 24px;
+  background: #f4f5f7;
+}
+/* 5 Card chung */
+.price-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: none;
+}
+/* 6 Toolbar */
+.price-toolbar,
+.cinema-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-height: 60px;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.price-toolbar h2,
+.cinema-toolbar h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+/* 7 Bộ lọc Prices */
+.price-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 160px));
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 14px;
+}
+.price-filter-select {
+  position: relative;
+  min-width: 0;
+}
+.price-filters select,
+.cinema-filters select,
+.cinema-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  color: #1d1f27;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.price-filters select {
+  appearance: auto;
+}
+.price-filter-select > i {
+  display: none;
+}
+.price-filters select:focus,
+.cinema-filters select:focus,
+.cinema-search:focus-within {
+  border-color: var(--price-accent);
+  box-shadow: 0 0 0 3px rgb(229 9 20 / 10%);
+  outline: none;
+}
+/* 8 Bộ lọc Cinemas */
+.cinema-filter-card {
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.cinema-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 14px;
+}
+.cinema-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 220px;
+  min-width: 180px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+.cinema-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+.cinema-search > i {
+  color: #64748b;
+}
+.cinema-filters select {
+  flex: 0 1 170px;
+  min-width: 120px;
+}
+/* 9 Buttons */
+.price-button,
+.cinema-filter-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s;
+}
+.price-button--primary,
+.cinema-filter-button {
+  color: #fff !important;
+  background: #e50914;
+  border-color: #e50914;
+}
+.price-button--primary:hover,
+.cinema-filter-button:hover {
+  color: #fff !important;
+  background: #c40812;
+  border-color: #c40812;
+}
+.price-button--secondary {
+  color: #374151;
+  background: #fff;
+  border-color: #d1d5db;
+}
+.price-button--secondary:hover {
+  background: #f3f4f6;
+}
+/* 10 Bảng dữ liệu */
+.price-table-card {
+  padding: 0 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.price-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.price-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: 14px;
+  color: #1d1f27;
+}
+.price-table thead {
+  background: #f8fafc;
+}
+.price-table th {
+  height: 48px;
+  font-weight: 600;
+  color: #475569;
+  text-align: left;
+  white-space: nowrap;
+}
+.price-table th,
+.price-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-wrap: anywhere;
+}
+.price-table td {
+  height: 54px;
+}
+.price-table tbody tr {
+  transition: background .15s;
+}
+.price-table tbody tr:hover {
+  background: #f8fafc;
+}
+.price-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.price-table__empty {
+  padding: 36px !important;
+  text-align: center;
+  color: #64748b;
+}
+/* 11 Bảng Cinemas */
+.cinema-table {
+  min-width: 850px;
+}
+.cinema-table--rooms {
+  min-width: 760px;
+}
+.cinema-table th:nth-child(1),
+.cinema-table th:nth-child(2),
+.cinema-table th:nth-child(3),
+.cinema-table th:nth-child(4),
+.cinema-table th:nth-child(5),
+.cinema-table th:nth-child(6) {
+  width: auto;
+}
+.cinema-table td:nth-child(4),
+.cinema-table td:nth-child(5) {
+  white-space: normal;
+}
+/* 12 Trạng thái */
+.cinema-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cinema-status--active {
+  color: #166534;
+  background: #dcfce7;
+}
+.cinema-status--inactive {
+  color: #92400e;
+  background: #fef3c7;
+}
+/* 13 Các nút thao tác trong bảng */
+.price-row-actions,
+.cinema-row-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.price-row-actions a,
+.cinema-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 5px;
+}
+.price-row-actions a:hover,
+.cinema-edit:hover {
+  background: #f1f5f9;
+}
+.cinema-small-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: #475569;
+  color: #fff !important;
+  font-size: 12px;
+  cursor: pointer;
+}
+.cinema-small-button:hover {
+  background: #334155;
+}
+.cinema-row-actions form {
+  margin: 0;
+}
+/* 14 Pagination */
+.price-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+.price-pagination p {
+  margin: 0;
+}
+.price-pagination ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.price-pagination a,
+.price-pagination span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+}
+.price-pagination a:hover {
+  color: var(--price-accent);
+  border-color: var(--price-accent);
+}
+.price-pagination [aria-current="page"] {
+  color: #fff;
+  background: var(--price-accent);
+  border-color: var(--price-accent);
+}
+.price-pagination [aria-disabled="true"] {
+  opacity: .4;
+}
+.price-pagination .price-pagination__ellipsis {
+  border: 0;
+  background: transparent;
+}
+
+/* 15 Dialog thêm / sửa */
+.price-dialog {
+  width: 520px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: #1d1f27;
+  font-size: 14px;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 15%);
+}
+.price-dialog h2 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.price-field {
+  margin-bottom: 16px;
+}
+.price-field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+.price-field input,
+.price-field select {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+}
+.price-field input:focus,
+.price-field select:focus {
+  border-color: var(--price-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(229 9 20 / 10%);
+}
+.price-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+.price-errors {
+  padding-left: 20px;
+  margin-bottom: 16px;
+  color: #dc2626;
+}
+.price-notice {
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+.price-criteria summary {
+  padding: 8px 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+.price-criteria__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.price-field-hint {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* 16 Form phòng chiếu */
+.room-grid-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 17 Quản lý sơ đồ ghế */
+.room-seat-card,
+.seat-generator {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.room-seat-card {
+  padding: 20px;
+}
+.seat-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 600px;
+  align-items: start;
+  gap: 20px;
+}
+.seat-canvas {
+  min-width: 0;
+}
+
+.room-seat-scroll {
+  overflow: auto;
+  max-height: 65vh;
+}
+.room-seat-map {
+  width: max-content;
+  min-width: 100%;
+  padding-bottom: 16px;
+}
+.room-screen {
+  margin: 0 24px 24px;
+  padding: 10px;
+  text-align: center;
+  color: #64748b;
+  background: #f1f5f9;
+  border-top: 4px solid #94a3b8;
+  border-radius: 5px;
+  font-weight: 600;
+}
+.room-seat {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--room-seat-size, 30px);
+  height: var(--room-seat-size, 30px);
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 12px;
+}
+.room-seat--standard {
+  background: #e2e8f0;
+}
+.room-seat--vip {
+  background: #fde68a;
+}
+.room-seat--couple {
+  background: #ddd6fe;
+}
+.room-seat-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.room-seat-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seat-generator {
+  padding: 20px;
+}
+.seat-generator h3 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.seat-generator .price-field {
+  margin-bottom: 14px;
+}
+.seat-generate-button {
+  width: 100%;
+  color: #fff !important;
+  background: var(--price-accent);
+}
+.seat-count,
+.seat-cycle-hint {
+  color: #64748b;
+  font-size: 13px;
+}
+.seat-count {
+  margin: 12px 0 0;
+  text-align: center;
+}
+.seat-cycle-hint {
+  margin-top: 16px;
+  line-height: 1.6;
+}
+.seat-feedback {
+  padding: 12px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* 18. Responsive */
+@media (max-width: 991.98px) {
+  .price-content {
+    padding: 20px;
+  }
+  .seat-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .seat-generator {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .price-topbar {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+  }
+  .price-content {
+    padding: 16px;
+  }
+  .price-toolbar,
+  .cinema-toolbar {
+    align-items: stretch;
+    padding: 16px;
+  }
+  .price-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1 1 100%;
+  }
+  .price-toolbar > .price-button {
+    width: 100%;
+  }
+  .cinema-filters {
+    width: 100%;
+  }
+  .cinema-search {
+    flex: 1 1 100%;
+  }
+  .cinema-filters select {
+    flex: 1 1 calc(50% - 8px);
+  }
+  .cinema-filter-button {
+    flex: 1 1 100%;
+  }
+  .price-table {
+    min-width: 760px;
+  }
+  .price-dialog {
+    padding: 20px;
+  }
+  .price-dialog__actions .price-button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .price-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .price-criteria__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .room-grid-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .price-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .cinema-filters select {
+    flex: 1 1 100%;
+  }
+  .room-seat-legend {
+    justify-content: flex-start;
+  }
+}

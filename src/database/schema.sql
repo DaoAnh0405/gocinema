@@ -123,6 +123,16 @@ CREATE TABLE rooms (
     CONSTRAINT chk_rooms_status CHECK (status IN (0, 1))
 ) ENGINE=InnoDB;
 
+CREATE TABLE room_layouts (
+  room_id       INT PRIMARY KEY,
+  row_count     INT NOT NULL,
+  column_count  INT NOT NULL,
+  couple_pairs  JSON NULL,
+  CONSTRAINT fk_room_layout_room FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE,
+  CONSTRAINT chk_room_layout_rows CHECK (row_count BETWEEN 1 AND 702),
+  CONSTRAINT chk_room_layout_columns CHECK (column_count BETWEEN 1 AND 100)
+) ENGINE=InnoDB;
+
 CREATE TABLE seat_types (
     seat_type_id    INT AUTO_INCREMENT PRIMARY KEY,
     seat_type_name  VARCHAR(30) NOT NULL UNIQUE COMMENT 'Standard / VIP / Couple'
@@ -178,7 +188,7 @@ CREATE TABLE ticket_prices (
     day_type       VARCHAR(20) DEFAULT 'WEEKDAY' COMMENT 'WEEKDAY / WEEKEND / HOLIDAY',
     time_from      TIME,
     time_to        TIME,
-    price          DECIMAL(10,0) NOT NULL,
+    price          DECIMAL(12,0) NOT NULL,
     valid_from     DATE,
     valid_to       DATE,
     CONSTRAINT fk_tp_seat_type FOREIGN KEY (seat_type_id) REFERENCES seat_types(seat_type_id),
@@ -189,7 +199,7 @@ CREATE TABLE food_items (
     food_id    INT AUTO_INCREMENT PRIMARY KEY,
     food_name  VARCHAR(100) NOT NULL,
     category   VARCHAR(30) COMMENT 'POPCORN / DRINK / COMBO',
-    price      DECIMAL(10,0) NOT NULL,
+    price      DECIMAL(12,0) NOT NULL,
     image_url  VARCHAR(255),
     status     TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = available, 0 = unavailable',
     CONSTRAINT chk_food_price CHECK (price >= 0),
@@ -203,8 +213,8 @@ CREATE TABLE promotions (
     description      TEXT,
     discount_type    VARCHAR(20) NOT NULL COMMENT 'PERCENT / AMOUNT',
     discount_value   DECIMAL(10,2) NOT NULL,
-    max_discount     DECIMAL(10,0),
-    min_order_value  DECIMAL(10,0) DEFAULT 0,
+    max_discount     DECIMAL(12,0),
+    min_order_value  DECIMAL(12,0) DEFAULT 0,
     start_date       DATETIME,
     end_date         DATETIME,
     quantity         INT,
@@ -218,18 +228,21 @@ CREATE TABLE promotions (
 CREATE TABLE work_shifts (
     shift_id      INT AUTO_INCREMENT PRIMARY KEY,
     staff_id      INT NOT NULL,
+    cinema_id     INT NULL COMMENT 'Rạp trực ca làm việc',
     start_time    DATETIME NOT NULL,
     end_time      DATETIME NULL,
     opening_cash  DECIMAL(12,0) DEFAULT 0,
     closing_cash  DECIMAL(12,0) NULL,
     status        TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = open, 0 = closed',
     CONSTRAINT fk_shift_staff FOREIGN KEY (staff_id) REFERENCES staff(account_id),
+    CONSTRAINT fk_shift_cinema FOREIGN KEY (cinema_id) REFERENCES cinemas(cinema_id),
     CONSTRAINT chk_shift_status CHECK (status IN (0, 1))
 ) ENGINE=InnoDB;
 
 CREATE TABLE orders (
     order_id         INT AUTO_INCREMENT PRIMARY KEY,
     order_code       VARCHAR(20) NOT NULL UNIQUE COMMENT 'Ma don hien thi cho khach',
+    cinema_id        INT NULL COMMENT 'Rạp phát sinh doanh thu (NULL với đơn chưa gán rạp)',
     customer_id      INT NULL COMMENT 'NULL neu ban cho khach vang lai(bán tại quầy)',
     staff_id         INT NULL COMMENT 'NULL neu khach dat online',
     shift_id         INT NULL COMMENT 'NULL neu khach dat online',
@@ -245,10 +258,12 @@ CREATE TABLE orders (
     INDEX idx_orders_customer_date (customer_id, created_at),
     INDEX idx_orders_created_at (created_at),
     INDEX idx_orders_status_created (status, created_at),
+    INDEX idx_orders_cinema_created (cinema_id, created_at),
     CONSTRAINT fk_ord_customer  FOREIGN KEY (customer_id)  REFERENCES customers(account_id),
     CONSTRAINT fk_ord_staff     FOREIGN KEY (staff_id)     REFERENCES staff(account_id),
     CONSTRAINT fk_ord_shift     FOREIGN KEY (shift_id)     REFERENCES work_shifts(shift_id),
     CONSTRAINT fk_ord_promotion FOREIGN KEY (promotion_id) REFERENCES promotions(promotion_id),
+    CONSTRAINT fk_ord_cinema    FOREIGN KEY (cinema_id)    REFERENCES cinemas(cinema_id),
     CONSTRAINT chk_ord_channel CHECK (channel IN ('ONLINE','COUNTER')),
     CONSTRAINT chk_ord_status CHECK (status IN ('PENDING','PAID','CANCELLED','EXPIRED'))
 ) ENGINE=InnoDB;
@@ -258,7 +273,7 @@ CREATE TABLE tickets (
     order_id             INT NOT NULL,
     showtime_id          INT NOT NULL,
     seat_id              INT NOT NULL,
-    ticket_price         DECIMAL(10,0) NOT NULL COMMENT 'Gia tai thoi diem mua',
+    ticket_price         DECIMAL(12,0) NOT NULL COMMENT 'Gia tai thoi diem mua',
     qr_code              VARCHAR(50) NOT NULL UNIQUE COMMENT 'Ma QR de soat ve',
     status               TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = valid, 0 = used, -1 = cancelled. Tao cung luc voi don; chi co hieu luc khi don o trang thai PAID',
     checked_by_staff_id  INT NULL,
@@ -276,7 +291,7 @@ CREATE TABLE order_food_items (
     order_id       INT NOT NULL,
     food_id        INT NOT NULL,
     quantity       INT NOT NULL DEFAULT 1,
-    unit_price     DECIMAL(10,0) NOT NULL COMMENT 'Don gia tai thoi diem mua',
+    unit_price     DECIMAL(12,0) NOT NULL COMMENT 'Don gia tai thoi diem mua',
     CONSTRAINT fk_ofi_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     CONSTRAINT fk_ofi_food  FOREIGN KEY (food_id)  REFERENCES food_items(food_id),
     CONSTRAINT chk_ofi_quantity CHECK (quantity > 0)

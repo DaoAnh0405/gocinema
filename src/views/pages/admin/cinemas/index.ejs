@@ -1,11 +1,26 @@
-<%- include('../../../components/prices/card', { className: 'cinema-toolbar', content: include('toolbar') }) %>
-<% if (!rooms) { %><%- include('../../../components/prices/card', { className: 'cinema-filter-card', content: include('filters') }) %><% } %>
-<%- include('../../../components/prices/card', { className: 'price-table-card cinema-table-card', content: include('table') }) %>
-<%- include('../prices/pagination', { paginationLabel: rooms ? 'phòng chiếu' : 'rạp' }) %>
+<%- include('../../../components/admin/card', {
+  className: 'cinema-toolbar',
+  content: include('toolbar')
+}) %>
+<% if (!rooms) { %>
+  <%- include('../../../components/admin/card', {
+    className: 'cinema-filter-card',
+    content: include('filters')
+  }) %>
+<% } %>
+<%- include('../../../components/admin/card', {
+  className: 'price-table-card cinema-table-card',
+  content: include('table')
+}) %>
+<%- include('../../../components/admin/pagination', {
+  paginationLabel: rooms ? 'phòng chiếu' : 'rạp'
+}) %>
 <% if (dialog) { %>
-  <%- include('../../../components/prices/dialog', {
+  <%- include('../../../components/admin/dialog', {
     heading: 'Thêm/ Sửa',
-    className: dialog === 'cinema' ? 'cinema-dialog' : 'room-dialog',
+    className: dialog === 'cinema'
+      ? 'cinema-dialog'
+      : 'room-dialog',
     content: include('form'),
   }) %>
 <% } %>

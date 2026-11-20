@@ -17,6 +17,7 @@ let originalCinemas;
 let originalRooms;
 let originalSeats;
 
+
 const cinemaData = (suffix = 'A', overrides = {}) => ({
   cinema_name: `${prefix}_${suffix}`, address: 'Địa chỉ kiểm thử', city: `${prefix}_City`,
   phone_number: '0901234567', status: '1', ...overrides,
@@ -232,8 +233,12 @@ describe('Room management', () => {
     expect((await model.listRooms(firstId, 2, filter)).rows).toHaveLength(2);
     const response = await admin.get(roomBase()).query({ ...filter, page: 2 });
     expect(response.status).toBe(200);
-    expect(response.text).toContain('11 - 12/12');
-    expect(response.text).toContain('type=3D');
+    const text = response.text.replace(/\s+/g, ' ');
+    expect(text).toContain('11 - 12 / 12');
+    expect(text).toContain('Room 10');
+    expect(text).toContain('Room 11');
+    expect(text).not.toContain('Room 9');
+    expect(text).toContain('type=3D');
   });
 
   test('resizes an unused grid while preserving IDs and types of retained seats', async () => {
@@ -261,7 +266,7 @@ describe('Room management', () => {
     const page = await admin.get(`${roomBase()}/${room.room_id}/seats`);
     expect(page.status).toBe(200);
     expect(page.text).toContain('MÀN HÌNH');
-    expect(page.text).toContain('data-seat-editor');
+    expect(page.text).toContain('data-seatEditor');
   });
 
   test('rolls back room updates when shrinking over a sold seat', async () => {
