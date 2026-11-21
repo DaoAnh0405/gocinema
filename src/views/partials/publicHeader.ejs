@@ -9,15 +9,31 @@
           <li class="nav-item">
             <a class="nav-link gc-nav-buy" href="/booking">Mua vé</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/movies">Phim</a>
+          <li class="nav-item dropdown">
+            <button type="button" class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">
+              Phim <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item<%= currentPath === '/movies/now-showing' ? ' active' : '' %>"
+                   href="/movies/now-showing"<%- currentPath === '/movies/now-showing' ? ' aria-current="page"' : '' %>>
+                  Phim đang chiếu
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item<%= currentPath === '/movies/coming-soon' ? ' active' : '' %>"
+                   href="/movies/coming-soon"<%- currentPath === '/movies/coming-soon' ? ' aria-current="page"' : '' %>>
+                  Phim sắp chiếu
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/cinemas">Rạp/Giá vé</a>
+            <button type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#cinemaModal">Rạp</button>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/promotions">Ưu đãi</a>
-          </li>
+          </li> -->
         </ul>
       </div>
     </nav>
@@ -27,13 +43,15 @@
 
     <!-- tìm kiếm -->
     <form class="gc-search flex-grow-1 d-none d-md-block"
-          action="/movies" method="get" role="search">
+      action="/movies" method="get" role="search">
       <div class="input-group input-group-sm">
         <input type="search" name="q" class="form-control"
-               placeholder="Từ khóa tìm kiếm..."
-               aria-label="Tìm phim">
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          placeholder="Tìm phim..."
+          maxlength="100" required autocomplete="off"
+          aria-label="Tìm phim">
         <button class="btn btn-outline-secondary" type="submit"
-                aria-label="Tìm">
+          aria-label="Tìm">
           <i class="bi bi-search"></i>
         </button>
       </div>
@@ -54,30 +72,30 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <% if (currentUser.role === ROLE.ADMIN) { %>
               <li>
-                <a class="dropdown-item" href="/admin">
-                  <i class="bi bi-speedometer2"></i> Trang quản trị
+                <a class="dropdown-item px-3" href="/admin">
+                  Trang quản trị
                 </a>
               </li>
             <% } else if (currentUser.role === ROLE.STAFF) { %>
               <li>
-                <a class="dropdown-item" href="/staff">
-                  <i class="bi bi-briefcase"></i> Trang nhân viên
+                <a class="dropdown-item px-3" href="/staff">
+                  Trang nhân viên
                 </a>
               </li>
             <% } else if (currentUser.role === ROLE.CUSTOMER) { %>
               <li>
-                <a class="dropdown-item" href="/profile">
-                  <i class="bi bi-person"></i> Tài khoản
+                <a class="dropdown-item px-3" href="/profile">
+                  Tài khoản
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="/orders">
-                  <i class="bi bi-receipt"></i> Lịch sử
+                <a class="dropdown-item px-3" href="/orders">
+                  Lịch sử
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="/profile/password">
-                  <i class="bi bi-key"></i> Đổi mật khẩu
+                <a class="dropdown-item px-3" href="/profile/password">
+                  Đổi mật khẩu
                 </a>
               </li>
             <% } %>
@@ -86,7 +104,7 @@
             <li>
               <form action="/logout" method="post" class="px-3">
                 <button class="btn btn-link text-danger p-0" type="submit">
-                  <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                  Đăng xuất
                 </button>
               </form>
             </li>
