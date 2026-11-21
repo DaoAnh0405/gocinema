@@ -50,4 +50,12 @@ async function getDetail(rawId) {
   };
 }
 
-module.exports = { getDetail };
+async function search(keyword) {
+  const movies = await movieModel.searchByTitle(keyword);
+  return {
+    nowShowing: movies.filter((m) => m.status === MOVIE_STATUS.NOW_SHOWING),
+    comingSoon: movies.filter((m) => m.status === MOVIE_STATUS.COMING_SOON),
+  };
+}
+
+module.exports = { getDetail, search };
