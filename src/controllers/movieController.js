@@ -1,6 +1,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const movieService = require('../services/movieService');
 const { errorMessages } = require('../middlewares/validate');
+const { MOVIE_STATUS } = require('../constants');
 
 exports.detail = asyncHandler(async (req, res) => {
   const data = await movieService.getDetail(req.params.id);
@@ -27,3 +28,18 @@ exports.search = asyncHandler(async (req, res) => {
   const result = await movieService.search(keyword);
   return res.render('pages/home/movieSearch', { ...view, ...result });
 });
+
+// trang danh sách đầy đủ theo trạng thái phim
+function statusPage(status, heading, emptyText) {
+  return asyncHandler(async (req, res) => {
+    const movies = await movieService.listByStatus(status);
+    res.render('pages/home/movieList', { title: heading, heading, emptyText, movies });
+  });
+}
+
+exports.nowShowing = statusPage(
+  MOVIE_STATUS.NOW_SHOWING, 'Phim đang chiếu', 'Hiện chưa có phim đang chiếu.',
+);
+exports.comingSoon = statusPage(
+  MOVIE_STATUS.COMING_SOON, 'Phim sắp chiếu', 'Hiện chưa có phim sắp chiếu.',
+);
