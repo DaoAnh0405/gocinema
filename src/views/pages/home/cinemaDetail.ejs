@@ -1,0 +1,125 @@
+<link rel="stylesheet" href="/css/cinemaDetail.css">
+<%
+  const fullAddress = [cinema.address, cinema.city].filter(Boolean).join(', ');
+  const qs = (date, format) => '?date=' + date + (format ? '&format=' + encodeURIComponent(format) : '');
+%>
+
+<%# THÔNG TIN RẠP %>
+<section class="gc-cd-hero">
+  <div class="container">
+    <nav class="gc-cd-crumb" aria-label="Vị trí trang">
+      Rạp
+      <% if (cinema.city) { %><span class="gc-cd-crumb__sep">/</span><%= cinema.city %><% } %>
+      <span class="gc-cd-crumb__sep">/</span><strong><%= cinema.cinema_name %></strong>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row gap-4 align-items-md-start">
+      <div class="gc-cd-logo" aria-hidden="true"><img src="/images/favicon.png" alt=""></i></div>
+      <div>
+        <h1 class="gc-cd-name"><%= cinema.cinema_name %></h1>
+        <p class="gc-cd-info"><i class="bi bi-geo-alt"></i> <%= fullAddress %></p>
+        <% if (cinema.phone_number) { %>
+          <p class="gc-cd-info"><i class="bi bi-telephone"></i> <%= cinema.phone_number %></p>
+        <% } %>
+        <div class="gc-cd-actions">
+          <a href="/booking" class="btn gc-btn-buy">Mua vé</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-4">
+  <div class="row g-4">
+    <%# LỊCH CHIẾU %>
+    <div class="col-lg-8">
+      <div class="gc-cd-card">
+        <h2 class="gc-cd-title">Lịch chiếu <%= cinema.cinema_name %></h2>
+
+        <nav class="gc-cd-days" aria-label="Chọn ngày chiếu">
+          <% days.forEach((d) => { %>
+            <a class="gc-cd-day<%= d.ymd === selectedDate ? ' gc-cd-day--active' : '' %>"
+               href="<%= qs(d.ymd, selectedFormat) %>"<%- d.ymd === selectedDate ? ' aria-current="date"' : '' %>>
+              <span><%= d.weekday %></span>
+              <strong><%= d.dm %></strong>
+            </a>
+          <% }) %>
+        </nav>
+
+        <% if (formats.length) { %>
+          <div class="dropdown mb-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              <%= selectedFormat || 'Định dạng' %>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item<%= !selectedFormat ? ' active' : '' %>" href="<%= qs(selectedDate, '') %>">Tất cả định dạng</a></li>
+              <% formats.forEach((f) => { %>
+                <li><a class="dropdown-item<%= f === selectedFormat ? ' active' : '' %>" href="<%= qs(selectedDate, f) %>"><%= f %></a></li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+
+        <% if (movies.length) { %>
+          <% movies.forEach((m) => { %>
+            <article class="gc-cd-movie">
+              <div class="gc-cd-movie__head">
+                <% if (m.posterUrl) { %>
+                  <img class="gc-cd-movie__poster" src="<%= m.posterUrl %>" alt="Poster <%= m.title %>" loading="lazy">
+                <% } else { %>
+                  <span class="gc-cd-movie__poster" aria-hidden="true"></span>
+                <% } %>
+                <div>
+                  <a class="gc-cd-movie__title" href="/movies/<%= m.id %>"><%= m.title %></a>
+                  <span class="gc-age gc-age--inline gc-age--<%= String(m.ageRating || 'P').toLowerCase() %>"><%= m.ageRating || 'P' %></span>
+                  <div class="gc-cd-movie__meta"><%= m.duration %> phút<%= m.genres ? ' · ' + m.genres : '' %></div>
+                </div>
+              </div>
+
+              <% m.groups.forEach((g) => { %>
+                <div class="gc-cd-row">
+                  <div class="gc-cd-row__label"><%= g.label %></div>
+                  <div class="gc-cd-times">
+                    <% g.times.forEach((t) => { %>
+                      <% if (t.past) { %>
+                        <span class="gc-cd-time gc-cd-time--past" title="Suất đã chiếu"><%= t.time %></span>
+                      <% } else { %>
+                        <a class="gc-cd-time" href="/booking/showtimes/<%= t.id %>/seats"><%= t.time %></a>
+                      <% } %>
+                    <% }) %>
+                  </div>
+                </div>
+              <% }) %>
+            </article>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted text-center py-4 mb-0">
+            Rạp chưa có suất chiếu nào trong ngày này. Hãy chọn ngày khác.
+          </p>
+        <% } %>
+      </div>
+    </div>
+
+    <%# RẠP KHÁC CÙNG KHU VỰC %>
+    <aside class="col-lg-4">
+      <div class="gc-cd-card">
+        <h2 class="gc-cd-title">Rạp khác<%= cinema.city ? ' tại ' + cinema.city : '' %></h2>
+        <% if (others.length) { %>
+          <ul class="gc-cd-others">
+            <% others.forEach((o) => { %>
+              <li>
+                <a href="/cinemas/<%= o.cinema_id %>">
+                  <strong><%= o.cinema_name %></strong>
+                  <span><%= o.address %></span>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="text-muted small mb-0">Chưa có rạp nào khác trong khu vực này.</p>
+        <% } %>
+      </div>
+    </aside>
+  </div>
+</div>

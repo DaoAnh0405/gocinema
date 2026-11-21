@@ -16,7 +16,7 @@ body.gc-site { background: var(--gc-bg); color: var(--gc-ink); min-height: 100vh
 .gc-btn-buy:hover { background: #dd7010; color: #fff; }
 .gc-search { max-width: 420px; }
 .gc-nav { background: #fff; border-top: 1px solid #f0f0f0; }
-.gc-nav .nav { overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
+.gc-nav .nav { flex-wrap: nowrap; white-space: nowrap; }
 .gc-nav .nav-link { color: var(--gc-ink); font-weight: 500; font-size: .92rem; }
 .gc-nav .nav-link:hover { color: var(--gc-red); }
 
@@ -144,7 +144,7 @@ body.gc-site { background: var(--gc-bg); color: var(--gc-ink); min-height: 100vh
     color: #64748b;
     font-size: .88rem;
     font-weight: 500;
-    padding: 8px 7px;
+    /* padding: 8px 7px; */
     transition: color .2s;
 }
 
@@ -266,6 +266,8 @@ body.gc-site { background: var(--gc-bg); color: var(--gc-ink); min-height: 100vh
 .gc-header .dropdown-item {
     padding: 9px 12px;
     border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.88rem;
 }
 
 .gc-header .gc-nav .nav-link.gc-nav-buy {
@@ -281,6 +283,133 @@ body.gc-site { background: var(--gc-bg); color: var(--gc-ink); min-height: 100vh
     background: #dd7010;
     color: #fff;
     transform: translate(3px);
+}
+
+/* dropdown "Phim" trên navbar */
+.gc-header .gc-nav .dropdown-menu {
+    margin-top: 6px;
+}
+
+.gc-header .gc-nav .nav-link .bi-chevron-down {
+    font-size: .65rem;
+    margin-left: 2px;
+    transition: transform .2s;
+}
+
+.gc-header .gc-nav .nav-link[aria-expanded="true"] {
+    color: var(--gc-red);
+}
+
+.gc-header .gc-nav .nav-link[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.gc-header .gc-nav .dropdown-item.active {
+    background: #fdecee;
+    color: var(--gc-red);
+    font-weight: 600;
+}
+
+/* modal chọn rạp (navbar / Rạp) */
+.gc-cinema-modal {
+    --bs-modal-margin: 5.5rem;
+}
+
+.gc-cinema-modal .modal-dialog {
+    max-width: 840px;
+}
+
+.gc-cinema-modal .modal-header {
+    padding: 1.25rem 1.5rem .75rem;
+}
+
+.gc-cinema-modal .modal-content {
+    border: 0;
+    border-radius: 14px;
+}
+
+.gc-cinema-modal .modal-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.gc-cinema-modal .gc-cinema-city {
+    padding: 0 1.5rem 1.1rem;
+}
+
+.gc-cinema-modal .form-select {
+    width: min(100%, 340px);
+    height: 40px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+}
+
+.gc-cinema-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #eee;
+}
+
+.gc-cinema-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 24px;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.gc-cinema-item:hover {
+    background: #f8f9fb;
+}
+
+.gc-cinema-item__logo {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.gc-cinema-item__logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.2);
+}
+
+.gc-cinema-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.gc-cinema-item__name {
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.gc-cinema-item__addr {
+    font-size: .8rem;
+    color: var(--gc-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gc-cinema-badge {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #fdecee;
+    color: var(--gc-red);
+    font-size: .7rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 /* responsive */
@@ -348,6 +477,6 @@ body.gc-site { background: var(--gc-bg); color: var(--gc-ink); min-height: 100vh
     }
 
     .gc-header .gc-nav .nav {
-        overflow-x: auto;
+        flex-wrap: wrap;
     }
 }

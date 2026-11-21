@@ -1,0 +1,264 @@
+/* trang một rạp */
+.gc-cd-hero {
+    background: #14171f;
+    color: #fff;
+    padding: 1.25rem 0 1.75rem;
+}
+
+.gc-cd-crumb {
+    margin-bottom: 1rem;
+    color: #9aa3b5;
+    font-size: .95rem;
+}
+
+.gc-cd-crumb strong {
+    color: #fff;
+    font-weight: 500;
+}
+
+.gc-cd-crumb__sep {
+    margin: 0 .4rem;
+}
+
+.gc-cd-logo {
+    flex: 0 0 140px;
+    width: 140px;
+    height: 140px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.gc-cd-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gc-cd-name {
+    margin: 0 0 .5rem;
+    font-size: 2.3rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.gc-cd-info {
+    margin: 0 0 .25rem;
+    color: #d3d8e3;
+}
+
+.gc-cd-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 1rem;
+}
+
+.gc-cd-actions .btn {
+    padding: .7rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.gc-cd-ghost {
+    border: 1px solid #5b6478;
+    background: transparent;
+    color: #fff;
+}
+
+.gc-cd-ghost:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+/* khối nội dung */
+.gc-cd-card {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+}
+
+.gc-cd-title {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* chọn ngày */
+.gc-cd-days {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: .6rem;
+    margin-bottom: 1rem;
+}
+
+.gc-cd-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: .55rem .25rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: var(--gc-ink);
+    font-size: .8rem;
+    line-height: 1.25;
+    text-decoration: none;
+}
+
+.gc-cd-day strong {
+    font-size: 1.05rem;
+}
+
+.gc-cd-day:hover {
+    border-color: var(--gc-red);
+}
+
+.gc-cd-day--active,
+.gc-cd-day--active:hover {
+    border-color: var(--gc-red);
+    background: var(--gc-red);
+    color: #fff;
+}
+
+/* phim và giờ chiếu */
+.gc-cd-movie {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.gc-cd-movie__head {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    margin-bottom: .9rem;
+}
+
+.gc-cd-movie__poster {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 64px;
+    border-radius: 4px;
+    background: #eee;
+    object-fit: cover;
+}
+
+.gc-cd-movie__title {
+    margin-right: .35rem;
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.gc-cd-movie__title:hover {
+    color: var(--gc-red);
+}
+
+.gc-cd-movie__meta {
+    color: var(--gc-muted);
+    font-size: .82rem;
+}
+
+.gc-cd-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: .6rem;
+}
+
+.gc-cd-row__label {
+    flex: 0 0 130px;
+    padding-top: .8rem;
+    color: #555;
+    font-size: .82rem;
+}
+
+.gc-cd-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+.gc-cd-time {
+    min-width: 84px;
+    padding: .7rem 1rem;
+    border: 1px solid #d9dee8;
+    border-radius: 8px;
+    color: var(--gc-ink);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+a.gc-cd-time:hover {
+    border-color: var(--gc-red);
+    color: var(--gc-red);
+}
+
+.gc-cd-time--past {
+    border-color: transparent;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+/* rạp khác */
+.gc-cd-others {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gc-cd-others li + li {
+    margin-top: .9rem;
+}
+
+.gc-cd-others a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.gc-cd-others strong {
+    display: block;
+}
+
+.gc-cd-others a:hover strong {
+    color: var(--gc-red);
+}
+
+.gc-cd-others span {
+    color: var(--gc-muted);
+    font-size: .82rem;
+}
+
+@media (max-width: 767.98px) {
+    .gc-cd-logo {
+        flex-basis: 96px;
+        width: 96px;
+        height: 96px;
+    }
+
+    .gc-cd-name {
+        font-size: 1.7rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .gc-cd-days {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gc-cd-row {
+        flex-direction: column;
+        gap: .3rem;
+    }
+
+    .gc-cd-row__label {
+        flex-basis: auto;
+        padding-top: 0;
+    }
+}
