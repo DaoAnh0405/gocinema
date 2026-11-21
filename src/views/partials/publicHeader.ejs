@@ -9,15 +9,31 @@
           <li class="nav-item">
             <a class="nav-link gc-nav-buy" href="/booking">Mua vé</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/movies">Phim</a>
+          <li class="nav-item dropdown">
+            <button type="button" class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">
+              Phim <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item<%= currentPath === '/movies/now-showing' ? ' active' : '' %>"
+                   href="/movies/now-showing"<%- currentPath === '/movies/now-showing' ? ' aria-current="page"' : '' %>>
+                  Phim đang chiếu
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item<%= currentPath === '/movies/coming-soon' ? ' active' : '' %>"
+                   href="/movies/coming-soon"<%- currentPath === '/movies/coming-soon' ? ' aria-current="page"' : '' %>>
+                  Phim sắp chiếu
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/cinemas">Rạp</a>
+            <button type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#cinemaModal">Rạp</button>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/promotions">Ưu đãi</a>
-          </li>
+          </li> -->
         </ul>
       </div>
     </nav>

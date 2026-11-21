@@ -28,4 +28,10 @@ function dayLabel(ymd) {
   return `${WEEKDAY_VI[weekday]} ${dd}/${mm}`;
 }
 
-module.exports = { TZ, partsOf, todayYmd, isValidYmd, dayLabel };
+// nhãn thứ của một ngày: "Hôm nay", "Thứ 2", ..., "CN"
+function weekdayLabel(ymd) {
+  if (ymd === todayYmd()) return 'Hôm nay';
+  return WEEKDAY_VI[partsOf(new Date(`${ymd}T12:00:00+07:00`)).weekday];
+}
+
+module.exports = { TZ, partsOf, todayYmd, isValidYmd, dayLabel, weekdayLabel };

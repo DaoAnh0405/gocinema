@@ -8,19 +8,21 @@ const GENRES_SUBQUERY = `
 
 const toLimit = (value, fallback) => Math.max(1, parseInt(value, 10) || fallback);
 
-// phim theo trạng thái (trang chủ, và là điểm bắt đầu cho trang danh sách phim)
+// phim theo trạng thái (limit = null: lấy tất cả)
 async function listByStatus(status, limit = 8) {
-  const n = toLimit(limit, 8);
+  const limitSql = limit === null ? '' : `LIMIT ${toLimit(limit, 8)}`;
   return query(
     `SELECT m.movie_id, m.title, m.duration, m.release_date, m.poster_url,
             m.age_rating, m.status, ${GENRES_SUBQUERY} AS genres
        FROM movies m
       WHERE m.status = ?
       ORDER BY m.release_date DESC, m.movie_id DESC
-      LIMIT ${n}`,
+      ${limitSql}`,
     [status],
   );
 }
+
+const listAllByStatus = (status) => listByStatus(status, null);
 
 // phim "hot": đang chiếu, nhiều vé đã thanh toán nhất (= thì phim mới hơn xếp trước)
 async function listHot(limit = 5) {
@@ -67,4 +69,4 @@ async function findById(movieId) {
   return rows[0] || null;
 }
 
-module.exports = { listByStatus, listHot, searchByTitle, findById };
+module.exports = { listByStatus, listAllByStatus, listHot, searchByTitle, findById };

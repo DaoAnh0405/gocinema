@@ -58,4 +58,7 @@ async function search(keyword) {
   };
 }
 
-module.exports = { getDetail, search };
+// toàn bộ phim đang chiếu hoặc sắp chiếu (trang danh sách đầy đủ)
+const listByStatus = (status) => movieModel.listAllByStatus(status);
+
+module.exports = { getDetail, search, listByStatus};
