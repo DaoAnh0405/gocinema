@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { requireLogin, requireRole } = require('../../middlewares/auth');
 const { adminLayout } = require('../../middlewares/layout');
+const foodController = require('../../controllers/foodController');
 const { ROLE, PERMISSION } = require('../../constants');
 const { requirePermission } = require('../../middlewares/permission');
 const prices = require('../../controllers/ticketPriceController');
@@ -11,6 +12,7 @@ const cinemaRules = require('../../validators/cinemaValidator');
 router.use(requireLogin, requireRole(ROLE.ADMIN), adminLayout);
 
 router.get('/', (req, res) => res.render('pages/admin/dashboard', { title: 'Tổng quan' }));
+router.get('/foods', foodController.renderAdminPage);
 
 router.use(require('./adminCatalogRoutes'));
 // mount module ở đây

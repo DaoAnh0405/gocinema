@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoCinema - Quản lý Đồ ăn</title>
+  <link rel="stylesheet" href="/css/food-admin.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>GoCinema</h1>
+      <p>Quản trị</p>
+    </div>
+
+    <nav>
+      <a href="#" class="nav-link">Tổng quan</a>
+
+      <div class="nav-group">Danh mục</div>
+      <a href="#" class="nav-link">Phim</a>
+      <a href="#" class="nav-link">Thể loại</a>
+      <a href="#" class="nav-link">Rạp & phòng chiếu</a>
+      <a href="#" class="nav-link">Suất chiếu</a>
+
+      <div class="nav-group">Bán hàng</div>
+      <a href="#" class="nav-link">Giá vé</a>
+      <a href="/admin/foods" class="nav-link active">Đồ ăn</a>
+      <a href="#" class="nav-link">Khuyến mãi</a>
+
+      <div class="nav-group">Hệ thống</div>
+      <a href="#" class="nav-link">Tài khoản</a>
+      <a href="#" class="nav-link">Phân quyền</a>
+      <a href="#" class="nav-link">Thống kê</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="header">
+      <h2>Quản lý Đồ ăn</h2>
+      <button class="admin-badge" type="button">
+        <span class="admin-avatar">👤</span>
+        <span>admin@gocinema.vn</span>
+        <span>▾</span>
+      </button>
+    </header>
+
+    <div class="content">
+      <div class="toolbar">
+        <div class="filter-group">
+          <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm..." class="input-control search-input">
+          <select id="filterStatus" class="input-control">
+            <option value="">Trạng thái</option>
+            <option value="Đang bán">Đang bán</option>
+            <option value="Ngừng bán">Ngừng bán</option>
+          </select>
+        </div>
+
+        <button type="button" id="btnOpenAdd" class="btn-primary">
+          <span>+</span>
+          <span>Thêm món</span>
+        </button>
+      </div>
+
+      <div id="foodGrid" class="food-grid"></div>
+    </div>
+  </main>
+
+  <!-- MODAL THÊM MÓN -->
+  <div id="addModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>Thêm món mới</h3>
+      <form id="addForm">
+        <div class="form-group">
+          <label for="addImageInput" class="upload-box">
+            <img id="addImagePreview" src="" alt="Preview" class="hidden">
+            <span id="addImagePlaceholder">⬆ Ảnh</span>
+          </label>
+          <input type="file" id="addImageInput" name="image" accept="image/*" class="hidden">
+        </div>
+
+        <div class="form-group">
+          <label>Tên</label>
+          <input type="text" name="name" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>Mô tả</label>
+          <input type="text" name="description" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>Giá bán (VND)</label>
+          <input type="number" name="price" required min="0" step="1000" class="form-input">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnCloseAdd" class="btn-secondary">Hủy bỏ</button>
+          <button type="submit" class="btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL SỬA MÓN -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="editModalTitle">Sửa món: Tên món</h3>
+      <form id="editForm">
+        <input type="hidden" id="editId">
+
+        <div class="form-group">
+          <label>Tên</label>
+          <input type="text" id="editName" name="name" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>Mô tả</label>
+          <input type="text" id="editDesc" name="description" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>Giá bán (VND)</label>
+          <input type="number" id="editPrice" name="price" required min="0" step="1000" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>Trạng thái</label>
+          <select id="editStatus" name="status" class="form-input">
+            <option value="Đang bán">Đang bán</option>
+            <option value="Ngừng bán">Ngừng bán</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnCloseEdit" class="btn-secondary">Hủy bỏ</button>
+          <button type="submit" class="btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/food-admin.js"></script>
+</body>
+</html>
