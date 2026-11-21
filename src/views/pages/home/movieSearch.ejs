@@ -1,0 +1,46 @@
+<% const total = nowShowing.length + comingSoon.length; %>
+<section class="gc-section pt-0">
+  <h1 class="gc-section__title mb-3">
+    <% if (!hasKeyword) { %>
+      Phim đang chiếu và sắp chiếu
+    <% } else if (errors.length) { %>
+      Tìm kiếm phim
+    <% } else { %>
+      Kết quả tìm kiếm cho “<%= searchQuery %>”
+    <% } %>
+  </h1>
+
+  <% if (errors.length) { %>
+    <div class="alert alert-danger" role="alert">
+      <% errors.forEach((msg) => { %><div><%= msg %></div><% }) %>
+    </div>
+  <% } else if (!total) { %>
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-search fs-1 d-block mb-2" aria-hidden="true"></i>
+      <% if (hasKeyword) { %>
+        <p class="mb-1">Không tìm thấy phim nào phù hợp với “<%= searchQuery %>”.</p>
+      <% } else { %>
+        <p class="mb-3">Hiện chưa có phim đang chiếu hoặc sắp chiếu.</p>
+      <% } %>
+      <a href="/" class="btn btn-sm btn-outline-secondary">Về trang chủ</a>
+    </div>
+  <% } else { %>
+    <% if (hasKeyword) { %>
+      <p class="text-muted small mb-3">Tìm thấy <%= total %> phim.</p>
+    <% } %>
+
+    <% if (nowShowing.length) { %>
+      <h2 class="h6 fw-bold mt-4 mb-3">Đang chiếu <span class="text-muted fw-normal">(<%= nowShowing.length %>)</span></h2>
+      <div class="gc-grid">
+        <% nowShowing.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
+      </div>
+    <% } %>
+
+    <% if (comingSoon.length) { %>
+      <h2 class="h6 fw-bold mt-4 mb-3">Sắp chiếu <span class="text-muted fw-normal">(<%= comingSoon.length %>)</span></h2>
+      <div class="gc-grid">
+        <% comingSoon.forEach((movie) => { %><%- include('../../partials/movieCard', { movie }) %><% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</section>

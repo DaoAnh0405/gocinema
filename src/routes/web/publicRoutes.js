@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const homeController = require('../../controllers/homeController');
 const movieController = require('../../controllers/movieController');
+const { searchRules } = require('../../validators/searchValidator');
 
-// các trang công khai khác (phim, rạp, bảng giá, ưu đãi) thêm vào đây
+// phim, rạp, ưu đãi, search, chi tiết
 router.get('/', homeController.index);
+router.get('/movies', searchRules, movieController.search);
 router.get('/movies/:id(\\d+)', movieController.detail);
 
 module.exports = router;
