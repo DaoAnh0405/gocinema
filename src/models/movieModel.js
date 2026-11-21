@@ -1,4 +1,5 @@
 const { query } = require('../config/db');
+const { MOVIE_STATUS } = require('../constants');
 
 const GENRES_SUBQUERY = `
   (SELECT GROUP_CONCAT(g.genre_name ORDER BY g.genre_name SEPARATOR ', ')
@@ -39,6 +40,25 @@ async function listHot(limit = 5) {
   );
 }
 
+async function searchByTitle(keyword, limit = 100) {
+  const n = toLimit(limit, 100);
+  const where = ['m.status IN (?, ?)'];
+  const params = [MOVIE_STATUS.NOW_SHOWING, MOVIE_STATUS.COMING_SOON];
+  if (keyword) {
+    where.push('LOCATE(LOWER(?), LOWER(m.title)) > 0');
+    params.push(keyword);
+  }
+  return query(
+    `SELECT m.movie_id, m.title, m.duration, m.release_date, m.poster_url,
+            m.age_rating, m.status, ${GENRES_SUBQUERY} AS genres
+       FROM movies m
+      WHERE ${where.join(' AND ')}
+      ORDER BY FIELD(m.status, 'NOW_SHOWING', 'COMING_SOON'), m.release_date DESC, m.movie_id DESC
+      LIMIT ${n}`,
+    params,
+  );
+}
+
 async function findById(movieId) {
   const rows = await query(
     `SELECT m.*, ${GENRES_SUBQUERY} AS genres FROM movies m WHERE m.movie_id = ?`,
@@ -47,4 +67,4 @@ async function findById(movieId) {
   return rows[0] || null;
 }
 
-module.exports = { listByStatus, listHot, findById };
+module.exports = { listByStatus, listHot, searchByTitle, findById };
