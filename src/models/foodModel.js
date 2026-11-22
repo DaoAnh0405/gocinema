@@ -1,95 +1,18 @@
-const db = require('../config/db');
-const { query } = require('../config/db');
-const { FOOD_STATUS } = require('../constants/foodConstants');
+const { query, withTransaction } = require('../config/db');
+const AppError = require('../utils/AppError');
 
-class FoodModel {
-  static normalizeStatus(status) {
-    if (status === FOOD_STATUS.SELLING || status === 1 || status === '1') return 1;
-    if (status === FOOD_STATUS.STOPPED || status === 0 || status === '0') return 0;
-    return 1;
-  }
+const PAGE_SIZE = 8;
+const IN_USE_MESSAGE = 'Không thể xóa món đã có trong đơn hàng. Hãy chuyển sang "Ngừng bán"';
 
-  static mapRow(row) {
-    if (!row) return null;
-
-    return {
-      id: row.id ?? row.food_id,
-      name: row.name ?? row.food_name,
-      description: row.description ?? row.category ?? '',
-      price: Number(row.price),
-      status: Number(row.status) === 1 ? FOOD_STATUS.SELLING : FOOD_STATUS.STOPPED,
-      image_url: row.image_url || null
-    };
-  }
-
-  static async findAll({ search, status }) {
-    let sql = `
-      SELECT
-        food_id AS id,
-        food_name AS name,
-        category AS description,
-        price,
-        status,
-        image_url
-      FROM food_items
-      WHERE 1=1
-    `;
-    const params = [];
-
-    if (search) {
-      sql += ' AND (food_name LIKE ? OR category LIKE ?)';
-      params.push(`%${search}%`, `%${search}%`);
-    }
-    if (status !== undefined && status !== null && status !== '') {
-      const normalizedStatus = status === FOOD_STATUS.SELLING ? 1 : status === FOOD_STATUS.STOPPED ? 0 : Number(status);
-      sql += ' AND status = ?';
-      params.push(normalizedStatus);
-    }
-
-    sql += ' ORDER BY food_id DESC';
-    const rows = await db.query(sql, params);
-    return rows.map((row) => this.mapRow(row));
-  }
-
-  static async findById(id) {
-    const rows = await db.query(
-      `
-        SELECT
-          food_id AS id,
-          food_name AS name,
-          category AS description,
-          price,
-          status,
-          image_url
-        FROM food_items
-        WHERE food_id = ?
-      `,
-      [id]
-    );
-    return this.mapRow(rows[0]);
-  }
-
-  static async create({ name, description, price, status, image_url }) {
-    const result = await db.query(
-      'INSERT INTO food_items (food_name, category, price, status, image_url) VALUES (?, ?, ?, ?, ?)',
-      [name, description?.trim() || null, Number(price), this.normalizeStatus(status), image_url]
-    );
-    return result.insertId;
-  }
-
-  static async update(id, { name, description, price, status, image_url }) {
-    const result = await db.query(
-      'UPDATE food_items SET food_name = ?, category = ?, price = ?, status = ?, image_url = ? WHERE food_id = ?',
-      [name, description?.trim() || null, Number(price), this.normalizeStatus(status), image_url, id]
-    );
-    return result.affectedRows;
-  }
-
-  static async delete(id) {
-    const result = await db.query('DELETE FROM food_items WHERE food_id = ?', [id]);
-    return result.affectedRows;
-  }
+function foodError(message, status, field) {
+  const error = new AppError(message, status);
+  error.field = field;
+  return error;
 }
+
+const isReferenced = (err) => err.code === 'ER_ROW_IS_REFERENCED_2' || err.errno === 1451;
+
+/* phần dùng cho khách hàng / thanh toán */
 
 async function listActive() {
   return query(
@@ -107,4 +30,89 @@ async function findActiveByIds(ids) {
   );
 }
 
-module.exports = { listActive, findActiveByIds, FoodModel };
+/* phần quản trị */
+
+async function listPage(filters) {
+  const where = [];
+  const params = [];
+  if (filters.q) {
+    // LOCATE tránh phải escape ký tự % _ của LIKE
+    where.push('LOCATE(LOWER(?), LOWER(food_name)) > 0');
+    params.push(filters.q);
+  }
+  if (filters.category) {
+    where.push('category = ?');
+    params.push(filters.category);
+  }
+  if (filters.status !== '') {
+    where.push('status = ?');
+    params.push(Number(filters.status));
+  }
+  const clause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  const counts = await query(`SELECT COUNT(*) AS total FROM food_items ${clause}`, params);
+  const total = Number(counts[0].total);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(filters.page, totalPages);
+  const foods = await query(
+    `SELECT food_id, food_name, category, price, image_url, status
+       FROM food_items ${clause}
+      ORDER BY food_id DESC LIMIT ? OFFSET ?`,
+    [...params, PAGE_SIZE, (page - 1) * PAGE_SIZE],
+  );
+  return {
+    foods,
+    filters: { ...filters, page },
+    pagination: { page, pageSize: PAGE_SIZE, total, totalPages, hasPrevious: page > 1, hasNext: page < totalPages },
+  };
+}
+
+async function findById(id) {
+  const rows = await query(
+    'SELECT food_id, food_name, category, price, image_url, status FROM food_items WHERE food_id = ?',
+    [id],
+  );
+  return rows[0] || null;
+}
+
+async function create({ food_name, category, price, image_url, status }) {
+  const result = await query(
+    'INSERT INTO food_items (food_name, category, price, image_url, status) VALUES (?, ?, ?, ?, ?)',
+    [food_name, category, price, image_url || null, status],
+  );
+  return result.insertId;
+}
+
+// image_url === undefined nghĩa là giữ ảnh hiện tại (đọc lại trong transaction, tránh ghi đè ảnh mới hơn)
+async function update(id, { food_name, category, price, image_url, status }) {
+  return withTransaction(async (conn) => {
+    const [rows] = await conn.query('SELECT image_url FROM food_items WHERE food_id = ? FOR UPDATE', [id]);
+    if (!rows.length) throw foodError('Không tìm thấy món', 404);
+    const nextImage = image_url === undefined ? rows[0].image_url : image_url;
+    await conn.query(
+      'UPDATE food_items SET food_name = ?, category = ?, price = ?, image_url = ?, status = ? WHERE food_id = ?',
+      [food_name, category, price, nextImage, status, id],
+    );
+    return { food_id: id, previousImageUrl: rows[0].image_url };
+  });
+}
+
+async function remove(id) {
+  try {
+    return await withTransaction(async (conn) => {
+      const [rows] = await conn.query('SELECT food_id, image_url FROM food_items WHERE food_id = ? FOR UPDATE', [id]);
+      if (!rows.length) throw foodError('Không tìm thấy món', 404);
+      const [used] = await conn.query('SELECT 1 FROM order_food_items WHERE food_id = ? LIMIT 1', [id]);
+      if (used.length) throw foodError(IN_USE_MESSAGE, 409);
+      await conn.query('DELETE FROM food_items WHERE food_id = ?', [id]);
+      return rows[0];
+    });
+  } catch (err) {
+    if (isReferenced(err)) throw foodError(IN_USE_MESSAGE, 409);
+    throw err;
+  }
+}
+
+module.exports = {
+  PAGE_SIZE, listActive, findActiveByIds,
+  listPage, findById, create, update, remove,
+};

@@ -1,0 +1,89 @@
+<link rel="stylesheet" href="/css/adminCatalog.css">
+<%
+  const formValues = values || {};
+  const problems = fieldErrors || {};
+  const messages = [...new Set([...(errors || []), ...Object.values(problems)].filter((m) => typeof m === 'string' && m))];
+  const existingImage = (food && food.image_url) || formValues.image_url || '';
+  const invalid = (name) => (problems[name] ? 'is-invalid' : '');
+  const describedBy = (name) => (problems[name] ? 'aria-describedby=error-' + name : '');
+%>
+<section class="gc-catalog" aria-label="<%= isEdit ? 'Chỉnh sửa món' : 'Thêm món mới' %>">
+  <% if (messages.length) { %>
+    <div class="gc-catalog__errors" role="alert" tabindex="-1" data-error-summary>
+      <h2>Không thể lưu món</h2>
+      <ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul>
+      <p>Vui lòng kiểm tra thông tin bên dưới. Nếu đã chọn ảnh mới, bạn cần chọn lại tệp.</p>
+    </div>
+  <% } %>
+
+  <form method="post" action="<%= formAction %>" enctype="multipart/form-data" data-food-form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="gc-catalog__form-grid">
+      <section class="gc-catalog__form-panel" aria-labelledby="food-info-heading">
+        <h2 id="food-info-heading">Thông tin món</h2>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="food-name">Tên món <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <input class="form-control <%= invalid('food_name') %>" id="food-name" name="food_name" type="text" maxlength="100" required
+                 value="<%= formValues.food_name || '' %>" aria-invalid="<%= Boolean(problems.food_name) %>" <%= describedBy('food_name') %>>
+          <% if (problems.food_name) { %><p class="gc-catalog__field-error" id="error-food_name"><%= problems.food_name %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field-row">
+          <div class="gc-catalog__field">
+            <label class="form-label" for="food-category">Loại <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+            <select class="form-select <%= invalid('category') %>" id="food-category" name="category" aria-invalid="<%= Boolean(problems.category) %>" <%= describedBy('category') %>>
+              <% if (formValues.category && !categories.includes(formValues.category)) { %><option value="" selected>Chọn loại</option><% } %>
+              <% categories.forEach((category) => { %>
+                <option value="<%= category %>" <%= formValues.category === category ? 'selected' : '' %>><%= categoryLabels[category] %></option>
+              <% }) %>
+            </select>
+            <% if (problems.category) { %><p class="gc-catalog__field-error" id="error-category"><%= problems.category %></p><% } %>
+          </div>
+
+          <div class="gc-catalog__field">
+            <label class="form-label" for="food-price">Giá (VNĐ) <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+            <input class="form-control <%= invalid('price') %>" id="food-price" name="price" type="number" min="0" step="1" required
+                   value="<%= formValues.price === undefined || formValues.price === null ? '' : formValues.price %>"
+                   aria-invalid="<%= Boolean(problems.price) %>" <%= describedBy('price') %>>
+            <% if (problems.price) { %><p class="gc-catalog__field-error" id="error-price"><%= problems.price %></p><% } %>
+          </div>
+        </div>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="food-status">Trạng thái</label>
+          <select class="form-select <%= invalid('status') %>" id="food-status" name="status" aria-invalid="<%= Boolean(problems.status) %>" <%= describedBy('status') %>>
+            <option value="1" <%= String(formValues.status) === '1' ? 'selected' : '' %>><%= statusLabels[1] %></option>
+            <option value="0" <%= String(formValues.status) === '0' ? 'selected' : '' %>><%= statusLabels[0] %></option>
+          </select>
+          <% if (problems.status) { %><p class="gc-catalog__field-error" id="error-status"><%= problems.status %></p><% } %>
+        </div>
+      </section>
+
+      <section class="gc-catalog__form-panel" aria-labelledby="food-image-heading">
+        <h2 id="food-image-heading">Hình ảnh</h2>
+        <div class="gc-catalog__field gc-catalog__poster-field" data-food-image-field>
+          <label class="form-label" for="food-image">Ảnh món</label>
+          <div class="gc-catalog__poster-preview">
+            <img data-food-image-preview <%= existingImage ? '' : 'hidden' %> src="<%= existingImage || '/images/favicon.png' %>" alt="Xem trước ảnh món">
+            <span class="gc-catalog__upload-placeholder" data-food-image-placeholder <%= existingImage ? 'hidden' : '' %>><i class="bi bi-image" aria-hidden="true"></i><span>Chọn ảnh món</span></span>
+          </div>
+          <input class="form-control <%= invalid('image') %>" id="food-image" name="image" type="file"
+                 accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-food-image-input
+                 aria-describedby="food-image-help food-image-client-error<%= problems.image ? ' error-image' : '' %>"
+                 aria-invalid="<%= Boolean(problems.image) %>">
+          <p class="gc-catalog__hint" id="food-image-help">JPG, PNG hoặc WebP, tối đa 5 MB. <%= isEdit ? 'Để trống để giữ ảnh hiện tại.' : 'Không bắt buộc.' %></p>
+          <p class="gc-catalog__field-error" id="food-image-client-error" data-food-image-error aria-live="polite" hidden></p>
+          <% if (problems.image) { %><p class="gc-catalog__field-error" id="error-image"><%= problems.image %></p><% } %>
+        </div>
+      </section>
+    </div>
+
+    <footer class="gc-catalog__form-footer">
+      <a class="btn gc-catalog__secondary" href="/admin/foods">Hủy bỏ</a>
+      <button class="btn gc-catalog__primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> Lưu</button>
+    </footer>
+  </form>
+</section>
+<script src="/js/adminCatalog.js"></script>
+<script src="/js/foodAdmin.js"></script>

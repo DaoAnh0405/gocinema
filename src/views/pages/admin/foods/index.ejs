@@ -1,0 +1,111 @@
+<link rel="stylesheet" href="/css/adminCatalog.css">
+<%
+  const currentPage = Math.max(1, Number(pagination.page) || 1);
+  const totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+  const total = Number(pagination.total) || 0;
+  const pageSize = Number(pagination.pageSize) || 8;
+  const firstItem = total && foods.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const lastItem = total && foods.length ? Math.min(total, firstItem + foods.length - 1) : 0;
+  const pageUrl = (page) => {
+    const params = new URLSearchParams();
+    for (const key of ['q', 'category', 'status']) {
+      if (filters[key] !== undefined && filters[key] !== null && String(filters[key])) params.set(key, String(filters[key]));
+    }
+    params.set('page', String(page));
+    return '/admin/foods?' + params.toString();
+  };
+  const pageNumbers = [...new Set([1, totalPages, currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2])]
+    .filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+%>
+<section class="gc-catalog" aria-label="Quản lý đồ ăn">
+  <div class="gc-catalog__toolbar">
+    <form class="gc-catalog__filters" method="get" action="/admin/foods" role="search">
+      <div class="gc-catalog__search">
+        <label class="visually-hidden" for="food-search">Tìm theo tên món</label>
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input class="form-control" id="food-search" name="q" value="<%= filters.q || '' %>" maxlength="100" placeholder="Tìm theo tên món...">
+      </div>
+      <div>
+        <label class="visually-hidden" for="food-category-filter">Loại</label>
+        <select class="form-select" id="food-category-filter" name="category">
+          <option value="">Tất cả loại</option>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>><%= categoryLabels[category] %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="visually-hidden" for="food-status-filter">Trạng thái</label>
+        <select class="form-select" id="food-status-filter" name="status">
+          <option value="">Tất cả trạng thái</option>
+          <option value="1" <%= filters.status === '1' ? 'selected' : '' %>><%= statusLabels[1] %></option>
+          <option value="0" <%= filters.status === '0' ? 'selected' : '' %>><%= statusLabels[0] %></option>
+        </select>
+      </div>
+      <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+    </form>
+    <a class="btn gc-catalog__primary" href="/admin/foods/new"><i class="bi bi-plus-lg" aria-hidden="true"></i> Thêm món mới</a>
+  </div>
+
+  <div class="gc-catalog__table-panel">
+    <div class="gc-catalog__table-scroll">
+      <table class="table gc-catalog__table gc-catalog__movie-table">
+        <caption class="visually-hidden">Danh sách đồ ăn</caption>
+        <thead><tr><th scope="col">Ảnh</th><th scope="col">Tên món</th><th scope="col">Loại</th><th scope="col">Giá</th><th scope="col">Trạng thái</th><th scope="col">Thao tác</th></tr></thead>
+        <tbody>
+          <% if (!foods.length) { %>
+            <tr><td colspan="6" class="gc-catalog__empty"><i class="bi bi-cup-straw" aria-hidden="true"></i><p>Không tìm thấy món phù hợp.</p><a href="/admin/foods">Xem tất cả món</a></td></tr>
+          <% } %>
+          <% foods.forEach((food) => { %>
+            <tr>
+              <td>
+                <% if (food.image_url) { %>
+                  <img class="gc-catalog__poster-thumb" src="<%= food.image_url %>" alt="Ảnh <%= food.food_name %>" loading="lazy" width="48" height="66">
+                <% } else { %>
+                  <span class="gc-catalog__poster-thumb gc-catalog__poster-empty" role="img" aria-label="Chưa có ảnh"><i class="bi bi-image" aria-hidden="true"></i></span>
+                <% } %>
+              </td>
+              <th scope="row" class="gc-catalog__movie-title"><a href="/admin/foods/<%= food.food_id %>/edit"><%= food.food_name %></a></th>
+              <td><%= categoryLabels[food.category] || food.category || '—' %></td>
+              <td class="text-nowrap"><%= fmt.money(food.price) %></td>
+              <td><span class="gc-catalog__status <%= Number(food.status) === 1 ? 'gc-catalog__status--showing' : 'gc-catalog__status--ended' %>"><%= Number(food.status) === 1 ? statusLabels[1] : statusLabels[0] %></span></td>
+              <td>
+                <div class="gc-catalog__actions">
+                  <a class="gc-catalog__icon-button" href="/admin/foods/<%= food.food_id %>/edit" aria-label="Sửa món <%= food.food_name %>" title="Chỉnh sửa"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+                  <form method="post" action="/admin/foods/<%= food.food_id %>/delete" data-confirm-delete data-confirm-message="Bạn có chắc muốn xóa món “<%= food.food_name %>”? Hành động này không thể hoàn tác.">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="gc-catalog__icon-button gc-catalog__icon-button--danger" type="submit" aria-label="Xóa món <%= food.food_name %>" title="Xóa món"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <footer class="gc-catalog__table-footer">
+      <p>Hiển thị <strong><%= firstItem %>–<%= lastItem %></strong> trong <strong><%= total %></strong> món</p>
+      <nav aria-label="Phân trang đồ ăn">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item <%= pagination.hasPrevious ? '' : 'disabled' %>">
+            <% if (pagination.hasPrevious) { %><a class="page-link" href="<%= pageUrl(currentPage - 1) %>" aria-label="Trang trước" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang trước"><i class="bi bi-chevron-left" aria-hidden="true"></i></span><% } %>
+          </li>
+          <% pageNumbers.forEach((page, index) => { %>
+            <% if (index && page - pageNumbers[index - 1] > 1) { %><li class="page-item disabled"><span class="page-link" aria-hidden="true">…</span></li><% } %>
+            <li class="page-item <%= page === currentPage ? 'active' : '' %>"><% if (page === currentPage) { %><span class="page-link" aria-current="page"><%= page %></span><% } else { %><a class="page-link" href="<%= pageUrl(page) %>" aria-label="Trang <%= page %>"><%= page %></a><% } %></li>
+          <% }) %>
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <% if (pagination.hasNext) { %><a class="page-link" href="<%= pageUrl(currentPage + 1) %>" aria-label="Trang sau" rel="next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang sau"><i class="bi bi-chevron-right" aria-hidden="true"></i></span><% } %>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+
+  <dialog class="gc-catalog__dialog" data-delete-dialog aria-labelledby="catalog-dialog-title" aria-describedby="catalog-dialog-message">
+    <h2 id="catalog-dialog-title">Xác nhận xóa</h2>
+    <p id="catalog-dialog-message" data-dialog-message>Bạn có chắc muốn xóa món này?</p>
+    <div class="gc-catalog__dialog-actions"><button class="btn gc-catalog__secondary" type="button" data-dialog-cancel autofocus>Hủy</button><button class="btn gc-catalog__primary" type="button" data-dialog-confirm>Xóa</button></div>
+  </dialog>
+</section>
+<script src="/js/adminCatalog.js"></script>
