@@ -16,6 +16,8 @@ router.get('/', (req, res) => res.render('pages/admin/dashboard', { title: 'Tổ
 router.use(require('./adminCatalogRoutes'));
 //foods
 router.use(require('./adminFoodRoutes'));
+//showtimes
+router.use(require('./adminShowtimeRoutes'));
 
 //cinemas
 router.use('/cinemas', requirePermission(PERMISSION.MANAGE_CINEMAS), cinemas.csrf);

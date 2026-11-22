@@ -1,0 +1,192 @@
+.gc-showtimes {
+  color: #24242b;
+  font-size: 13px;
+}
+
+.gc-showtimes__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f0f0f0;
+}
+
+.gc-showtimes__filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.gc-showtimes__filters input,
+.gc-showtimes__filters select {
+  min-height: 34px;
+  max-width: 190px;
+  padding: 6px 9px;
+  border: 1px solid #d7d7dc;
+  border-radius: 6px;
+  background: #fff;
+  color: #34343b;
+  font: inherit;
+}
+
+.gc-showtimes__filters input[type="date"] { width: 142px; }
+.gc-showtimes__filters select { min-width: 102px; }
+
+.gc-showtimes__filter-button,
+.gc-showtimes__primary,
+.gc-showtimes__cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gc-showtimes__filter-button { color: #34343b; background: #fff; border-color: #d7d7dc; }
+.gc-showtimes__filter-button:hover { background: #f8f8f9; }
+.gc-showtimes__primary { color: #fff; background: #df000b; }
+.gc-showtimes__primary:hover { color: #fff; background: #c70009; }
+.gc-showtimes__cancel { color: #44444b; background: #fff; border-color: #cfcfd4; }
+.gc-showtimes__cancel:hover { color: #222; background: #f6f6f7; }
+
+.gc-showtimes__table-card {
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f0f0f0;
+}
+
+.gc-showtimes__table-scroll { width: 100%; overflow-x: auto; }
+.gc-showtimes__table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 12px; }
+.gc-showtimes__table th,
+.gc-showtimes__table td { padding: 13px 11px; border-bottom: 1px solid #dedee1; text-align: left; vertical-align: middle; }
+.gc-showtimes__table thead { color: #4b4b52; background: #e9e9eb; }
+.gc-showtimes__table thead th { font-weight: 600; white-space: nowrap; }
+.gc-showtimes__table tbody tr:last-child th,
+.gc-showtimes__table tbody tr:last-child td { border-bottom: 0; }
+.gc-showtimes__table tbody tr:hover { background: #f8f8f9; }
+.gc-showtimes__table small { display: block; margin-top: 2px; color: #73737c; font-size: 10px; }
+.gc-showtimes__movie { max-width: 220px; font-weight: 500; }
+.gc-showtimes__cinema { display: block; min-width: 135px; }
+.gc-showtimes__date,
+.gc-showtimes__seats { white-space: nowrap; }
+.gc-showtimes__date strong { font-weight: 500; }
+.gc-showtimes__format { white-space: nowrap; }
+
+.gc-showtimes__status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.gc-showtimes__status--open { color: #fff; background: #57d17c; }
+.gc-showtimes__status--closed { color: #fff; background: #64646b; }
+.gc-showtimes__status--cancelled { color: #fff; background: #d94b53; }
+
+.gc-showtimes__actions { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.gc-showtimes__actions form { display: inline-flex; margin: 0; }
+.gc-showtimes__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #55555c;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.gc-showtimes__icon:hover { background: #e4e4e7; }
+.gc-showtimes__icon--danger { color: #d32f38; }
+.gc-showtimes__small-action {
+  min-height: 22px;
+  padding: 3px 7px;
+  border: 0;
+  border-radius: 5px;
+  background: #4e4e55;
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.gc-showtimes__small-action:hover { background: #35353b; }
+.gc-showtimes__small-action--muted { background: #72727a; }
+.gc-showtimes__small-action--muted:hover { background: #55555c; }
+
+.gc-showtimes__empty { padding: 38px 16px !important; color: #6b6b73; text-align: center !important; }
+.gc-showtimes__empty i { font-size: 24px; }
+.gc-showtimes__empty p { margin: 8px 0 4px; }
+.gc-showtimes__empty a { color: #c9000a; }
+.gc-showtimes__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; color: #6b6b73; }
+.gc-showtimes__footer p { margin: 0; }
+.gc-showtimes__pagination { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.gc-showtimes__pagination a,
+.gc-showtimes__pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 6px; border: 1px solid #d5d5da; border-radius: 5px; background: #fff; color: #44444b; text-decoration: none; }
+.gc-showtimes__pagination a:hover,
+.gc-showtimes__pagination [aria-current="page"] { border-color: #d9000b; background: #d9000b; color: #fff; }
+.gc-showtimes__pagination [aria-disabled="true"] { opacity: .45; }
+.gc-showtimes__pagination .gc-showtimes__ellipsis { border-color: transparent; background: transparent; }
+
+.gc-showtimes__dialog {
+  width: 500px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100dvh - 28px);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 15px;
+  background: #f5f5f6;
+  color: #25252b;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 30%);
+}
+.gc-showtimes__dialog::backdrop { background: rgb(0 0 0 / 62%); }
+.gc-showtimes__form { padding: 22px 24px; }
+.gc-showtimes__form h2 { margin: 0 0 16px; font-size: 20px; font-weight: 600; }
+.gc-showtimes__field { min-width: 0; margin-bottom: 12px; }
+.gc-showtimes__field label { display: block; margin-bottom: 5px; color: #37373e; font-size: 12px; font-weight: 500; }
+.gc-showtimes__field input,
+.gc-showtimes__field select { display: block; width: 100%; min-height: 37px; padding: 7px 10px; border: 1px solid #d3d3d8; border-radius: 6px; background: #fff; color: #303038; font: inherit; }
+.gc-showtimes__field input:focus,
+.gc-showtimes__field select:focus { border-color: #65a8ee; outline: 0; box-shadow: 0 0 0 3px rgb(13 110 253 / 12%); }
+.gc-showtimes__field select:disabled { color: #8a8a91; background: #ededee; }
+.gc-showtimes__field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.gc-showtimes__hint { display: block; margin-top: 5px; color: #777780; font-size: 11px; }
+.gc-showtimes__dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 6px; }
+.gc-showtimes__dialog-actions .gc-showtimes__primary,
+.gc-showtimes__dialog-actions .gc-showtimes__cancel { min-width: 94px; min-height: 36px; }
+.gc-showtimes__errors { margin-bottom: 14px; padding: 10px 12px; border: 1px solid #f0b9bd; border-radius: 7px; background: #fff0f1; color: #8f1720; }
+.gc-showtimes__errors ul { margin: 5px 0 0; padding-left: 18px; }
+
+@media (max-width: 800px) {
+  .gc-showtimes__toolbar { align-items: stretch; flex-direction: column; }
+  .gc-showtimes__primary { align-self: flex-start; }
+  .gc-showtimes__filters { width: 100%; }
+  .gc-showtimes__filters select { flex: 1 1 130px; max-width: none; }
+}
+@media (max-width: 520px) {
+  .gc-showtimes__filters input[type="date"] { flex: 1 1 100%; width: 100%; max-width: none; }
+  .gc-showtimes__filter-button { flex: 1 1 100%; }
+  .gc-showtimes__footer { align-items: flex-start; flex-direction: column; }
+  .gc-showtimes__form { padding: 19px 17px; }
+}
