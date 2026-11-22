@@ -12,8 +12,12 @@ router.use(requireLogin, requireRole(ROLE.ADMIN), adminLayout);
 
 router.get('/', (req, res) => res.render('pages/admin/dashboard', { title: 'Tổng quan' }));
 
+//catalog(movies, genres)
 router.use(require('./adminCatalogRoutes'));
-// mount module ở đây
+//foods
+router.use(require('./adminFoodRoutes'));
+
+//cinemas
 router.use('/cinemas', requirePermission(PERMISSION.MANAGE_CINEMAS), cinemas.csrf);
 router.get('/cinemas', cinemas.index);
 router.get('/cinemas/new', cinemas.create);
@@ -30,6 +34,7 @@ router.post('/cinemas/:cinemaId/rooms/:roomId/seats', cinemaRules.cinemaIdRule, 
 router.post('/cinemas/:cinemaId/rooms/:roomId', cinemaRules.cinemaIdRule, cinemaRules.roomIdRule, cinemaRules.roomRules, cinemas.saveRoom);
 router.post('/cinemas/:cinemaId/rooms/:roomId/status', cinemaRules.cinemaIdRule, cinemaRules.roomIdRule, cinemaRules.statusRule, cinemas.changeRoomStatus);
 
+// prices
 router.use('/prices', requirePermission(PERMISSION.MANAGE_PRICES), prices.csrf);
 router.get('/prices', prices.index);
 router.get('/prices/new', prices.create);
