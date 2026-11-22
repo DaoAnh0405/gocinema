@@ -1,54 +1,46 @@
-const FoodModel = require('../models/foodModel');
-const { FOOD_STATUS, UPLOAD_PATH } = require('../constants/foodConstants');
-const { deletePublicFile } = require('../utils/fileHelper');
+const foodModel = require('../models/foodModel');
+const { persistFoodImage, cleanupManagedFoodImage } = require('../middlewares/foodUpload');
 
-class FoodService {
-  static async getAllFoods(query) {
-    return await FoodModel.findAll({
-      search: query.search?.trim(),
-      status: query.status
-    });
-  }
-
-  static async createFood(body, file) {
-    const image_url = file ? `${UPLOAD_PATH}/${file.filename}` : null;
-    const newId = await FoodModel.create({
-      name: body.name.trim(),
-      description: body.description?.trim() || '',
-      price: Number(body.price),
-      status: FOOD_STATUS.SELLING,
-      image_url
-    });
-    return await FoodModel.findById(newId);
-  }
-
-  static async updateFood(id, body, file) {
-    const existing = await FoodModel.findById(id);
-    if (!existing) throw new Error('NOT_FOUND');
-
-    let image_url = existing.image_url;
-    if (file) {
-      deletePublicFile(existing.image_url);
-      image_url = `${UPLOAD_PATH}/${file.filename}`;
-    }
-
-    await FoodModel.update(id, {
-      name: body.name.trim(),
-      description: body.description !== undefined ? body.description.trim() : existing.description,
-      price: Number(body.price),
-      status: body.status || existing.status,
-      image_url
-    });
-    return await FoodModel.findById(id);
-  }
-
-  static async deleteFood(id) {
-    const existing = await FoodModel.findById(id);
-    if (!existing) throw new Error('NOT_FOUND');
-
-    deletePublicFile(existing.image_url);
-    await FoodModel.delete(id);
+// dữ liệu đã lưu DB thành công thì không được báo lỗi chỉ vì dọn ảnh cũ thất bại.
+async function safeCleanup(imageUrl) {
+  try {
+    await cleanupManagedFoodImage(imageUrl);
+  } catch (err) {
+    console.error('Không thể dọn ảnh món ăn:', imageUrl, err);
   }
 }
 
-module.exports = FoodService;
+const list = (filters) => foodModel.listPage(filters);
+const getById = (id) => foodModel.findById(id);
+
+async function create(values, file) {
+  let imageUrl;
+  try {
+    if (file) imageUrl = await persistFoodImage(file);
+    return await foodModel.create({ ...values, image_url: imageUrl || null });
+  } catch (err) {
+    if (imageUrl) await safeCleanup(imageUrl);
+    throw err;
+  }
+}
+
+async function update(id, values, file) {
+  let imageUrl;
+  try {
+    if (file) imageUrl = await persistFoodImage(file);
+    const result = await foodModel.update(id, { ...values, image_url: imageUrl });
+    if (imageUrl) await safeCleanup(result.previousImageUrl);
+    return result;
+  } catch (err) {
+    if (imageUrl) await safeCleanup(imageUrl);
+    throw err;
+  }
+}
+
+async function remove(id) {
+  const food = await foodModel.remove(id);
+  await safeCleanup(food.image_url);
+  return food;
+}
+
+module.exports = { list, getById, create, update, remove };
