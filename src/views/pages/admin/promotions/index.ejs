@@ -1,0 +1,224 @@
+<%
+  const currentPage = Math.max(1, Number(pagination.page) || 1);
+  const totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+  const total = Number(pagination.total) || 0;
+  const pageSize = Number(pagination.pageSize) || 8;
+  const firstItem = total && promotions.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const lastItem = total && promotions.length ? Math.min(total, firstItem + promotions.length - 1) : 0;
+  const pageUrl = (page) => {
+    const params = new URLSearchParams();
+    for (const key of ['q', 'status']) {
+      if (filters[key] !== undefined && filters[key] !== null && String(filters[key])) params.set(key, String(filters[key]));
+    }
+    params.set('page', String(page));
+    return '/admin/promotions?' + params.toString();
+  };
+  const pageNumbers = [...new Set([1, totalPages, currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2])]
+    .filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  const pillClass = {
+    ACTIVE: 'gc-catalog__status--showing',
+    UPCOMING: 'gc-promo__status--upcoming',
+    PAUSED: 'gc-catalog__status--soon',
+    EXPIRED: 'gc-promo__status--expired'
+  };
+
+  // Dữ liệu modal: rỗng khi mở trang, hoặc giá trị đã nhập khi server trả lỗi
+  const isEdit = Boolean(modal && modal.mode === 'edit');
+  const mv = Object.assign({ discount_type: 'PERCENT', min_order_value: '0', status: 1 }, modal ? modal.values : {});
+  const problems = modal ? (modal.fieldErrors || {}) : {};
+  const messages = modal
+    ? [...new Set([...(modal.errors || []), ...Object.values(problems)].filter((m) => typeof m === 'string' && m))]
+    : [];
+  const formAction = isEdit ? '/admin/promotions/' + modal.id + '/update' : '/admin/promotions';
+  const val = (name) => (mv[name] === undefined || mv[name] === null ? '' : String(mv[name]));
+  const bad = (name) => (problems[name] ? 'is-invalid' : '');
+  const desc = (name) => (problems[name] ? 'aria-describedby=error-promo-' + name : '');
+%>
+<section class="gc-catalog gc-promo" aria-label="Quản lý khuyến mãi" data-promo-page>
+  <div class="gc-catalog__toolbar">
+    <form class="gc-catalog__filters" method="get" action="/admin/promotions" role="search">
+      <div class="gc-catalog__search">
+        <label class="visually-hidden" for="promo-search">Tìm theo mã hoặc tên chương trình</label>
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input class="form-control" id="promo-search" name="q" value="<%= filters.q || '' %>" maxlength="100" placeholder="Tìm mã hoặc tên chương trình...">
+      </div>
+      <div>
+        <label class="visually-hidden" for="promo-status-filter">Trạng thái</label>
+        <select class="form-select" id="promo-status-filter" name="status">
+          <option value="">Trạng thái</option>
+          <% statusKeys.forEach((key) => { %>
+            <option value="<%= key %>" <%= filters.status === key ? 'selected' : '' %>><%= statusLabels[key] %></option>
+          <% }) %>
+        </select>
+      </div>
+      <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+    </form>
+    <button class="btn gc-catalog__primary" type="button" data-promo-create><i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo khuyến mãi</button>
+  </div>
+
+  <div class="gc-catalog__table-panel">
+    <div class="gc-catalog__table-scroll">
+      <table class="table gc-catalog__table gc-promo__table">
+        <caption class="visually-hidden">Danh sách khuyến mãi</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mã</th><th scope="col">Tên chương trình</th><th scope="col">Mức giảm</th>
+            <th scope="col">Đơn tối thiểu</th><th scope="col">Hiệu lực</th><th scope="col">Lượt sử dụng</th>
+            <th scope="col">Trạng thái</th><th scope="col">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!promotions.length) { %>
+            <tr><td colspan="8" class="gc-catalog__empty"><i class="bi bi-ticket-perforated" aria-hidden="true"></i><p>Không tìm thấy khuyến mãi phù hợp.</p><a href="/admin/promotions">Xem tất cả khuyến mãi</a></td></tr>
+          <% } %>
+          <% promotions.forEach((promo) => {
+               const editData = {
+                 id: promo.promotion_id, promo_code: promo.promo_code, promotion_name: promo.promotion_name,
+                 description: promo.description || '', discount_type: promo.discount_type,
+                 discount_value: promo.discount_value, max_discount: promo.max_discount,
+                 min_order_value: promo.min_order_value, start_date: promo.start_text, end_date: promo.end_text,
+                 quantity: promo.quantity, status: promo.status
+               };
+          %>
+            <tr>
+              <th scope="row" class="gc-promo__code"><%= promo.promo_code %></th>
+              <td class="gc-promo__name"><%= promo.promotion_name %></td>
+              <td>
+                <% if (promo.discount_type === 'PERCENT') { %>
+                  <%= promo.discount_value %>%<% if (promo.max_discount != null) { %> <span class="gc-promo__sub">(Tối đa <%= fmt.money(promo.max_discount) %>)</span><% } %>
+                <% } else { %>
+                  <%= fmt.money(promo.discount_value) %>
+                <% } %>
+              </td>
+              <td class="text-nowrap"><%= fmt.money(promo.min_order_value) %></td>
+              <td class="text-nowrap"><%= fmt.date(promo.start_text) %> - <%= fmt.date(promo.end_text) %></td>
+              <td class="text-nowrap"><%= promo.used_count %> / <%= promo.quantity == null ? '∞' : promo.quantity %></td>
+              <td><span class="gc-catalog__status <%= pillClass[promo.effective_status] %>"><%= statusLabels[promo.effective_status] %></span></td>
+              <td>
+                <div class="gc-catalog__actions">
+                  <button class="gc-catalog__icon-button" type="button" data-promo-edit data-promo="<%= JSON.stringify(editData) %>" aria-label="Sửa mã <%= promo.promo_code %>" title="Chỉnh sửa"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                  <form method="post" action="/admin/promotions/<%= promo.promotion_id %>/delete" data-confirm-delete data-confirm-message="Bạn có chắc muốn xóa mã “<%= promo.promo_code %>”? Hành động này không thể hoàn tác.">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="gc-catalog__icon-button gc-catalog__icon-button--danger" type="submit" aria-label="Xóa mã <%= promo.promo_code %>" title="Xóa mã"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <footer class="gc-catalog__table-footer">
+      <p>Hiển thị <strong><%= firstItem %>–<%= lastItem %></strong> trong <strong><%= total %></strong> khuyến mãi</p>
+      <nav aria-label="Phân trang khuyến mãi">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item <%= pagination.hasPrevious ? '' : 'disabled' %>">
+            <% if (pagination.hasPrevious) { %><a class="page-link" href="<%= pageUrl(currentPage - 1) %>" aria-label="Trang trước" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang trước"><i class="bi bi-chevron-left" aria-hidden="true"></i></span><% } %>
+          </li>
+          <% pageNumbers.forEach((page, index) => { %>
+            <% if (index && page - pageNumbers[index - 1] > 1) { %><li class="page-item disabled"><span class="page-link" aria-hidden="true">…</span></li><% } %>
+            <li class="page-item <%= page === currentPage ? 'active' : '' %>"><% if (page === currentPage) { %><span class="page-link" aria-current="page"><%= page %></span><% } else { %><a class="page-link" href="<%= pageUrl(page) %>" aria-label="Trang <%= page %>"><%= page %></a><% } %></li>
+          <% }) %>
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <% if (pagination.hasNext) { %><a class="page-link" href="<%= pageUrl(currentPage + 1) %>" aria-label="Trang sau" rel="next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang sau"><i class="bi bi-chevron-right" aria-hidden="true"></i></span><% } %>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+
+  <!-- modal tạo / sửa khuyến mãi -->
+  <dialog class="gc-promo__dialog" data-promo-dialog data-open="<%= modal ? 'true' : 'false' %>" aria-labelledby="promo-dialog-title">
+    <h2 id="promo-dialog-title" data-promo-title><%= isEdit ? 'Sửa mã khuyến mãi' : 'Tạo mã khuyến mãi mới' %></h2>
+    <% if (messages.length) { %>
+      <div class="gc-catalog__errors" role="alert" tabindex="-1" data-promo-errors>
+        <ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul>
+      </div>
+    <% } %>
+    <form method="post" action="<%= formAction %>" data-promo-form>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="gc-promo__grid">
+        <div class="gc-catalog__field">
+          <label class="form-label" for="promo-code">Mã khuyến mãi <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <input class="form-control <%= bad('promo_code') %>" id="promo-code" name="promo_code" maxlength="30" required autocomplete="off" style="text-transform: uppercase" value="<%= val('promo_code') %>" <%= desc('promo_code') %>>
+          <% if (problems.promo_code) { %><p class="gc-catalog__field-error" id="error-promo-promo_code"><%= problems.promo_code %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="promo-value">Giá trị <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <div class="input-group">
+            <input class="form-control <%= bad('discount_value') %>" id="promo-value" name="discount_value" type="number" min="1" max="<%= mv.discount_type === 'AMOUNT' ? 100000000 : 100 %>" step="1" required value="<%= val('discount_value') %>" <%= desc('discount_value') %>>
+            <select class="form-select gc-promo__unit <%= bad('discount_type') %>" name="discount_type" aria-label="Loại giảm giá">
+              <option value="PERCENT" <%= mv.discount_type === 'PERCENT' ? 'selected' : '' %>>%</option>
+              <option value="AMOUNT" <%= mv.discount_type === 'AMOUNT' ? 'selected' : '' %>>VNĐ</option>
+            </select>
+          </div>
+          <% if (problems.discount_value) { %><p class="gc-catalog__field-error" id="error-promo-discount_value"><%= problems.discount_value %></p><% } %>
+          <% if (problems.discount_type) { %><p class="gc-catalog__field-error" id="error-promo-discount_type"><%= problems.discount_type %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field gc-promo__full">
+          <label class="form-label" for="promo-name">Tên chương trình <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <input class="form-control <%= bad('promotion_name') %>" id="promo-name" name="promotion_name" maxlength="100" required value="<%= val('promotion_name') %>" <%= desc('promotion_name') %>>
+          <% if (problems.promotion_name) { %><p class="gc-catalog__field-error" id="error-promo-promotion_name"><%= problems.promotion_name %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="promo-min">Đơn tối thiểu (VNĐ)</label>
+          <input class="form-control <%= bad('min_order_value') %>" id="promo-min" name="min_order_value" type="number" min="0" max="100000000" step="1" value="<%= val('min_order_value') %>" <%= desc('min_order_value') %>>
+          <% if (problems.min_order_value) { %><p class="gc-catalog__field-error" id="error-promo-min_order_value"><%= problems.min_order_value %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field" data-promo-max-field>
+          <label class="form-label" for="promo-max">Giảm tối đa (VNĐ)</label>
+          <input class="form-control <%= bad('max_discount') %>" id="promo-max" name="max_discount" type="number" min="1" max="100000000" step="1" placeholder="Không giới hạn" value="<%= val('max_discount') %>" <%= mv.discount_type === 'AMOUNT' ? 'disabled' : '' %> <%= desc('max_discount') %>>
+          <% if (problems.max_discount) { %><p class="gc-catalog__field-error" id="error-promo-max_discount"><%= problems.max_discount %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="promo-start">Bắt đầu - Kết thúc <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <div class="gc-promo__range">
+            <input class="form-control <%= bad('start_date') %>" id="promo-start" name="start_date" type="date" required aria-label="Ngày bắt đầu" value="<%= val('start_date') %>">
+            <span aria-hidden="true">–</span>
+            <input class="form-control <%= bad('end_date') %>" id="promo-end" name="end_date" type="date" required aria-label="Ngày kết thúc" value="<%= val('end_date') %>">
+          </div>
+          <% if (problems.start_date) { %><p class="gc-catalog__field-error" id="error-promo-start_date"><%= problems.start_date %></p><% } %>
+          <% if (problems.end_date) { %><p class="gc-catalog__field-error" id="error-promo-end_date"><%= problems.end_date %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field">
+          <label class="form-label" for="promo-quantity">Số lượng</label>
+          <input class="form-control <%= bad('quantity') %>" id="promo-quantity" name="quantity" type="number" min="1" max="1000000" step="1" placeholder="Không giới hạn" value="<%= val('quantity') %>" <%= desc('quantity') %>>
+          <% if (problems.quantity) { %><p class="gc-catalog__field-error" id="error-promo-quantity"><%= problems.quantity %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field gc-promo__full">
+          <label class="form-label" for="promo-description">Mô tả (không bắt buộc)</label>
+          <textarea class="form-control <%= bad('description') %>" id="promo-description" name="description" rows="2" maxlength="500" <%= desc('description') %>><%= val('description') %></textarea>
+          <% if (problems.description) { %><p class="gc-catalog__field-error" id="error-promo-description"><%= problems.description %></p><% } %>
+        </div>
+
+        <div class="gc-catalog__field gc-promo__full" data-promo-status-field <%= isEdit ? '' : 'hidden' %>>
+          <label class="form-label" for="promo-status">Trạng thái</label>
+          <select class="form-select <%= bad('status') %>" id="promo-status" name="status" <%= isEdit ? '' : 'disabled' %>>
+            <option value="1" <%= val('status') === '1' ? 'selected' : '' %>>Đang hoạt động</option>
+            <option value="-1" <%= val('status') === '-1' ? 'selected' : '' %>>Tạm dừng</option>
+            <option value="0" <%= val('status') === '0' ? 'selected' : '' %>>Kết thúc sớm</option>
+          </select>
+          <% if (problems.status) { %><p class="gc-catalog__field-error" id="error-promo-status"><%= problems.status %></p><% } %>
+        </div>
+      </div>
+
+      <div class="gc-promo__footer">
+        <button class="btn gc-catalog__secondary" type="button" data-promo-close>Hủy bỏ</button>
+        <button class="btn gc-catalog__primary" type="submit">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="gc-catalog__dialog" data-delete-dialog aria-labelledby="catalog-dialog-title" aria-describedby="catalog-dialog-message">
+    <h2 id="catalog-dialog-title">Xác nhận xóa</h2>
+    <p id="catalog-dialog-message" data-dialog-message>Bạn có chắc muốn xóa khuyến mãi này?</p>
+    <div class="gc-catalog__dialog-actions"><button class="btn gc-catalog__secondary" type="button" data-dialog-cancel autofocus>Hủy</button><button class="btn gc-catalog__primary" type="button" data-dialog-confirm>Xóa</button></div>
+  </dialog>
+</section>
