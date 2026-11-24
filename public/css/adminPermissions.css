@@ -1,0 +1,101 @@
+/* phân quyền */
+.gc-dash--admin .gc-perm__note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #1e40af;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+}
+.gc-dash--admin .gc-perm__note i {
+    margin-top: 2px;
+}
+
+.gc-dash--admin .gc-perm__table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+.gc-dash--admin .gc-perm__table thead th {
+    padding: 12px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+.gc-dash--admin .gc-perm__table thead th small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: #94a3b8;
+}
+.gc-dash--admin .gc-perm__table .gc-perm__name-col {
+    width: 46%;
+    padding-left: 18px;
+    text-align: left;
+}
+.gc-dash--admin .gc-perm__table tbody th.gc-perm__name-col {
+    font-weight: 400;
+}
+.gc-dash--admin .gc-perm__table td,
+.gc-dash--admin .gc-perm__table tbody th {
+    padding: 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+}
+.gc-dash--admin .gc-perm__table td {
+    text-align: center;
+}
+.gc-dash--admin .gc-perm__table code {
+    display: block;
+    font-size: 13px;
+    color: #0f172a;
+}
+.gc-dash--admin .gc-perm__table tbody th span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+}
+.gc-dash--admin .gc-perm__group th {
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-align: left;
+    background: #f8fafc;
+}
+.gc-dash--admin .gc-perm__locked {
+    color: #94a3b8;
+}
+.gc-dash--admin .gc-perm__none {
+    color: #cbd5e1;
+}
+.gc-dash--admin .gc-perm__table .form-check-input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+.gc-dash--admin .gc-perm__table .form-check-input:checked {
+    background-color: #e50914;
+    border-color: #e50914;
+}
+.gc-dash--admin .gc-perm__cell--changed {
+    background: #fff7ed;
+}
+.gc-dash--admin .gc-perm__actions {
+    display: flex;
+    gap: 10px;
+}
+
+@media (max-width: 575.98px) {
+    .gc-dash--admin .gc-perm__table .gc-perm__name-col {
+        width: 52%;
+    }
+}

@@ -1,0 +1,63 @@
+<section class="gc-catalog gc-perm" aria-label="Phân quyền" data-perm-page>
+  <!-- <div class="gc-perm__note" role="note">
+    <i class="bi bi-info-circle" aria-hidden="true"></i>
+    <span>Chọn quyền cho vai trò Nhân viên. Thay đổi có hiệu lực ở lần tải trang kế tiếp của mỗi nhân viên, không cần đăng nhập lại. Quyền của Admin luôn đầy đủ và không thể chỉnh sửa.</span>
+  </div> -->
+
+  <form method="post" action="/admin/permissions" data-perm-form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="gc-catalog__table-panel">
+      <div class="gc-catalog__table-scroll">
+        <table class="gc-perm__table">
+          <caption class="visually-hidden">Quyền của từng vai trò</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="gc-perm__name-col">Quyền</th>
+              <% roles.forEach((role) => { %>
+                <th scope="col">
+                  <%= role.name %>
+                  <small><%= role.accountCount %> tài khoản</small>
+                </th>
+              <% }) %>
+            </tr>
+          </thead>
+          <% groups.forEach((group) => { %>
+            <tbody>
+              <tr class="gc-perm__group"><th scope="rowgroup" colspan="<%= roles.length + 1 %>"><%= group.label %></th></tr>
+              <% group.rows.forEach((row) => { %>
+                <tr>
+                  <th scope="row" class="gc-perm__name-col">
+                    <code><%= row.name %></code>
+                    <span><%= row.description %></span>
+                  </th>
+                  <% row.cells.forEach((cell) => { %>
+                    <td>
+                      <% if (cell.editable) { %>
+                        <input class="form-check-input" type="checkbox" name="permissions" value="<%= row.name %>"
+                               data-initial="<%= cell.checked ? '1' : '0' %>" <%= cell.checked ? 'checked' : '' %>
+                               aria-label="<%= cell.role %>: <%= row.name %>">
+                      <% } else if (cell.checked) { %>
+                        <i class="bi bi-lock-fill gc-perm__locked" role="img" aria-label="<%= cell.role %> có quyền này, không thể chỉnh sửa" title="Có quyền, không thể chỉnh sửa"></i>
+                      <% } else { %>
+                        <i class="bi bi-dash gc-perm__none" role="img" aria-label="<%= cell.role %> không có quyền này" title="Không có quyền này"></i>
+                      <% } %>
+                    </td>
+                  <% }) %>
+                </tr>
+              <% }) %>
+            </tbody>
+          <% }) %>
+        </table>
+      </div>
+
+      <footer class="gc-catalog__table-footer">
+        <p data-perm-count aria-live="polite">Chưa có thay đổi</p>
+        <div class="gc-perm__actions">
+          <button class="btn gc-catalog__secondary" type="button" data-perm-undo>Hoàn tác</button>
+          <button class="btn gc-catalog__primary" type="submit">Lưu thay đổi</button>
+        </div>
+      </footer>
+    </div>
+  </form>
+</section>
