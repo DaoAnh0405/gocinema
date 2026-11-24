@@ -8,6 +8,7 @@ const expressLayouts = require('express-ejs-layouts');
 // config
 const env = require('./config/env');
 const sessionMiddleware = require('./config/session');
+const refreshSession = require('./middlewares/refreshSession');
 
 // middlewares
 const viewLocals = require('./middlewares/viewLocals');
@@ -65,6 +66,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // session và view locals
 app.use(sessionMiddleware);
+app.use(refreshSession);
 app.use(viewLocals);
 
 // routes

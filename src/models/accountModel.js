@@ -31,6 +31,26 @@ async function getPermissionNames(roleId) {
   return rows.map((r) => r.permission_name);
 }
 
+// trạng thái đăng nhập hiện tại của tài khoản, đọc bằng 1 query (dùng làm mới session mỗi request)
+// trả về null nếu tài khoản không còn tồn tại
+async function loadAuthState(accountId) {
+  const rows = await query(
+    `SELECT a.status, r.role_name, p.permission_name
+     FROM accounts a
+     JOIN roles r ON r.role_id = a.role_id
+     LEFT JOIN role_permissions rp ON rp.role_id = a.role_id
+     LEFT JOIN permissions p ON p.permission_id = rp.permission_id
+     WHERE a.account_id = ?`,
+    [accountId],
+  );
+  if (!rows.length) return null;
+  return {
+    status: rows[0].status,
+    role: rows[0].role_name,
+    permissions: rows.map((r) => r.permission_name).filter(Boolean),
+  };
+}
+
 // tạo accounts + customers trong 1 transaction (thiếu 1 bảng thì rollback cả hai)
 async function createCustomer({ email, phone, passwordHash, fullName, dob, gender, address }) {
   return withTransaction(async (conn) => {
@@ -91,6 +111,7 @@ module.exports = {
   findByPhone,
   findById,
   getPermissionNames,
+  loadAuthState,
   createCustomer,
   getCustomerProfile,
   updateCustomerProfile,
