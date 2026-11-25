@@ -8,6 +8,8 @@ const transporter = nodemailer.createTransport({
   auth: { user: env.mail.user, pass: env.mail.pass },
 });
 
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 async function sendMail({ to, subject, html, text, attachments }) {
   if (env.isTest) return;
 
@@ -44,4 +46,16 @@ async function sendResetPasswordMail(to, resetUrl, ttlMinutes) {
   });
 }
 
-module.exports = { sendMail, sendPasswordOtpMail, sendResetPasswordMail };
+async function sendStaffInviteMail(to, fullName, setPasswordUrl, ttlHours) {
+  return sendMail({
+    to,
+    subject: 'GoCinema – Thiết lập mật khẩu tài khoản nhân viên',
+    text: `Xin chào ${fullName}, tài khoản nhân viên GoCinema của bạn đã được tạo. Mở liên kết sau để đặt mật khẩu (có hiệu lực ${ttlHours} giờ): ${setPasswordUrl}`,
+    html: `<p>Xin chào ${escapeHtml(fullName)},</p>
+           <p>Tài khoản nhân viên GoCinema của bạn đã được tạo. Email đăng nhập: <b>${escapeHtml(to)}</b></p>
+           <p><a href="${setPasswordUrl}">Bấm vào đây để đặt mật khẩu</a></p>
+           <p>Liên kết có hiệu lực trong ${ttlHours} giờ và chỉ dùng được một lần. Nếu hết hạn, hãy nhờ quản trị viên gửi lại.</p>`,
+  });
+}
+
+module.exports = { sendMail, sendPasswordOtpMail, sendResetPasswordMail, sendStaffInviteMail };

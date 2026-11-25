@@ -1,0 +1,211 @@
+<%
+  const role = filters.role;
+  const isStaffTab = role === 'STAFF';
+  const isAdminTab = role === 'ADMIN';
+  const currentPage = Math.max(1, Number(pagination.page) || 1);
+  const totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+  const total = Number(pagination.total) || 0;
+  const pageSize = Number(pagination.pageSize) || 8;
+  const firstItem = total && accounts.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const lastItem = total && accounts.length ? Math.min(total, firstItem + accounts.length - 1) : 0;
+  const buildUrl = (overrides) => {
+    const merged = Object.assign({ role: role, q: filters.q, status: filters.status }, overrides);
+    const params = new URLSearchParams();
+    for (const key of ['role', 'q', 'status', 'page']) {
+      if (merged[key] !== undefined && merged[key] !== null && String(merged[key])) params.set(key, String(merged[key]));
+    }
+    return '/admin/accounts?' + params.toString();
+  };
+  const pageUrl = (page) => buildUrl({ page });
+  const backUrl = buildUrl({ page: currentPage });
+  const pageNumbers = [...new Set([1, totalPages, currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2])]
+    .filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  const colCount = isStaffTab ? 6 : (isAdminTab ? 4 : 6);
+
+  const isEdit = Boolean(modal && modal.mode === 'edit');
+  const mv = Object.assign({}, modal ? modal.values : {});
+  const problems = modal ? (modal.fieldErrors || {}) : {};
+  const messages = modal
+    ? [...new Set([...(modal.errors || []), ...Object.values(problems)].filter((m) => typeof m === 'string' && m))]
+    : [];
+  const formAction = isEdit ? '/admin/accounts/' + modal.id + '/update' : '/admin/accounts';
+  const val = (name) => (mv[name] === undefined || mv[name] === null ? '' : String(mv[name]));
+  const bad = (name) => (problems[name] ? 'is-invalid' : '');
+  const desc = (name) => (problems[name] ? 'aria-describedby=error-acc-' + name : '');
+%>
+<section class="gc-catalog gc-acc" aria-label="Quản lý tài khoản" data-acc-page>
+  <nav class="gc-acc__tabs" aria-label="Loại tài khoản">
+    <% tabs.forEach((tab) => { %>
+      <a class="gc-acc__tab <%= tab === role ? 'is-active' : '' %>" href="/admin/accounts?role=<%= tab %>" <%= tab === role ? 'aria-current=page' : '' %>>
+        <%= tabLabels[tab] %> <span class="gc-acc__count"><%= counts[tab] || 0 %></span>
+      </a>
+    <% }) %>
+  </nav>
+
+  <div class="gc-catalog__toolbar">
+    <form class="gc-catalog__filters" method="get" action="/admin/accounts" role="search">
+      <input type="hidden" name="role" value="<%= role %>">
+      <div class="gc-catalog__search">
+        <label class="visually-hidden" for="acc-search">Tìm theo tên, email hoặc số điện thoại</label>
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input class="form-control" id="acc-search" name="q" value="<%= filters.q || '' %>" maxlength="100" placeholder="Tìm tên, email hoặc SĐT...">
+      </div>
+      <div>
+        <label class="visually-hidden" for="acc-status-filter">Trạng thái</label>
+        <select class="form-select" id="acc-status-filter" name="status">
+          <option value="">Trạng thái</option>
+          <option value="1" <%= filters.status === '1' ? 'selected' : '' %>>Hoạt động</option>
+          <option value="0" <%= filters.status === '0' ? 'selected' : '' %>>Đã khóa</option>
+        </select>
+      </div>
+      <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+    </form>
+    <% if (isStaffTab) { %>
+      <button class="btn gc-catalog__primary" type="button" data-acc-create><i class="bi bi-plus-lg" aria-hidden="true"></i> Thêm nhân viên</button>
+    <% } %>
+  </div>
+
+  <div class="gc-catalog__table-panel">
+    <div class="gc-catalog__table-scroll">
+      <table class="table gc-catalog__table gc-acc__table">
+        <caption class="visually-hidden">Danh sách tài khoản <%= tabLabels[role] %></caption>
+        <thead>
+          <tr>
+            <th scope="col">Họ tên</th><th scope="col">Email</th>
+            <% if (isStaffTab) { %><th scope="col">Rạp</th><th scope="col">Chức vụ</th><% } else if (!isAdminTab) { %><th scope="col">SĐT</th><th scope="col">Ngày tạo</th><% } %>
+            <th scope="col">Trạng thái</th>
+            <% if (!isAdminTab) { %><th scope="col">Thao tác</th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!accounts.length) { %>
+            <tr><td colspan="<%= colCount %>" class="gc-catalog__empty"><i class="bi bi-people" aria-hidden="true"></i><p>Không tìm thấy tài khoản phù hợp.</p><a href="/admin/accounts?role=<%= role %>">Xem tất cả</a></td></tr>
+          <% } %>
+          <% accounts.forEach((acc) => {
+               const active = Number(acc.status) === 1;
+               const self = Number(acc.account_id) === Number(currentUserId);
+               const editData = {
+                 id: acc.account_id, full_name: acc.full_name || '', email: acc.email, phone: acc.phone || '',
+                 cinema_id: acc.cinema_id, position: acc.position || ''
+               };
+          %>
+            <tr>
+              <th scope="row" class="gc-acc__name">
+                <%= acc.full_name || '—' %>
+                <% if (isStaffTab && acc.phone) { %><span class="gc-acc__sub"><%= acc.phone %></span><% } %>
+                <% if (self) { %><span class="gc-acc__sub">(Bạn)</span><% } %>
+              </th>
+              <td class="gc-acc__email"><%= acc.email %></td>
+              <% if (isStaffTab) { %>
+                <td><%= acc.cinema_name || '—' %></td><td><%= acc.position || '—' %></td>
+              <% } else if (!isAdminTab) { %>
+                <td class="text-nowrap"><%= acc.phone || '—' %></td><td class="text-nowrap"><%= fmt.date(acc.created_at) %></td>
+              <% } %>
+              <td><span class="gc-catalog__status <%= active ? 'gc-catalog__status--showing' : 'gc-promo__status--expired' %>"><%= active ? 'Hoạt động' : 'Đã khóa' %></span></td>
+              <% if (!isAdminTab) { %>
+              <td>
+                <div class="gc-catalog__actions">
+                  <% if (isStaffTab) { %>
+                    <button class="gc-catalog__icon-button" type="button" data-acc-edit data-acc="<%= JSON.stringify(editData) %>" aria-label="Sửa nhân viên <%= acc.full_name %>" title="Chỉnh sửa"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                    <% if (active) { %>
+                    <form method="post" action="/admin/accounts/<%= acc.account_id %>/resend-invite">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="back" value="<%= backUrl %>">
+                      <button class="gc-catalog__icon-button" type="submit" aria-label="Gửi lại liên kết đặt mật khẩu cho <%= acc.full_name %>" title="Gửi lại liên kết đặt mật khẩu"><i class="bi bi-envelope" aria-hidden="true"></i></button>
+                    </form>
+                    <% } %>
+                  <% } %>
+                  <% if (!self) { %>
+                  <form method="post" action="/admin/accounts/<%= acc.account_id %>/status" data-confirm-delete data-confirm-title="<%= active ? 'Xác nhận khóa' : 'Xác nhận mở khóa' %>" data-confirm-label="<%= active ? 'Khóa' : 'Mở khóa' %>" data-confirm-message="<%= active ? 'Khóa tài khoản “' + acc.email + '”? Người dùng sẽ bị đăng xuất và không thể đăng nhập cho đến khi được mở khóa.' : 'Mở khóa tài khoản “' + acc.email + '”?' %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="status" value="<%= active ? 0 : 1 %>">
+                    <input type="hidden" name="back" value="<%= backUrl %>">
+                    <button class="gc-catalog__icon-button <%= active ? 'gc-catalog__icon-button--danger' : '' %>" type="submit" aria-label="<%= active ? 'Khóa' : 'Mở khóa' %> tài khoản <%= acc.email %>" title="<%= active ? 'Khóa tài khoản' : 'Mở khóa' %>"><i class="bi <%= active ? 'bi-lock' : 'bi-unlock' %>" aria-hidden="true"></i></button>
+                  </form>
+                  <% } %>
+                </div>
+              </td>
+              <% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <footer class="gc-catalog__table-footer">
+      <p>Hiển thị <strong><%= firstItem %>–<%= lastItem %></strong> trong <strong><%= total %></strong> tài khoản</p>
+      <nav aria-label="Phân trang tài khoản">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item <%= pagination.hasPrevious ? '' : 'disabled' %>">
+            <% if (pagination.hasPrevious) { %><a class="page-link" href="<%= pageUrl(currentPage - 1) %>" aria-label="Trang trước" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang trước"><i class="bi bi-chevron-left" aria-hidden="true"></i></span><% } %>
+          </li>
+          <% pageNumbers.forEach((page, index) => { %>
+            <% if (index && page - pageNumbers[index - 1] > 1) { %><li class="page-item disabled"><span class="page-link" aria-hidden="true">…</span></li><% } %>
+            <li class="page-item <%= page === currentPage ? 'active' : '' %>"><% if (page === currentPage) { %><span class="page-link" aria-current="page"><%= page %></span><% } else { %><a class="page-link" href="<%= pageUrl(page) %>" aria-label="Trang <%= page %>"><%= page %></a><% } %></li>
+          <% }) %>
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <% if (pagination.hasNext) { %><a class="page-link" href="<%= pageUrl(currentPage + 1) %>" aria-label="Trang sau" rel="next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang sau"><i class="bi bi-chevron-right" aria-hidden="true"></i></span><% } %>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+
+  <% if (isStaffTab) { %>
+  <!-- modal thêm / sửa nhân viên -->
+  <dialog class="gc-acc__dialog" data-acc-dialog data-open="<%= modal ? 'true' : 'false' %>" aria-labelledby="acc-dialog-title">
+    <h2 id="acc-dialog-title" data-acc-title><%= isEdit ? 'Sửa thông tin nhân viên' : 'Thêm nhân viên mới' %></h2>
+    <% if (messages.length) { %>
+      <div class="gc-catalog__errors" role="alert" tabindex="-1" data-acc-errors>
+        <ul><% messages.forEach((message) => { %><li><%= message %></li><% }) %></ul>
+      </div>
+    <% } %>
+    <form method="post" action="<%= formAction %>" data-acc-form>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="back" value="<%= backUrl %>">
+      <div class="gc-acc__grid">
+        <div class="gc-catalog__field gc-acc__full">
+          <label class="form-label" for="acc-name">Họ tên <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <input class="form-control <%= bad('full_name') %>" id="acc-name" name="full_name" maxlength="100" required value="<%= val('full_name') %>" <%= desc('full_name') %>>
+          <% if (problems.full_name) { %><p class="gc-catalog__field-error" id="error-acc-full_name"><%= problems.full_name %></p><% } %>
+        </div>
+        <div class="gc-catalog__field gc-acc__full">
+          <label class="form-label" for="acc-email">Email <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <input class="form-control <%= bad('email') %>" id="acc-email" name="email" type="email" maxlength="100" required autocomplete="off" value="<%= val('email') %>" <%= isEdit ? 'readonly' : '' %> <%= desc('email') %>>
+          <% if (problems.email) { %><p class="gc-catalog__field-error" id="error-acc-email"><%= problems.email %></p><% } %>
+          <p class="gc-acc__hint" data-acc-email-hint <%= isEdit ? 'hidden' : '' %>>Liên kết đặt mật khẩu sẽ được gửi tới email này (hiệu lực 24 giờ).</p>
+        </div>
+        <div class="gc-catalog__field">
+          <label class="form-label" for="acc-phone">Số điện thoại</label>
+          <input class="form-control <%= bad('phone') %>" id="acc-phone" name="phone" inputmode="tel" maxlength="12" value="<%= val('phone') %>" <%= desc('phone') %>>
+          <% if (problems.phone) { %><p class="gc-catalog__field-error" id="error-acc-phone"><%= problems.phone %></p><% } %>
+        </div>
+        <div class="gc-catalog__field">
+          <label class="form-label" for="acc-position">Chức vụ</label>
+          <input class="form-control <%= bad('position') %>" id="acc-position" name="position" maxlength="50" placeholder="VD: Thu ngân" value="<%= val('position') %>" <%= desc('position') %>>
+          <% if (problems.position) { %><p class="gc-catalog__field-error" id="error-acc-position"><%= problems.position %></p><% } %>
+        </div>
+        <div class="gc-catalog__field gc-acc__full">
+          <label class="form-label" for="acc-cinema">Rạp làm việc <span class="gc-catalog__required" aria-hidden="true">*</span></label>
+          <select class="form-select <%= bad('cinema_id') %>" id="acc-cinema" name="cinema_id" required <%= desc('cinema_id') %>>
+            <option value="">— Chọn rạp —</option>
+            <% cinemas.forEach((cinema) => { %>
+              <option value="<%= cinema.cinema_id %>" <%= val('cinema_id') === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option>
+            <% }) %>
+          </select>
+          <% if (problems.cinema_id) { %><p class="gc-catalog__field-error" id="error-acc-cinema_id"><%= problems.cinema_id %></p><% } %>
+        </div>
+      </div>
+      <div class="gc-acc__footer">
+        <button class="btn gc-catalog__secondary" type="button" data-acc-close>Hủy bỏ</button>
+        <button class="btn gc-catalog__primary" type="submit">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+  <% } %>
+
+  <dialog class="gc-catalog__dialog" data-delete-dialog aria-labelledby="catalog-dialog-title" aria-describedby="catalog-dialog-message">
+    <h2 id="catalog-dialog-title" data-dialog-title>Xác nhận</h2>
+    <p id="catalog-dialog-message" data-dialog-message>Bạn có chắc muốn thực hiện thao tác này?</p>
+    <div class="gc-catalog__dialog-actions"><button class="btn gc-catalog__secondary" type="button" data-dialog-cancel autofocus>Hủy</button><button class="btn gc-catalog__primary" type="button" data-dialog-confirm>Xác nhận</button></div>
+  </dialog>
+</section>
