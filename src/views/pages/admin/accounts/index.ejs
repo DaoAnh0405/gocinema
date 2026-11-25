@@ -91,9 +91,9 @@
           %>
             <tr>
               <th scope="row" class="gc-acc__name">
-                <%= acc.full_name || '—' %>
+                <%= acc.full_name || 'Admin' %>
                 <% if (isStaffTab && acc.phone) { %><span class="gc-acc__sub"><%= acc.phone %></span><% } %>
-                <% if (self) { %><span class="gc-acc__sub">(Bạn)</span><% } %>
+                <!-- <% if (self) { %><span class="gc-acc__sub">(Bạn)</span><% } %> -->
               </th>
               <td class="gc-acc__email"><%= acc.email %></td>
               <% if (isStaffTab) { %>

@@ -16,5 +16,5 @@
 
 ### Account test, MK: Demo12345
 - Customer: an.nguyen@example.com
-- Admin: npm run seed:admin -- <email> '<mật_khẩu>' / admin@gocinema.vn 
+- Admin: npm run seed:admin -- '<email>' '<mật_khẩu>' / admin@gocinema.vn
 - Staff: staff1@gocinema.vn
