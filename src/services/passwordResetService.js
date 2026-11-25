@@ -8,6 +8,7 @@ const AppError = require('../utils/AppError');
 const { ACCOUNT_STATUS } = require('../constants');
 
 const TOKEN_TTL_MINUTES = 30;
+const INVITE_TTL_HOURS = 24;
 const COOLDOWN_MS = 60 * 1000;
 const SALT_ROUNDS = 10;
 const MSG_INVALID_LINK = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn';
@@ -41,6 +42,20 @@ async function requestReset(emailInput) {
   }
 }
 
+// gửi liên kết đặt mật khẩu cho nhân viên mới
+// dùng lại bảng token và trang /reset-password ném lỗi nếu gửi mail thất bại để nơi gọi báo cho admin
+async function sendInvite(account) {
+  const token = crypto.randomBytes(32).toString('hex');
+  const ttlMs = INVITE_TTL_HOURS * 60 * 60 * 1000;
+  await resetModel.createToken(account.account_id, hashToken(token), new Date(Date.now() + ttlMs));
+  await mailService.sendStaffInviteMail(
+    account.email,
+    account.full_name,
+    `${env.appUrl}/reset-password/${token}`,
+    INVITE_TTL_HOURS,
+  );
+}
+
 // trả về bản ghi token nếu còn hiệu lực và tài khoản còn hoạt động, ngược lại trả null
 async function findValidToken(token) {
   if (!isTokenFormat(String(token))) return null;
@@ -58,4 +73,4 @@ async function resetPassword(token, newPassword) {
   if (!ok) throw new AppError(MSG_INVALID_LINK, 400);
 }
 
-module.exports = { TOKEN_TTL_MINUTES, MSG_INVALID_LINK, requestReset, findValidToken, resetPassword };
+module.exports = { TOKEN_TTL_MINUTES, INVITE_TTL_HOURS, MSG_INVALID_LINK, requestReset, sendInvite, findValidToken, resetPassword };

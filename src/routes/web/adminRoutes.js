@@ -20,6 +20,8 @@ router.use(require('./adminFoodRoutes'));
 router.use(require('./adminPromotionRoutes'));
 //permissions
 router.use(require('./adminPermissionRoutes'));
+//accounts
+router.use(require('./adminAccountRoutes'));
 //cinemas
 router.use('/cinemas', requirePermission(PERMISSION.MANAGE_CINEMAS), cinemas.csrf);
 router.get('/cinemas', cinemas.index);
