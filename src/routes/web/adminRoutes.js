@@ -20,6 +20,8 @@ router.use(require('./adminFoodRoutes'));
 router.use(require('./adminPromotionRoutes'));
 //permissions
 router.use(require('./adminPermissionRoutes'));
+//reports
+router.use(require('./adminReportRoutes'));
 //accounts
 router.use(require('./adminAccountRoutes'));
 //cinemas

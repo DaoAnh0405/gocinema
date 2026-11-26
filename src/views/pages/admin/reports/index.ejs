@@ -1,0 +1,143 @@
+<%
+  const k = kpi;
+  const f = filters;
+  const hasData = k.orders > 0 || k.failedOrders > 0;
+  const rangeUrl = (from, to) => {
+    const params = new URLSearchParams({ from, to });
+    if (f.cinemaId) params.set('cinema_id', String(f.cinemaId));
+    return '/admin/reports?' + params.toString();
+  };
+  const csvUrl = (() => {
+    const params = new URLSearchParams({ from: f.from, to: f.to });
+    if (f.cinemaId) params.set('cinema_id', String(f.cinemaId));
+    return '/admin/reports/export.csv?' + params.toString();
+  })();
+  const activePreset = presets.find((p) => p.from === f.from && p.to === f.to);
+  const delta = (value) => {
+    if (value === null || value === undefined) return { text: 'Không có kỳ trước để so sánh', cls: 'is-flat' };
+    if (value === 0) return { text: 'Không đổi so với kỳ trước', cls: 'is-flat' };
+    return { text: (value > 0 ? '▲ ' : '▼ ') + Math.abs(value).toString().replace('.', ',') + '% so với kỳ trước', cls: value > 0 ? 'is-up' : 'is-down' };
+  };
+  const cards = [
+    { label: 'Doanh thu', value: fmt.money(k.revenue), icon: 'bi-cash-stack', change: delta(k.change.revenue) },
+    { label: 'Đơn đã thanh toán', value: k.orders, icon: 'bi-receipt', change: delta(k.change.orders) },
+    { label: 'Vé bán ra', value: k.tickets, icon: 'bi-ticket-perforated', change: delta(k.change.tickets) },
+    { label: 'Giá trị TB mỗi đơn', value: fmt.money(k.avgOrder), icon: 'bi-calculator', note: 'Doanh thu ÷ số đơn' },
+    { label: 'Đơn hủy / hết hạn', value: k.failedOrders, icon: 'bi-x-octagon', note: k.failedRate.toString().replace('.', ',') + '% số đơn đã chốt' }
+  ];
+  const maxMovie = Math.max(1, ...movies.map((m) => m.revenue));
+  const maxFood = Math.max(1, ...foods.map((m) => m.revenue));
+%>
+<section class="gc-catalog gc-rep" aria-label="Thống kê" data-report-page>
+  <form class="gc-rep__filters" method="get" action="/admin/reports">
+    <div class="gc-rep__field">
+      <label class="form-label" for="rep-from">Từ ngày</label>
+      <input class="form-control" id="rep-from" name="from" type="date" value="<%= f.from %>" required>
+    </div>
+    <div class="gc-rep__field">
+      <label class="form-label" for="rep-to">Đến ngày</label>
+      <input class="form-control" id="rep-to" name="to" type="date" value="<%= f.to %>" required>
+    </div>
+    <div class="gc-rep__field">
+      <label class="form-label" for="rep-cinema">Rạp</label>
+      <select class="form-select" id="rep-cinema" name="cinema_id">
+        <option value="">Tất cả rạp</option>
+        <% cinemaOptions.forEach((cinema) => { %>
+          <option value="<%= cinema.cinema_id %>" <%= String(f.cinemaId) === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Xem</button>
+    <a class="btn gc-catalog__secondary" href="<%= csvUrl %>"><i class="bi bi-download" aria-hidden="true"></i> Xuất CSV</a>
+  </form>
+
+  <div class="gc-rep__presets" role="group" aria-label="Chọn nhanh khoảng thời gian">
+    <% presets.forEach((preset) => { %>
+      <a class="gc-rep__preset <%= activePreset && activePreset.key === preset.key ? 'is-active' : '' %>" href="<%= rangeUrl(preset.from, preset.to) %>" <%= activePreset && activePreset.key === preset.key ? 'aria-current=true' : '' %>><%= preset.label %></a>
+    <% }) %>
+    <span class="gc-rep__range">Kỳ so sánh: <%= fmt.date(previous.from) %> – <%= fmt.date(previous.to) %></span>
+  </div>
+
+  <% if (f.notice) { %><div class="alert alert-warning" role="status"><%= f.notice %></div><% } %>
+
+  <div class="gc-rep__kpis">
+    <% cards.forEach((card) => { %>
+      <article class="gc-rep__kpi">
+        <span class="gc-rep__kpi-icon" aria-hidden="true"><i class="bi <%= card.icon %>"></i></span>
+        <div>
+          <p class="gc-rep__kpi-label"><%= card.label %></p>
+          <p class="gc-rep__kpi-value"><%= card.value %></p>
+          <% if (card.change) { %><p class="gc-rep__kpi-note <%= card.change.cls %>"><%= card.change.text %></p>
+          <% } else { %><p class="gc-rep__kpi-note is-flat"><%= card.note %></p><% } %>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+
+  <% if (!hasData) { %>
+    <div class="gc-catalog__table-panel gc-rep__empty">
+      <i class="bi bi-bar-chart" aria-hidden="true"></i>
+      <p>Chưa có đơn hàng nào trong khoảng thời gian này.</p>
+      <a href="<%= rangeUrl(presets[1].from, presets[1].to) %>">Xem 30 ngày gần nhất</a>
+    </div>
+  <% } else { %>
+    <div class="gc-rep__panel" data-report-charts data-report="<%= JSON.stringify(chartData) %>">
+      <h2 class="gc-rep__title">Doanh thu theo ngày</h2>
+      <div class="gc-rep__canvas gc-rep__canvas--wide"><canvas id="rep-daily" role="img" aria-label="Biểu đồ doanh thu và số đơn theo ngày"></canvas></div>
+      <p class="gc-rep__fallback" data-report-fallback hidden>Không tải được thư viện biểu đồ. Bạn vẫn có thể dùng nút Xuất CSV để xem số liệu từng ngày.</p>
+    </div>
+
+    <div class="gc-rep__grid">
+      <div class="gc-rep__panel">
+        <h2 class="gc-rep__title">Theo kênh bán</h2>
+        <% if (channels.length) { %>
+          <div class="gc-rep__canvas"><canvas id="rep-channels" role="img" aria-label="Biểu đồ doanh thu theo kênh bán"></canvas></div>
+          <table class="gc-rep__table"><thead><tr><th scope="col">Kênh</th><th scope="col" class="text-end">Đơn</th><th scope="col" class="text-end">Doanh thu</th></tr></thead>
+            <tbody><% channels.forEach((row) => { %><tr><th scope="row"><%= row.label %></th><td class="text-end"><%= row.orders %></td><td class="text-end"><%= fmt.money(row.revenue) %></td></tr><% }) %></tbody></table>
+        <% } else { %><p class="gc-rep__none">Chưa có dữ liệu.</p><% } %>
+      </div>
+      <div class="gc-rep__panel">
+        <h2 class="gc-rep__title">Theo phương thức thanh toán</h2>
+        <% if (payments.length) { %>
+          <div class="gc-rep__canvas"><canvas id="rep-payments" role="img" aria-label="Biểu đồ doanh thu theo phương thức thanh toán"></canvas></div>
+          <table class="gc-rep__table"><thead><tr><th scope="col">Phương thức</th><th scope="col" class="text-end">Giao dịch</th><th scope="col" class="text-end">Số tiền</th></tr></thead>
+            <tbody><% payments.forEach((row) => { %><tr><th scope="row"><%= row.label %></th><td class="text-end"><%= row.payments %></td><td class="text-end"><%= fmt.money(row.amount) %></td></tr><% }) %></tbody></table>
+        <% } else { %><p class="gc-rep__none">Chưa có dữ liệu.</p><% } %>
+      </div>
+    </div>
+
+    <div class="gc-rep__grid">
+      <div class="gc-rep__panel">
+        <h2 class="gc-rep__title">Top phim theo doanh thu vé</h2>
+        <% if (movies.length) { %>
+          <table class="gc-rep__table gc-rep__table--rank"><thead><tr><th scope="col">#</th><th scope="col">Phim</th><th scope="col" class="text-end">Vé</th><th scope="col" class="text-end">Doanh thu</th></tr></thead>
+            <tbody><% movies.forEach((row, index) => { %>
+              <tr><td><%= index + 1 %></td>
+                <th scope="row"><%= row.title %><span class="gc-rep__bar" style="width: <%= Math.max(3, Math.round(row.revenue / maxMovie * 100)) %>%"></span></th>
+                <td class="text-end"><%= row.tickets %></td><td class="text-end text-nowrap"><%= fmt.money(row.revenue) %></td></tr>
+            <% }) %></tbody></table>
+        <% } else { %><p class="gc-rep__none">Chưa có vé bán ra.</p><% } %>
+      </div>
+      <div class="gc-rep__panel">
+        <h2 class="gc-rep__title">Doanh thu vé theo rạp</h2>
+        <% if (cinemas.length) { %>
+          <table class="gc-rep__table"><thead><tr><th scope="col">Rạp</th><th scope="col" class="text-end">Vé</th><th scope="col" class="text-end">Doanh thu</th></tr></thead>
+            <tbody><% cinemas.forEach((row) => { %><tr><th scope="row"><%= row.cinema_name %></th><td class="text-end"><%= row.tickets %></td><td class="text-end text-nowrap"><%= fmt.money(row.revenue) %></td></tr><% }) %></tbody></table>
+        <% } else { %><p class="gc-rep__none">Chưa có vé bán ra.</p><% } %>
+      </div>
+    </div>
+
+    <div class="gc-rep__panel">
+      <h2 class="gc-rep__title">Top đồ ăn &amp; nước <span class="gc-rep__sub">(tổng đồ ăn: <%= fmt.money(k.foodRevenue) %>, giảm giá đã áp: <%= fmt.money(k.discount) %>)</span></h2>
+      <% if (foods.length) { %>
+        <table class="gc-rep__table gc-rep__table--rank"><thead><tr><th scope="col">#</th><th scope="col">Món</th><th scope="col" class="text-end">Số lượng</th><th scope="col" class="text-end">Doanh thu</th></tr></thead>
+          <tbody><% foods.forEach((row, index) => { %>
+            <tr><td><%= index + 1 %></td>
+              <th scope="row"><%= row.food_name %><span class="gc-rep__bar" style="width: <%= Math.max(3, Math.round(row.revenue / maxFood * 100)) %>%"></span></th>
+              <td class="text-end"><%= row.quantity %></td><td class="text-end text-nowrap"><%= fmt.money(row.revenue) %></td></tr>
+          <% }) %></tbody></table>
+      <% } else { %><p class="gc-rep__none">Chưa bán đồ ăn trong khoảng này.</p><% } %>
+    </div>
+    <p class="gc-rep__foot">Doanh thu tính trên đơn đã thanh toán, theo ngày tạo đơn. Khi lọc theo rạp, một đơn được tính cho rạp nếu có vé thuộc rạp đó.</p>
+  <% } %>
+</section>

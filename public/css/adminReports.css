@@ -1,0 +1,189 @@
+/* thống kê */
+
+.gc-dash--admin .gc-rep__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px 14px;
+    margin-bottom: 12px;
+}
+.gc-dash--admin .gc-rep__field {
+    min-width: 150px;
+}
+.gc-dash--admin .gc-rep__field .form-label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+.gc-dash--admin .gc-rep__presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.gc-dash--admin .gc-rep__preset {
+    padding: 5px 14px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+}
+.gc-dash--admin .gc-rep__preset:hover {
+    background: #f8fafc;
+}
+.gc-dash--admin .gc-rep__preset.is-active {
+    color: #fff;
+    background: #e50914;
+    border-color: #e50914;
+}
+.gc-dash--admin .gc-rep__range {
+    margin-left: auto;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.gc-dash--admin .gc-rep__kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.gc-dash--admin .gc-rep__kpi {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+.gc-dash--admin .gc-rep__kpi-icon {
+    display: grid;
+    flex: 0 0 42px;
+    height: 42px;
+    place-items: center;
+    color: #e50914;
+    font-size: 20px;
+    background: #fee2e2;
+    border-radius: 10px;
+}
+.gc-dash--admin .gc-rep__kpi p {
+    margin: 0;
+}
+.gc-dash--admin .gc-rep__kpi-label {
+    color: #64748b;
+    font-size: 13px;
+}
+.gc-dash--admin .gc-rep__kpi-value {
+    color: #1e293b;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+.gc-dash--admin .gc-rep__kpi-note {
+    font-size: 12px;
+}
+.gc-dash--admin .gc-rep__kpi-note.is-up {
+    color: #15803d;
+}
+.gc-dash--admin .gc-rep__kpi-note.is-down {
+    color: #b91c1c;
+}
+.gc-dash--admin .gc-rep__kpi-note.is-flat {
+    color: #64748b;
+}
+
+.gc-dash--admin .gc-rep__panel {
+    min-width: 0;
+    margin-bottom: 18px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+.gc-dash--admin .gc-rep__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.gc-dash--admin .gc-rep__title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+}
+.gc-dash--admin .gc-rep__sub {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 400;
+}
+.gc-dash--admin .gc-rep__canvas {
+    position: relative;
+    height: 220px;
+    margin-bottom: 12px;
+}
+.gc-dash--admin .gc-rep__canvas--wide {
+    height: 320px;
+}
+.gc-dash--admin .gc-rep__fallback,
+.gc-dash--admin .gc-rep__none,
+.gc-dash--admin .gc-rep__foot {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+.gc-dash--admin .gc-rep__fallback[hidden] {
+    display: none;
+}
+
+.gc-dash--admin .gc-rep__table {
+    width: 100%;
+    font-size: 14px;
+    border-collapse: collapse;
+}
+.gc-dash--admin .gc-rep__table th,
+.gc-dash--admin .gc-rep__table td {
+    padding: 8px 6px;
+    border-top: 1px solid #f1f5f9;
+    vertical-align: top;
+}
+.gc-dash--admin .gc-rep__table thead th {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    border-top: 0;
+}
+.gc-dash--admin .gc-rep__table tbody th {
+    font-weight: 500;
+}
+.gc-dash--admin .gc-rep__bar {
+    display: block;
+    height: 4px;
+    margin-top: 5px;
+    background: #e50914;
+    border-radius: 2px;
+}
+
+.gc-dash--admin .gc-rep__empty {
+    padding: 48px 16px;
+    color: #64748b;
+    text-align: center;
+}
+.gc-dash--admin .gc-rep__empty i {
+    font-size: 36px;
+}
+
+@media (max-width: 767.98px) {
+    .gc-dash--admin .gc-rep__grid {
+        grid-template-columns: 1fr;
+    }
+    .gc-dash--admin .gc-rep__range {
+        margin-left: 0;
+    }
+    .gc-dash--admin .gc-rep__canvas--wide {
+        height: 260px;
+    }
+}

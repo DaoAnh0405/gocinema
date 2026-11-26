@@ -7,3 +7,4 @@ coverage/
 .vscode/
 tests/
 public/images/foods/uploads/
+demoOrders.js

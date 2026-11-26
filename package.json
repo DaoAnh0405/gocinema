@@ -10,7 +10,8 @@
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d --wait",
     "test": "cross-env DB_NAME=gocinema_test jest --runInBand",
-    "seed:admin": "node src/database/seeds/createAdmin.js"
+    "seed:admin": "node src/database/seeds/createAdmin.js",
+    "seed:demo": "node src/database/seeds/demoOrders.js"
   },
   "keywords": [],
   "author": "",
