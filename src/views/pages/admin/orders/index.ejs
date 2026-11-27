@@ -1,0 +1,120 @@
+<%
+  const currentPage = Math.max(1, Number(pagination.page) || 1);
+  const totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+  const total = Number(pagination.total) || 0;
+  const pageSize = Number(pagination.pageSize) || 10;
+  const firstItem = total && orders.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const lastItem = total && orders.length ? Math.min(total, firstItem + orders.length - 1) : 0;
+  const filterParams = () => {
+    const params = new URLSearchParams();
+    for (const key of ['q', 'status', 'channel', 'from', 'to']) {
+      if (filters[key]) params.set(key, String(filters[key]));
+    }
+    if (filters.cinemaId) params.set('cinema_id', String(filters.cinemaId));
+    return params;
+  };
+  const pageUrl = (page) => {
+    const params = filterParams();
+    params.set('page', String(page));
+    return '/admin/orders?' + params.toString();
+  };
+  const exportUrl = '/admin/orders/export.csv' + (filterParams().toString() ? '?' + filterParams().toString() : '');
+  const pageNumbers = [...new Set([1, totalPages, currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2])]
+    .filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+%>
+<section class="gc-catalog gc-orders" aria-label="Quản lý đơn hàng">
+  <div class="gc-catalog__toolbar">
+    <form class="gc-catalog__filters gc-orders__filters" method="get" action="/admin/orders" role="search">
+      <div class="gc-catalog__search">
+        <label class="visually-hidden" for="order-search">Tìm theo mã đơn, tên, email hoặc số điện thoại</label>
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input class="form-control" id="order-search" name="q" value="<%= filters.q %>" maxlength="100" placeholder="Mã đơn, tên, email, SĐT...">
+      </div>
+      <div>
+        <label class="visually-hidden" for="order-status">Trạng thái</label>
+        <select class="form-select" id="order-status" name="status">
+          <option value="">Trạng thái</option>
+          <% statuses.forEach((key) => { %><option value="<%= key %>" <%= filters.status === key ? 'selected' : '' %>><%= statusLabels[key] %></option><% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="visually-hidden" for="order-channel">Kênh bán</label>
+        <select class="form-select" id="order-channel" name="channel">
+          <option value="">Kênh bán</option>
+          <% channels.forEach((key) => { %><option value="<%= key %>" <%= filters.channel === key ? 'selected' : '' %>><%= channelLabels[key] %></option><% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="visually-hidden" for="order-cinema">Rạp</label>
+        <select class="form-select" id="order-cinema" name="cinema_id">
+          <option value="">Tất cả rạp</option>
+          <% cinemas.forEach((cinema) => { %><option value="<%= cinema.cinema_id %>" <%= String(filters.cinemaId) === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option><% }) %>
+        </select>
+      </div>
+      <div class="gc-orders__range">
+        <input class="form-control" type="date" name="from" value="<%= filters.from %>" aria-label="Từ ngày">
+        <span aria-hidden="true">–</span>
+        <input class="form-control" type="date" name="to" value="<%= filters.to %>" aria-label="Đến ngày">
+      </div>
+      <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Lọc</button>
+    </form>
+    <a class="btn gc-catalog__secondary" href="<%= exportUrl %>"><i class="bi bi-download" aria-hidden="true"></i> Xuất CSV</a>
+  </div>
+
+  <div class="gc-catalog__table-panel">
+    <div class="gc-catalog__table-scroll">
+      <table class="table gc-catalog__table gc-orders__table">
+        <caption class="visually-hidden">Danh sách đơn hàng</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mã đơn</th><th scope="col">Thời gian</th><th scope="col">Khách hàng</th>
+            <th scope="col">Kênh</th><th scope="col">Vé</th><th scope="col">Tổng tiền</th>
+            <th scope="col">Thanh toán</th><th scope="col">Trạng thái</th><th scope="col"><span class="visually-hidden">Chi tiết</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!orders.length) { %>
+            <tr><td colspan="9" class="gc-catalog__empty"><i class="bi bi-receipt" aria-hidden="true"></i><p>Không tìm thấy đơn hàng phù hợp.</p><a href="/admin/orders">Xem tất cả đơn hàng</a></td></tr>
+          <% } %>
+          <% orders.forEach((order) => { %>
+            <tr>
+              <th scope="row" class="gc-orders__code"><a href="/admin/orders/<%= order.order_id %>"><%= order.order_code %></a></th>
+              <td class="text-nowrap"><%= fmt.dateTime(order.created_at) %></td>
+              <td>
+                <span class="<%= order.customer_name ? '' : 'gc-orders__guest' %>"><%= order.customerLabel %></span>
+                <% if (order.customer_email) { %><span class="gc-orders__sub"><%= order.customer_email %></span><% } %>
+              </td>
+              <td class="text-nowrap"><%= order.channelLabel %></td>
+              <td><%= order.ticket_count %></td>
+              <td class="text-nowrap"><strong><%= fmt.money(order.total_amount) %></strong></td>
+              <td class="text-nowrap"><%= order.paymentLabel || '—' %></td>
+              <td><span class="gc-orders__status gc-orders__status--<%= order.status.toLowerCase() %>"><%= statusLabels[order.status] %></span></td>
+              <td>
+                <div class="gc-catalog__actions">
+                  <a class="gc-catalog__icon-button" href="/admin/orders/<%= order.order_id %>" aria-label="Xem đơn <%= order.order_code %>" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <footer class="gc-catalog__table-footer">
+      <p>Hiển thị <strong><%= firstItem %>–<%= lastItem %></strong> trong <strong><%= total %></strong> đơn hàng</p>
+      <nav aria-label="Phân trang đơn hàng">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item <%= pagination.hasPrevious ? '' : 'disabled' %>">
+            <% if (pagination.hasPrevious) { %><a class="page-link" href="<%= pageUrl(currentPage - 1) %>" aria-label="Trang trước" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang trước"><i class="bi bi-chevron-left" aria-hidden="true"></i></span><% } %>
+          </li>
+          <% pageNumbers.forEach((page, index) => { %>
+            <% if (index && page - pageNumbers[index - 1] > 1) { %><li class="page-item disabled"><span class="page-link" aria-hidden="true">…</span></li><% } %>
+            <li class="page-item <%= page === currentPage ? 'active' : '' %>"><% if (page === currentPage) { %><span class="page-link" aria-current="page"><%= page %></span><% } else { %><a class="page-link" href="<%= pageUrl(page) %>" aria-label="Trang <%= page %>"><%= page %></a><% } %></li>
+          <% }) %>
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <% if (pagination.hasNext) { %><a class="page-link" href="<%= pageUrl(currentPage + 1) %>" aria-label="Trang sau" rel="next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a><% } else { %><span class="page-link" aria-disabled="true" aria-label="Trang sau"><i class="bi bi-chevron-right" aria-hidden="true"></i></span><% } %>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+</section>

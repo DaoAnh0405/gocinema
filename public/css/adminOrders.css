@@ -1,0 +1,76 @@
+/* Quản lý đơn hàng */
+
+.gc-dash--admin .gc-orders__filters { flex-wrap: wrap; }
+.gc-dash--admin .gc-orders__range { display: flex; align-items: center; gap: 6px; }
+.gc-dash--admin .gc-orders__range .form-control { min-width: 140px; }
+.gc-dash--admin .gc-orders__table { min-width: 960px; }
+.gc-dash--admin .gc-orders__code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.gc-dash--admin .gc-orders__code a { color: #1d4ed8; text-decoration: none; }
+.gc-dash--admin .gc-orders__code a:hover { text-decoration: underline; }
+.gc-dash--admin .gc-orders__sub { display: block; color: #64748b; font-size: 12px; }
+.gc-dash--admin .gc-orders__guest { color: #64748b; font-style: italic; }
+
+/* trạng thái đơn và vé */
+.gc-dash--admin .gc-orders__status {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: 999px;
+}
+.gc-dash--admin .gc-orders__status--pending,
+.gc-dash--admin .gc-orders__status--ticket-pending { color: #92400e; background: #fef3c7; }
+.gc-dash--admin .gc-orders__status--paid,
+.gc-dash--admin .gc-orders__status--ticket-paid { color: #166534; background: #dcfce7; }
+.gc-dash--admin .gc-orders__status--cancelled,
+.gc-dash--admin .gc-orders__status--ticket-cancelled { color: #991b1b; background: #fee2e2; }
+.gc-dash--admin .gc-orders__status--expired { color: #fff; background: #475569; }
+.gc-dash--admin .gc-orders__status--ticket-used { color: #1d4ed8; background: #dbeafe; }
+
+/* trang chi tiết */
+.gc-dash--admin .gc-orders__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.gc-dash--admin .gc-orders__back { color: #475569; text-decoration: none; font-size: 14px; }
+.gc-dash--admin .gc-orders__back:hover { color: #1e293b; }
+.gc-dash--admin .gc-orders__summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.gc-dash--admin .gc-orders__title { margin: 0; font-size: 22px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.gc-dash--admin .gc-orders__summary .gc-orders__sub { margin-top: 2px; font-size: 13px; }
+.gc-dash--admin .gc-orders__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.gc-dash--admin .gc-orders__card { padding: 16px 20px; }
+.gc-dash--admin .gc-orders__card h3,
+.gc-dash--admin .gc-orders__section { margin: 0 0 12px; font-size: 15px; font-weight: 700; }
+.gc-dash--admin .gc-orders__section { padding: 16px 20px 0; }
+.gc-dash--admin .gc-orders__dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; font-size: 14px; }
+.gc-dash--admin .gc-orders__dl dt { color: #64748b; font-weight: 500; }
+.gc-dash--admin .gc-orders__dl dd { margin: 0; overflow-wrap: anywhere; }
+.gc-dash--admin .gc-orders__payments { margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid #e2e8f0; list-style: none; font-size: 13px; color: #334155; }
+.gc-dash--admin .gc-orders__payments li + li { margin-top: 4px; }
+.gc-dash--admin .gc-orders__notice {
+    display: flex; gap: 10px; margin-bottom: 16px; padding: 12px 16px;
+    color: #7f1d1d; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 14px;
+}
+.gc-dash--admin .gc-orders__notice p { margin: 2px 0 0; overflow-wrap: anywhere; }
+.gc-dash--admin .gc-catalog__table-panel + .gc-catalog__table-panel { margin-top: 16px; }
+
+.gc-dash--admin .gc-orders__cancel-btn { color: #fff; background: #dc2626; border-color: #dc2626; }
+.gc-dash--admin .gc-orders__cancel-btn:hover { color: #fff; background: #b91c1c; }
+.gc-dash--admin .gc-orders__cancel-btn:disabled { opacity: 0.6; }
+
+/* hộp thoại hủy đơn */
+.gc-dash--admin .gc-orders__dialog {
+    width: calc(100% - 32px); max-width: 480px; padding: 24px 26px; color: #1e293b;
+    background: #fff; border: 0; border-radius: 10px; box-shadow: 0 15px 60px rgb(0 0 0 / 22%);
+}
+.gc-dash--admin .gc-orders__dialog:not([open]) { display: none; }
+.gc-dash--admin .gc-orders__dialog::backdrop { background: rgb(0 0 0 / 45%); }
+.gc-dash--admin .gc-orders__dialog h2 { margin: 0 0 8px; font-size: 19px; }
+.gc-dash--admin .gc-orders__dialog p { margin: 0 0 14px; font-size: 14px; color: #475569; }
+.gc-dash--admin .gc-orders__dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+@media (max-width: 640px) {
+    .gc-dash--admin .gc-orders__summary { align-items: flex-start; flex-direction: column; }
+}

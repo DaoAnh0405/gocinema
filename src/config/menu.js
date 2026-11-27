@@ -16,6 +16,7 @@ const adminMenu = [
   { label: 'Giá vé', icon: 'bi-cash-coin', href: '/admin/prices', permission: P.MANAGE_PRICES },
   { label: 'Đồ ăn', icon: 'bi-cup-straw', href: '/admin/foods', permission: P.MANAGE_FOODS },
   { label: 'Khuyến mãi', icon: 'bi-ticket-perforated', href: '/admin/promotions', permission: P.MANAGE_PROMOTIONS },
+  { label: 'Đơn hàng', icon: 'bi-receipt', href: '/admin/orders', permission: P.VIEW_ORDERS },
 
   { group: 'Hệ thống' },
   { label: 'Tài khoản', icon: 'bi-people', href: '/admin/accounts', permission: P.MANAGE_ACCOUNTS },
