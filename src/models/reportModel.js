@@ -8,12 +8,26 @@ const ORDER_IN_CINEMA = `EXISTS (
     JOIN rooms rc ON rc.room_id = sc.room_id
    WHERE tc.order_id = o.order_id AND rc.cinema_id = ?)`;
 
+// lọc theo phim đơn có ít nhất một vé của suất chiếu thuộc phim đó
+const ORDER_HAS_MOVIE = `EXISTS (
+  SELECT 1 FROM tickets tm
+    JOIN showtimes sm ON sm.showtime_id = tm.showtime_id
+   WHERE tm.order_id = o.order_id AND sm.movie_id = ?)`;
+
 function orderScope(range, statuses = ['PAID']) {
   const sql = ['o.status IN (?)', 'o.created_at >= ?', 'o.created_at < ?'];
   const params = [statuses, `${range.from} 00:00:00`, `${range.toExclusive} 00:00:00`];
   if (range.cinemaId) {
     sql.push(ORDER_IN_CINEMA);
     params.push(range.cinemaId);
+  }
+  if (range.movieId) {
+    sql.push(ORDER_HAS_MOVIE);
+    params.push(range.movieId);
+  }
+  if (range.channel) {
+    sql.push('o.channel = ?');
+    params.push(range.channel);
   }
   return { where: sql.join(' AND '), params };
 }
@@ -30,6 +44,14 @@ function ticketScope(range) {
   if (range.cinemaId) {
     sql.push('r.cinema_id = ?');
     params.push(range.cinemaId);
+  }
+  if (range.movieId) {
+    sql.push('s.movie_id = ?');
+    params.push(range.movieId);
+  }
+  if (range.channel) {
+    sql.push('o.channel = ?');
+    params.push(range.channel);
   }
   return { where: sql.join(' AND '), params };
 }
@@ -141,6 +163,8 @@ async function topFoods(range, limit = 5) {
 
 const listCinemas = () => query('SELECT cinema_id, cinema_name FROM cinemas ORDER BY cinema_name');
 
+const listMovies = () => query('SELECT movie_id, title FROM movies ORDER BY title');
+
 module.exports = {
-  summary, dailyOrders, dailyTickets, byChannel, byPayment, topMovies, byCinema, topFoods, listCinemas,
+  summary, dailyOrders, dailyTickets, byChannel, byPayment, topMovies, byCinema, topFoods, listCinemas, listMovies,
 };

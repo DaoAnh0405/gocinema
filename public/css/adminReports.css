@@ -1,52 +1,145 @@
 /* thống kê */
 
+/* lọc */
 .gc-dash--admin .gc-rep__filters {
+    margin-bottom: 18px;
+    padding: 18px 20px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+.gc-dash--admin .gc-rep__filters-head {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 12px 14px;
-    margin-bottom: 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-bottom: 16px;
 }
-.gc-dash--admin .gc-rep__field {
-    min-width: 150px;
+.gc-dash--admin .gc-rep__filters-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 700;
 }
-.gc-dash--admin .gc-rep__field .form-label {
-    margin-bottom: 4px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #475569;
+.gc-dash--admin .gc-rep__filters-icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    color: #e50914;
+    font-size: 14px;
+    background: #fee2e2;
+    border-radius: 8px;
 }
 .gc-dash--admin .gc-rep__presets {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: 18px;
 }
 .gc-dash--admin .gc-rep__preset {
-    padding: 5px 14px;
-    color: #334155;
-    font-size: 13px;
+    padding: 4px 12px;
+    color: #475569;
+    font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    background: #fff;
-    border: 1px solid #d1d5db;
+    background: #f1f5f9;
+    border: 1px solid transparent;
     border-radius: 999px;
 }
 .gc-dash--admin .gc-rep__preset:hover {
-    background: #f8fafc;
+    background: #e2e8f0;
 }
 .gc-dash--admin .gc-rep__preset.is-active {
-    color: #fff;
-    background: #e50914;
-    border-color: #e50914;
+    color: #e50914;
+    background: #fee2e2;
+    border-color: #fecaca;
 }
-.gc-dash--admin .gc-rep__range {
-    margin-left: auto;
+.gc-dash--admin .gc-rep__fields {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px 16px;
+}
+.gc-dash--admin .gc-rep__field .form-label {
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+.gc-dash--admin .gc-rep__field .form-control,
+.gc-dash--admin .gc-rep__field .form-select {
+    min-width: 0;
+    color: #1e293b;
+    font-size: 14px;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    border-radius: 10px;
+}
+.gc-dash--admin .gc-rep__field .form-select:disabled {
+    color: #1e293b;
+    background-color: #f8fafc;
+    opacity: 1;
+    cursor: not-allowed;
+}
+.gc-dash--admin .gc-rep__filters-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #eef2f7;
+}
+.gc-dash--admin .gc-rep__summary {
+    margin: 0;
     color: #64748b;
     font-size: 12px;
 }
+.gc-dash--admin .gc-rep__summary strong {
+    color: #1e293b;
+    font-weight: 700;
+}
+.gc-dash--admin .gc-rep__summary span {
+    margin-left: 4px;
+    color: #e11d48;
+}
+.gc-dash--admin .gc-rep__summary .gc-rep__compare {
+    margin-left: 12px;
+    color: #94a3b8;
+}
+.gc-dash--admin .gc-rep__filters-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.gc-dash--admin .gc-rep__reset {
+    color: #475569;
+    font-weight: 600;
+    background: #eef2f7;
+    border-color: #eef2f7;
+}
+.gc-dash--admin .gc-rep__reset:hover {
+    color: #1e293b;
+    background: #e2e8f0;
+}
+.gc-dash--admin .gc-rep__apply {
+    color: #fff;
+    font-weight: 600;
+    background: #e11d48;
+    border-color: #e11d48;
+}
+.gc-dash--admin .gc-rep__apply:hover {
+    color: #fff;
+    background: #be123c;
+    border-color: #be123c;
+}
 
+/* content */
 .gc-dash--admin .gc-rep__kpis {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -176,11 +269,21 @@
     font-size: 36px;
 }
 
+@media (max-width: 1199.98px) {
+    .gc-dash--admin .gc-rep__fields {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 767.98px) {
     .gc-dash--admin .gc-rep__grid {
         grid-template-columns: 1fr;
     }
-    .gc-dash--admin .gc-rep__range {
+    .gc-dash--admin .gc-rep__fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .gc-dash--admin .gc-rep__compare {
+        display: block;
         margin-left: 0;
     }
     .gc-dash--admin .gc-rep__canvas--wide {

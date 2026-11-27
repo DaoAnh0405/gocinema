@@ -4,6 +4,7 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_DAYS = 366;
 const DEFAULT_DAYS = 30;
+const CHANNELS = Object.freeze(['ONLINE', 'COUNTER']);
 
 // 'YYYY-MM-DD' thật sự tồn tại (loại 2026-02-30) -> mốc UTC, ngược lại null
 function parseDate(raw) {
@@ -40,7 +41,15 @@ function normalizeReportFilters(input = {}, today = todayText()) {
     from = addDays(to, -(MAX_DAYS - 1));
     notice = `Chỉ xem được tối đa ${MAX_DAYS} ngày mỗi lần, đã rút gọn về ${MAX_DAYS} ngày gần nhất của khoảng đã chọn`;
   }
-  return { from, to, days: countDays(from, to), cinemaId: parseId(input.cinema_id) || '', notice };
+  return {
+    from,
+    to,
+    days: countDays(from, to),
+    cinemaId: parseId(input.cinema_id) || '',
+    movieId: parseId(input.movie_id) || '',
+    channel: CHANNELS.includes(input.channel) ? input.channel : '',
+    notice,
+  };
 }
 
 // khoảng liền trước có cùng số ngày, dùng để so sánh tăng giảm
@@ -53,14 +62,17 @@ function presetRanges(today = todayText()) {
   const [year, month] = today.split('-').map(Number);
   const lastMonthStart = formatDate(Date.UTC(year, month - 2, 1));
   const lastMonthEnd = formatDate(Date.UTC(year, month - 1, 0));
+  const [y, m, d] = today.split('-');
   return [
-    { key: '7d', label: '7 ngày', from: addDays(today, -6), to: today },
-    { key: '30d', label: '30 ngày', from: addDays(today, -29), to: today },
+    { key: 'all', label: 'Tất cả kỳ', title: `Tối đa ${MAX_DAYS} ngày gần nhất`, from: addDays(today, -(MAX_DAYS - 1)), to: today },
+    { key: 'today', label: `${d}/${m}/${y}`, title: 'Hôm nay', from: today, to: today },
+    { key: '7d', label: '7 ngày gần nhất', from: addDays(today, -6), to: today },
+    { key: '30d', label: '30 ngày gần nhất', from: addDays(today, -29), to: today },
     { key: 'month', label: 'Tháng này', from: `${today.slice(0, 8)}01`, to: today },
     { key: 'lastMonth', label: 'Tháng trước', from: lastMonthStart, to: lastMonthEnd },
   ];
 }
 
 module.exports = {
-  MAX_DAYS, parseDate, addDays, countDays, normalizeReportFilters, previousRange, presetRanges,
+  MAX_DAYS, parseDate, addDays, countDays, normalizeReportFilters, previousRange, presetRanges, CHANNELS
 };
