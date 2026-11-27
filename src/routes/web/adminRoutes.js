@@ -24,6 +24,8 @@ router.use(require('./adminPermissionRoutes'));
 router.use(require('./adminReportRoutes'));
 //accounts
 router.use(require('./adminAccountRoutes'));
+//orders
+router.use(require('./adminOrderRoutes'));
 //cinemas
 router.use('/cinemas', requirePermission(PERMISSION.MANAGE_CINEMAS), cinemas.csrf);
 router.get('/cinemas', cinemas.index);

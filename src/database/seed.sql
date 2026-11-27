@@ -44,6 +44,8 @@ INSERT INTO permissions (permission_name, description) VALUES
   ('MANAGE_ACCOUNTS',    'Quản lý tài khoản khách và nhân viên'),
   ('MANAGE_PERMISSIONS', 'Gán quyền theo vai trò'),
   ('VIEW_REPORTS',       'Xem thống kê doanh thu'),
+  ('VIEW_ORDERS',        'Xem danh sách và chi tiết đơn hàng'),
+  ('MANAGE_ORDERS',      'Hủy đơn hàng đang chờ thanh toán'),
   ('VIEW_SHOWTIMES',     'Xem lịch chiếu và tình trạng ghế'),
   ('SELL_TICKETS',       'Bán vé tại quầy'),
   ('CHECKIN_TICKETS',    'Soát vé'),

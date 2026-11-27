@@ -1,0 +1,109 @@
+<section class="gc-catalog gc-orders" aria-label="Chi tiết đơn hàng <%= order.order_code %>">
+  <div class="gc-orders__head">
+    <a class="gc-orders__back" href="/admin/orders"><i class="bi bi-arrow-left" aria-hidden="true"></i> Danh sách đơn hàng</a>
+    <% if (order.canCancel && can('MANAGE_ORDERS')) { %>
+      <button class="btn gc-orders__cancel-btn" type="button" data-order-cancel-open><i class="bi bi-x-circle" aria-hidden="true"></i> Hủy đơn</button>
+    <% } %>
+  </div>
+
+  <div class="gc-orders__summary">
+    <div>
+      <h2 class="gc-orders__title"><%= order.order_code %></h2>
+      <p class="gc-orders__sub">Tạo lúc <%= fmt.dateTime(order.created_at) %> · <%= order.channelLabel %></p>
+    </div>
+    <span class="gc-orders__status gc-orders__status--<%= order.status.toLowerCase() %>"><%= statusLabels[order.status] %></span>
+  </div>
+
+  <div class="gc-orders__grid">
+    <div class="gc-catalog__table-panel gc-orders__card">
+      <h3>Khách hàng</h3>
+      <dl class="gc-orders__dl">
+        <dt>Họ tên</dt><dd><%= order.customerLabel %></dd>
+        <% if (order.customer_email) { %><dt>Email</dt><dd><%= order.customer_email %></dd><% } %>
+        <% if (order.customer_phone) { %><dt>Điện thoại</dt><dd><%= order.customer_phone %></dd><% } %>
+        <% if (order.staff_name || order.staff_email) { %><dt>Nhân viên bán</dt><dd><%= order.staff_name || order.staff_email %></dd><% } %>
+      </dl>
+    </div>
+    <div class="gc-catalog__table-panel gc-orders__card">
+      <h3>Thanh toán</h3>
+      <dl class="gc-orders__dl">
+        <dt>Tạm tính</dt><dd><%= fmt.money(order.subtotal) %></dd>
+        <dt>Giảm giá<% if (order.promo_code) { %> (<%= order.promo_code %>)<% } %></dt><dd>− <%= fmt.money(order.discount_amount) %></dd>
+        <dt>Tổng cộng</dt><dd><strong><%= fmt.money(order.total_amount) %></strong></dd>
+      </dl>
+      <% if (payments.length) { %>
+        <ul class="gc-orders__payments">
+          <% payments.forEach((p) => { %>
+            <li><%= p.methodLabel %> · <%= fmt.money(p.amount) %> · <%= p.statusLabel %><% if (p.paid_at) { %> · <%= fmt.dateTime(p.paid_at) %><% } %><% if (p.transaction_ref) { %> <span class="gc-orders__sub">(<%= p.transaction_ref %>)</span><% } %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (order.cancelled_at || order.cancel_reason) { %>
+    <div class="gc-orders__notice" role="note">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <div>
+        <strong><%= statusLabels[order.status] %><% if (order.cancelled_at) { %> lúc <%= fmt.dateTime(order.cancelled_at) %><% } %></strong>
+        <% if (order.cancel_reason) { %><p><%= order.cancel_reason %></p><% } %>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="gc-catalog__table-panel">
+    <h3 class="gc-orders__section">Vé (<%= tickets.length %>)</h3>
+    <div class="gc-catalog__table-scroll">
+      <table class="table gc-catalog__table">
+        <caption class="visually-hidden">Danh sách vé của đơn</caption>
+        <thead><tr><th scope="col">Phim</th><th scope="col">Suất chiếu</th><th scope="col">Phòng</th><th scope="col">Ghế</th><th scope="col">Giá</th><th scope="col">Tình trạng</th></tr></thead>
+        <tbody>
+          <% if (!tickets.length) { %><tr><td colspan="6" class="gc-catalog__empty"><p>Đơn không có vé.</p></td></tr><% } %>
+          <% tickets.forEach((t) => { %>
+            <tr>
+              <th scope="row"><%= t.title %></th>
+              <td class="text-nowrap"><%= fmt.dateTime(t.start_time) %><span class="gc-orders__sub"><%= t.screen_format %> · <%= t.language %></span></td>
+              <td><%= t.cinema_name %><span class="gc-orders__sub"><%= t.room_name %></span></td>
+              <td><%= t.seatLabel %><span class="gc-orders__sub"><%= t.seat_type_name %></span></td>
+              <td class="text-nowrap"><%= fmt.money(t.ticket_price) %></td>
+              <td><span class="gc-orders__status gc-orders__status--ticket-<%= t.label.tone %>"><%= t.label.text %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if (foods.length) { %>
+    <div class="gc-catalog__table-panel">
+      <h3 class="gc-orders__section">Đồ ăn & nước uống</h3>
+      <div class="gc-catalog__table-scroll">
+        <table class="table gc-catalog__table">
+          <caption class="visually-hidden">Đồ ăn trong đơn</caption>
+          <thead><tr><th scope="col">Món</th><th scope="col">Số lượng</th><th scope="col">Đơn giá</th><th scope="col">Thành tiền</th></tr></thead>
+          <tbody>
+            <% foods.forEach((f) => { %>
+              <tr><th scope="row"><%= f.food_name %></th><td><%= f.quantity %></td><td><%= fmt.money(f.unit_price) %></td><td><%= fmt.money(f.lineTotal) %></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (order.canCancel && can('MANAGE_ORDERS')) { %>
+    <dialog class="gc-orders__dialog" data-order-cancel-dialog aria-labelledby="order-cancel-title">
+      <h2 id="order-cancel-title">Hủy đơn <%= order.order_code %></h2>
+      <p>Ghế đang giữ sẽ được nhả và lượt mã giảm giá (nếu có) được hoàn lại. Hành động này không thể hoàn tác.</p>
+      <form method="post" action="/admin/orders/<%= order.order_id %>/cancel">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label class="form-label" for="cancel-reason">Lý do (không bắt buộc)</label>
+        <textarea class="form-control" id="cancel-reason" name="reason" rows="3" maxlength="<%= reasonMax %>"></textarea>
+        <div class="gc-orders__dialog-actions">
+          <button class="btn gc-catalog__secondary" type="button" data-order-cancel-close>Đóng</button>
+          <button class="btn gc-orders__cancel-btn" type="submit">Xác nhận hủy đơn</button>
+        </div>
+      </form>
+    </dialog>
+  <% } %>
+</section>
