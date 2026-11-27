@@ -6,7 +6,7 @@ const PAYMENT_LABELS = Object.freeze({
   CASH: 'Tiền mặt', CARD: 'Thẻ', E_WALLET: 'Ví điện tử', BANK_TRANSFER: 'Chuyển khoản',
 });
 
-const toRange = ({ from, to, cinemaId }) => ({ from, to, toExclusive: addDays(to, 1), cinemaId });
+const toRange = ({ from, to, cinemaId, movieId, channel }) => ({ from, to, toExclusive: addDays(to, 1), cinemaId, movieId, channel });
 
 // % thay đổi so với kỳ trước, null khi kỳ trước bằng 0 (không so sánh được)
 function percentChange(current, previous) {
@@ -33,9 +33,9 @@ function fillDaily({ from, days }, orderRows, ticketRows) {
 
 async function build(filters) {
   const range = toRange(filters);
-  const previous = toRange({ ...previousRange(filters), cinemaId: filters.cinemaId });
+  const previous = toRange({ ...previousRange(filters), cinemaId: filters.cinemaId, movieId: filters.movieId, channel: filters.channel });
   const [
-    current, before, orderRows, ticketRows, channels, payments, movies, cinemas, foods, cinemaOptions,
+    current, before, orderRows, ticketRows, channels, payments, movies, cinemas, foods, cinemaOptions, movieOptions,
   ] = await Promise.all([
     reportModel.summary(range),
     reportModel.summary(previous),
@@ -47,6 +47,7 @@ async function build(filters) {
     reportModel.byCinema(range),
     reportModel.topFoods(range),
     reportModel.listCinemas(),
+    reportModel.listMovies(),
   ]);
 
   const finished = current.orders + current.failedOrders;
@@ -76,10 +77,11 @@ async function build(filters) {
     cinemas: cinemas.map((row) => ({ ...row, tickets: Number(row.tickets), revenue: Number(row.revenue) })),
     foods: foods.map((row) => ({ ...row, quantity: Number(row.quantity), revenue: Number(row.revenue) })),
     cinemaOptions,
+    movieOptions,
   };
 }
 
-// CSV theo ngày (có BOM để Excel đọc đúng tiếng Việt), kèm dòng tổng
+// CSV theo ngày (có BOM để Excel đọc đúng tiếng Việt), kèm dòng tổng (mô phỏng chưa format)
 function toCsv(report) {
   const lines = [['Ngày', 'Số đơn', 'Vé bán ra', 'Doanh thu (VNĐ)']];
   report.daily.forEach((row) => lines.push([row.date, row.orders, row.tickets, row.revenue]));

@@ -2,16 +2,16 @@
   const k = kpi;
   const f = filters;
   const hasData = k.orders > 0 || k.failedOrders > 0;
-  const rangeUrl = (from, to) => {
+    const filterParams = (from, to) => {
     const params = new URLSearchParams({ from, to });
     if (f.cinemaId) params.set('cinema_id', String(f.cinemaId));
-    return '/admin/reports?' + params.toString();
+    if (f.movieId) params.set('movie_id', String(f.movieId));
+    if (f.channel) params.set('channel', f.channel);
+    return params.toString();
   };
-  const csvUrl = (() => {
-    const params = new URLSearchParams({ from: f.from, to: f.to });
-    if (f.cinemaId) params.set('cinema_id', String(f.cinemaId));
-    return '/admin/reports/export.csv?' + params.toString();
-  })();
+  const rangeUrl = (from, to) => '/admin/reports?' + filterParams(from, to);
+  const csvUrl = '/admin/reports/export.csv?' + filterParams(f.from, f.to);
+  const lastThirty = presets.find((p) => p.key === '30d') || presets[0];
   const activePreset = presets.find((p) => p.from === f.from && p.to === f.to);
   const delta = (value) => {
     if (value === null || value === undefined) return { text: 'Không có kỳ trước để so sánh', cls: 'is-flat' };
@@ -29,34 +29,68 @@
   const maxFood = Math.max(1, ...foods.map((m) => m.revenue));
 %>
 <section class="gc-catalog gc-rep" aria-label="Thống kê" data-report-page>
-  <form class="gc-rep__filters" method="get" action="/admin/reports">
-    <div class="gc-rep__field">
-      <label class="form-label" for="rep-from">Từ ngày</label>
-      <input class="form-control" id="rep-from" name="from" type="date" value="<%= f.from %>" required>
-    </div>
-    <div class="gc-rep__field">
-      <label class="form-label" for="rep-to">Đến ngày</label>
-      <input class="form-control" id="rep-to" name="to" type="date" value="<%= f.to %>" required>
-    </div>
-    <div class="gc-rep__field">
-      <label class="form-label" for="rep-cinema">Rạp</label>
-      <select class="form-select" id="rep-cinema" name="cinema_id">
-        <option value="">Tất cả rạp</option>
-        <% cinemaOptions.forEach((cinema) => { %>
-          <option value="<%= cinema.cinema_id %>" <%= String(f.cinemaId) === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option>
+  <form class="gc-rep__filters" method="get" action="/admin/reports" aria-label="Bộ lọc dữ liệu thống kê">
+    <div class="gc-rep__filters-head">
+      <h2 class="gc-rep__filters-title"><span class="gc-rep__filters-icon" aria-hidden="true"><i class="bi bi-funnel"></i></span>Bộ lọc dữ liệu thống kê</h2>
+      <div class="gc-rep__presets" role="group" aria-label="Chọn nhanh khoảng thời gian">
+        <% presets.forEach((preset) => { %>
+          <a class="gc-rep__preset <%= activePreset && activePreset.key === preset.key ? 'is-active' : '' %>" href="<%= rangeUrl(preset.from, preset.to) %>" <% if (preset.title) { %>title="<%= preset.title %>" <% } %><%= activePreset && activePreset.key === preset.key ? 'aria-current=true' : '' %>><%= preset.label %></a>
         <% }) %>
-      </select>
+      </div>
     </div>
-    <button class="btn gc-catalog__filter-button" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Xem</button>
-    <a class="btn gc-catalog__secondary" href="<%= csvUrl %>"><i class="bi bi-download" aria-hidden="true"></i> Xuất CSV</a>
-  </form>
 
-  <div class="gc-rep__presets" role="group" aria-label="Chọn nhanh khoảng thời gian">
-    <% presets.forEach((preset) => { %>
-      <a class="gc-rep__preset <%= activePreset && activePreset.key === preset.key ? 'is-active' : '' %>" href="<%= rangeUrl(preset.from, preset.to) %>" <%= activePreset && activePreset.key === preset.key ? 'aria-current=true' : '' %>><%= preset.label %></a>
-    <% }) %>
-    <span class="gc-rep__range">Kỳ so sánh: <%= fmt.date(previous.from) %> – <%= fmt.date(previous.to) %></span>
-  </div>
+    <div class="gc-rep__fields">
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-from">Từ ngày</label>
+        <input class="form-control" id="rep-from" name="from" type="date" value="<%= f.from %>" required>
+      </div>
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-to">Đến ngày</label>
+        <input class="form-control" id="rep-to" name="to" type="date" value="<%= f.to %>" required>
+      </div>
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-cinema">Rạp chiếu (cinemas)</label>
+        <select class="form-select" id="rep-cinema" name="cinema_id">
+          <option value="">Tất cả rạp</option>
+          <% cinemaOptions.forEach((cinema) => { %>
+            <option value="<%= cinema.cinema_id %>" <%= String(f.cinemaId) === String(cinema.cinema_id) ? 'selected' : '' %>><%= cinema.cinema_name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-movie">Phim (movies)</label>
+        <select class="form-select" id="rep-movie" name="movie_id">
+          <option value="">Tất cả phim</option>
+          <% movieOptions.forEach((movie) => { %>
+            <option value="<%= movie.movie_id %>" <%= String(f.movieId) === String(movie.movie_id) ? 'selected' : '' %>><%= movie.title %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-channel">Kênh bán (channel)</label>
+        <select class="form-select" id="rep-channel" name="channel">
+          <option value="">ONLINE &amp; COUNTER</option>
+          <option value="ONLINE" <%= f.channel === 'ONLINE' ? 'selected' : '' %>>ONLINE (Trực tuyến)</option>
+          <option value="COUNTER" <%= f.channel === 'COUNTER' ? 'selected' : '' %>>COUNTER (Tại quầy)</option>
+        </select>
+      </div>
+      <div class="gc-rep__field">
+        <label class="form-label" for="rep-status">Trạng thái đơn</label>
+        <select class="form-select" id="rep-status" disabled aria-describedby="rep-status-hint">
+          <option>PAID (Đã thanh toán)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="gc-rep__filters-foot">
+      <p class="gc-rep__summary" id="rep-status-hint">Đang hiển thị đơn <strong>PAID</strong> từ <strong><%= f.from %></strong> đến <strong><%= f.to %></strong> <span>(<%= k.orders %> đơn)</span><span class="gc-rep__compare">Kỳ so sánh: <%= fmt.date(previous.from) %> – <%= fmt.date(previous.to) %></span></p>
+      <div class="gc-rep__filters-actions">
+        <a class="btn gc-catalog__secondary" href="<%= csvUrl %>"><i class="bi bi-download" aria-hidden="true"></i> Xuất CSV</a>
+        <a class="btn gc-rep__reset" href="/admin/reports">Đặt lại</a>
+        <button class="btn gc-rep__apply" type="submit">Áp dụng bộ lọc</button>
+      </div>
+    </div>
+  </form>
 
   <% if (f.notice) { %><div class="alert alert-warning" role="status"><%= f.notice %></div><% } %>
 
@@ -78,7 +112,7 @@
     <div class="gc-catalog__table-panel gc-rep__empty">
       <i class="bi bi-bar-chart" aria-hidden="true"></i>
       <p>Chưa có đơn hàng nào trong khoảng thời gian này.</p>
-      <a href="<%= rangeUrl(presets[1].from, presets[1].to) %>">Xem 30 ngày gần nhất</a>
+      <a href="<%= rangeUrl(lastThirty.from, lastThirty.to) %>">Xem 30 ngày gần nhất</a>
     </div>
   <% } else { %>
     <div class="gc-rep__panel" data-report-charts data-report="<%= JSON.stringify(chartData) %>">
@@ -138,6 +172,6 @@
           <% }) %></tbody></table>
       <% } else { %><p class="gc-rep__none">Chưa bán đồ ăn trong khoảng này.</p><% } %>
     </div>
-    <p class="gc-rep__foot">Doanh thu tính trên đơn đã thanh toán, theo ngày tạo đơn. Khi lọc theo rạp, một đơn được tính cho rạp nếu có vé thuộc rạp đó.</p>
+    <p class="gc-rep__foot">Doanh thu tính trên đơn đã thanh toán, theo ngày tạo đơn. Khi lọc theo rạp hoặc phim, một đơn được tính nếu có vé thuộc rạp hoặc phim đó.</p>
   <% } %>
 </section>
